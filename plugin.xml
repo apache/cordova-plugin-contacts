@@ -2,18 +2,34 @@
 
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
 xmlns:android="http://schemas.android.com/apk/res/android"
-id="org.apache.cordova.core">
+id="org.apache.cordova.core.contacts">
     version="0.1.0">
     <name>Contacts</name>
 
     <!-- android -->
     <platform name="android">
-        <config-file target="res/xml/config.xml" parent="/cordova/plugins">
-            <plugin name="Contacts" value="org.apache.cordova.core.ContactManager"/>
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="Contacts">
+                <param name="android-package" value="org.apache.cordova.core.contacts.ContactManager"/>
+            </feature>
         </config-file>
 
-       <source-file src="ContactAccessor.java" target-dir="org/apache/cordova/core" />
-        <source-file src="ContactAccessorSdk5.java" target-dir="org/apache/cordova/core" />
-        <source-file src="ContactManager.java" target-dir="org/apache/cordova/core" />
-       </platform>
+        <source-file src="src/android/ContactAccessor.java" target-dir="src/org/apache/cordova/core" />
+        <source-file src="src/android/ContactAccessorSdk5.java" target-dir="src/org/apache/cordova/core" />
+        <source-file src="src/android/ContactManager.java" target-dir="src/org/apache/cordova/core" />
+    </platform>
+
+    <!-- ios -->
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="Contacts">
+                <param name="ios-package" value="CDVContacts"/>
+            </feature>
+        </config-file>
+            
+        <header-file src="src/ios/CDVContacts.h" />
+        <source-file src="src/ios/CDVContacts.m" />
+        <header-file src="src/ios/CDVContact.h" />
+        <source-file src="src/ios/CDVContact.m" />          
+    </platform>
 </plugin>

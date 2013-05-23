@@ -5,6 +5,40 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 id="org.apache.cordova.core.contacts">
     version="0.1.0">
     <name>Contacts</name>
+    
+    <js-module src="www/contacts.js" name="contacts">
+        <clobbers target="navigator.contacts" />
+    </js-module>
+
+    <js-module src="www/Contact.js" name="Contact">
+        <clobbers target="Contact" />
+    </js-module>
+
+    <js-module src="www/ContactAddress.js" name="ContactAddress">
+        <clobbers target="ContactAddress" />
+    </js-module>
+
+    <js-module src="www/ContactError.js" name="ContactError">
+        <clobbers target="ContactError" />
+    </js-module>
+
+    <js-module src="www/ContactField.js" name="ContactField">
+        <clobbers target="ContactField" />
+    </js-module>
+
+    <js-module src="www/ContactFindOptions.js" name="ContactFindOptions">
+        <clobbers target="ContactFindOptions" />
+    </js-module>
+
+    <js-module src="www/ContactName.js" name="ContactName">
+        <clobbers target="ContactName" />
+    </js-module>
+
+    <js-module src="www/ContactOrganization.js" name="ContactOrganization">
+        <clobbers target="ContactOrganization" />
+    </js-module>
+
+
 
     <!-- android -->
     <platform name="android">
@@ -26,7 +60,15 @@ id="org.apache.cordova.core.contacts">
                 <param name="ios-package" value="CDVContacts"/>
             </feature>
         </config-file>
-            
+        
+        <js-module src="www/ios/contacts.js" name="contacts">
+            <merges target="navigator.contacts" />
+        </js-module>
+
+        <js-module src="www/ios/Contact.js" name="Contact">
+            <merges target="Contact" />
+        </js-module>
+   
         <header-file src="src/ios/CDVContacts.h" />
         <source-file src="src/ios/CDVContacts.m" />
         <header-file src="src/ios/CDVContact.h" />

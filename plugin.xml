@@ -78,7 +78,7 @@ id="org.apache.cordova.core.contacts">
     <!-- wp7 -->
     <platform name="wp7">
         <config-file target="config.xml" parent="/*">
-            <feature name="Console">
+            <feature name="Contacts">
                 <param name="wp-package" value="Contacts"/>
             </feature>
         </config-file>

@@ -83,6 +83,10 @@ id="org.apache.cordova.core.contacts">
             </feature>
         </config-file>
 
+        <config-file target="Properties/WMAppManifest.xml" parent="/Deployment/App/Capabilities">
+            <Capability Name="ID_CAP_CONTACTS" />
+        </config-file>
+
         <source-file src="src/wp7/Contacts.cs" /> 
     </platform>
 

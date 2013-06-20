@@ -160,7 +160,7 @@ Contact.prototype.save = function(successCB, errorCB) {
     var success = function(result) {
         if (result) {
             if (successCB) {
-                var fullContact = require('cordova/plugin/contacts').create(result);
+                var fullContact = require('org.apache.cordova.core.contacts.contacts').create(result);
                 successCB(convertIn(fullContact));
             }
         }

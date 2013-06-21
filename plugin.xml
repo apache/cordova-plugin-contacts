@@ -81,6 +81,25 @@ id="org.apache.cordova.core.contacts">
         <source-file src="src/ios/CDVContact.m" />          
     </platform>
 
+    <!-- blackberry10 -->
+    <platform name="blackberry10">
+        <config-file target="www/config.xml" parent="/widget">
+            <feature name="Contacts" value="Contacts"/>
+        </config-file>
+        <source-file src="src/blackberry10/index.js" target-dir="Contacts"></source-file>
+        <source-file src="src/blackberry10/ContactActivity.js" target-dir="Contacts"></source-file>
+        <source-file src="src/blackberry10/ContactAddress.js" target-dir="Contacts"></source-file>
+        <source-file src="src/blackberry10/contactConsts.js" target-dir="Contacts"></source-file>
+        <source-file src="src/blackberry10/ContactError.js" target-dir="Contacts"></source-file>
+        <source-file src="src/blackberry10/ContactField.js" target-dir="Contacts"></source-file>
+        <source-file src="src/blackberry10/ContactFindOptions.js" target-dir="Contacts"></source-file>
+        <source-file src="src/blackberry10/ContactName.js" target-dir="Contacts"></source-file>
+        <source-file src="src/blackberry10/ContactNews.js" target-dir="Contacts"></source-file>
+        <source-file src="src/blackberry10/ContactOrganization.js" target-dir="Contacts"></source-file>
+        <source-file src="src/blackberry10/ContactPhoto.js" target-dir="Contacts"></source-file>
+        <source-file src="src/blackberry10/contactUtils.js" target-dir="Contacts"></source-file>
+    </platform>
+
     <!-- wp7 -->
     <platform name="wp7">
         <config-file target="config.xml" parent="/*">

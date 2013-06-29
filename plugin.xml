@@ -5,14 +5,6 @@
       version="0.1.0">
     <name>Contacts</name>
     
-    <js-module src="www/contacts.js" name="contacts">
-        <clobbers target="navigator.contacts" />
-    </js-module>
-
-    <js-module src="www/Contact.js" name="Contact">
-        <clobbers target="Contact" />
-    </js-module>
-
     <js-module src="www/ContactAddress.js" name="ContactAddress">
         <clobbers target="ContactAddress" />
     </js-module>
@@ -53,6 +45,14 @@
             <uses-permission android:name="android.permission.GET_ACCOUNTS" />
         </config-file>
         
+        <js-module src="www/contacts.js" name="contacts">
+            <clobbers target="navigator.contacts" />
+        </js-module>
+
+        <js-module src="www/Contact.js" name="Contact">
+            <clobbers target="Contact" />
+        </js-module>
+
         <source-file src="src/android/ContactAccessor.java" target-dir="src/org/apache/cordova/core" />
         <source-file src="src/android/ContactAccessorSdk5.java" target-dir="src/org/apache/cordova/core" />
         <source-file src="src/android/ContactManager.java" target-dir="src/org/apache/cordova/core" />
@@ -85,6 +85,15 @@
         <config-file target="www/config.xml" parent="/widget">
             <feature name="Contacts" value="Contacts"/>
         </config-file>
+
+        <js-module src="www/contacts.js" name="contacts">
+            <clobbers target="navigator.contacts" />
+        </js-module>
+
+        <js-module src="www/Contact.js" name="Contact">
+            <clobbers target="Contact" />
+        </js-module>
+
         <source-file src="src/blackberry10/index.js" target-dir="Contacts"></source-file>
         <source-file src="src/blackberry10/ContactActivity.js" target-dir="Contacts"></source-file>
         <source-file src="src/blackberry10/ContactAddress.js" target-dir="Contacts"></source-file>
@@ -107,6 +116,14 @@
             </feature>
         </config-file>
 
+        <js-module src="www/contacts.js" name="contacts">
+            <clobbers target="navigator.contacts" />
+        </js-module>
+
+        <js-module src="www/Contact.js" name="Contact">
+            <clobbers target="Contact" />
+        </js-module>
+
         <config-file target="Properties/WMAppManifest.xml" parent="/Deployment/App/Capabilities">
             <Capability Name="ID_CAP_CONTACTS" />
         </config-file>
@@ -125,6 +142,14 @@
         <config-file target="Properties/WMAppManifest.xml" parent="/Deployment/App/Capabilities">
             <Capability Name="ID_CAP_CONTACTS" />
         </config-file>
+
+        <js-module src="www/contacts.js" name="contacts">
+            <clobbers target="navigator.contacts" />
+        </js-module>
+
+        <js-module src="www/Contact.js" name="Contact">
+            <clobbers target="Contact" />
+        </js-module>
 
         <source-file src="src/wp8/Contacts.cs" />
     </platform>

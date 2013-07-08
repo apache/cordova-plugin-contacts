@@ -111,7 +111,7 @@
             <Capability Name="ID_CAP_CONTACTS" />
         </config-file>
 
-        <source-file src="src/wp7/Contacts.cs" />
+        <source-file src="src/wp/Contacts.cs" />
     </platform>
 
     <!-- wp8 -->
@@ -126,7 +126,7 @@
             <Capability Name="ID_CAP_CONTACTS" />
         </config-file>
 
-        <source-file src="src/wp8/Contacts.cs" />
+        <source-file src="src/wp/Contacts.cs" />
     </platform>
 
 </plugin>

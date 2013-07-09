@@ -954,9 +954,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         // Create new contact
         if (id == null) {
             return createNewContact(contact, accountType, accountName);
-        }
-        // Modify existing contact
-        else {
+        } else {
             return modifyContact(id, contact, accountType, accountName);
         }
     }
@@ -1101,13 +1099,22 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                         }
                         // This is an existing email so do a DB update
                         else {
-                            ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+                        	String emailValue=getJsonString(email, "value");
+                        	if(!emailValue.isEmpty()) {                        		
+                                ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
                                     .withSelection(ContactsContract.CommonDataKinds.Email._ID + "=? AND " +
                                             ContactsContract.Data.MIMETYPE + "=?",
                                             new String[] { emailId, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE })
                                     .withValue(ContactsContract.CommonDataKinds.Email.DATA, getJsonString(email, "value"))
                                     .withValue(ContactsContract.CommonDataKinds.Email.TYPE, getContactType(getJsonString(email, "type")))
                                     .build());
+                        	} else {
+                                ops.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
+                                        .withSelection(ContactsContract.CommonDataKinds.Email._ID + "=? AND " +
+                                                ContactsContract.Data.MIMETYPE + "=?",
+                                                new String[] { emailId, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE })
+                                        .build());
+                        	}
                         }
                     }
                 }

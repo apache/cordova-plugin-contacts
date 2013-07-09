@@ -20,7 +20,7 @@
 */
 
 var exec = require('cordova/exec'),
-    ContactError = require('org.apache.cordova.core.contacts.ContactError');
+    ContactError = require('./ContactError');
 
 /**
  * Provides iOS Contact.display API.

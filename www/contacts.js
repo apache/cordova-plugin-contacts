@@ -21,9 +21,9 @@
 
 var argscheck = require('cordova/argscheck'),
     exec = require('cordova/exec'),
-    ContactError = require('org.apache.cordova.core.contacts.ContactError'),
+    ContactError = require('./ContactError'),
     utils = require('cordova/utils'),
-    Contact = require('org.apache.cordova.core.contacts.Contact');
+    Contact = require('./Contact');
 
 /**
 * Represents a group of Contacts.

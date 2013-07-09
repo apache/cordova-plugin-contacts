@@ -21,7 +21,7 @@
 
 var argscheck = require('cordova/argscheck'),
     exec = require('cordova/exec'),
-    ContactError = require('org.apache.cordova.core.contacts.ContactError'),
+    ContactError = require('./ContactError'),
     utils = require('cordova/utils');
 
 /**
@@ -160,7 +160,7 @@ Contact.prototype.save = function(successCB, errorCB) {
     var success = function(result) {
         if (result) {
             if (successCB) {
-                var fullContact = require('org.apache.cordova.core.contacts.contacts').create(result);
+                var fullContact = require('./contacts').create(result);
                 successCB(convertIn(fullContact));
             }
         }

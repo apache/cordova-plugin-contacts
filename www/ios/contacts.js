@@ -54,7 +54,7 @@ module.exports = {
          *
          */
          var win = function(result) {
-             var fullContact = require('org.apache.cordova.core.contacts.contacts').create(result);
+             var fullContact = require('./contacts').create(result);
             successCallback(fullContact.id, fullContact);
        };
         exec(win, null, "Contacts","chooseContact", [options]);

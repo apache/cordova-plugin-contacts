@@ -33,7 +33,7 @@ import android.provider.ContactsContract;
 import android.util.Log;
 import android.webkit.WebView;
 
-import org.apache.cordova.api.CordovaInterface;
+import org.apache.cordova.CordovaInterface;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

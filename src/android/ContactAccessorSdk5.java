@@ -2142,6 +2142,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      * @param type
      * @return phone type as string.
      */
+    @SuppressWarnings("unused")
     private String getImType(int type) {
         String stringType;
         switch (type) {

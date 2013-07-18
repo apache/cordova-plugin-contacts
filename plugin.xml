@@ -4,7 +4,8 @@
            id="org.apache.cordova.core.contacts"
       version="0.1.0">
     <name>Contacts</name>
-    
+
+
     <js-module src="www/contacts.js" name="contacts">
         <clobbers target="navigator.contacts" />
     </js-module>
@@ -39,6 +40,7 @@
 
 
 
+
     <!-- android -->
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
@@ -46,13 +48,13 @@
                 <param name="android-package" value="org.apache.cordova.core.ContactManager"/>
             </feature>
         </config-file>
-        
+
         <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.READ_CONTACTS" />
-            <uses-permission android:name="android.permission.WRITE_CONTACTS" />  
+            <uses-permission android:name="android.permission.WRITE_CONTACTS" />
             <uses-permission android:name="android.permission.GET_ACCOUNTS" />
         </config-file>
-        
+
         <source-file src="src/android/ContactAccessor.java" target-dir="src/org/apache/cordova/core" />
         <source-file src="src/android/ContactAccessorSdk5.java" target-dir="src/org/apache/cordova/core" />
         <source-file src="src/android/ContactManager.java" target-dir="src/org/apache/cordova/core" />
@@ -65,7 +67,7 @@
                 <param name="ios-package" value="CDVContacts"/>
             </feature>
         </config-file>
-        
+
         <js-module src="www/ios/contacts.js" name="contacts">
             <merges target="navigator.contacts" />
         </js-module>
@@ -73,17 +75,24 @@
         <js-module src="www/ios/Contact.js" name="Contact">
             <merges target="Contact" />
         </js-module>
-   
+
         <header-file src="src/ios/CDVContacts.h" />
         <source-file src="src/ios/CDVContacts.m" />
         <header-file src="src/ios/CDVContact.h" />
-        <source-file src="src/ios/CDVContact.m" />          
+        <source-file src="src/ios/CDVContact.m" />
     </platform>
 
     <!-- blackberry10 -->
     <platform name="blackberry10">
         <config-file target="www/config.xml" parent="/widget">
             <feature name="Contacts" value="Contacts"/>
+        </config-file>
+        <config-file target="www/config.xml" parent="/widget">
+            <rim:permissions>
+            </rim:permissions>
+        </config-file>
+        <config-file target="www/config.xml" parent="/widget/rim:permissions">
+            <rim:permit>access_pimdomain_contacts</rim:permit>
         </config-file>
         <source-file src="src/blackberry10/index.js" target-dir="Contacts"></source-file>
         <source-file src="src/blackberry10/ContactActivity.js" target-dir="Contacts"></source-file>
@@ -97,6 +106,8 @@
         <source-file src="src/blackberry10/ContactOrganization.js" target-dir="Contacts"></source-file>
         <source-file src="src/blackberry10/ContactPhoto.js" target-dir="Contacts"></source-file>
         <source-file src="src/blackberry10/contactUtils.js" target-dir="Contacts"></source-file>
+        <dependency id="com.blackberry.utils" url="https://github.com/blackberry/cordova-blackberry-plugins.git" commit="plugins" subdir="plugin/com.blackberry.utils"/>
+        <dependency id="org.apache.cordova.blackberry10.pimlib" url="https://github.com/blackberry/cordova-blackberry-plugins.git" commit="plugins" subdir="/plugin/org.apache.cordova.blackberry10.pimlib/"/>
     </platform>
 
     <!-- wp7 -->

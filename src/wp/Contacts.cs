@@ -443,7 +443,7 @@ namespace WPCordovaClassLib.Cordova.Commands
             List<Contact> foundContacts = null;
 
             // if we have multiple search fields
-            if (searchParams.options.filter.Length > 0 && searchParams.fields.Count() > 1)
+            if (searchParams.options.filter != null && searchParams.options.filter.Length > 0 && searchParams.fields.Count() > 1)
             {
                 foundContacts = new List<Contact>();
                 if (searchParams.fields.Contains("emails"))

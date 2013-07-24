@@ -18,6 +18,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Windows;
@@ -441,6 +442,10 @@ namespace WPCordovaClassLib.Cordova.Commands
             ContactSearchParams searchParams = (ContactSearchParams)e.State;
 
             List<Contact> foundContacts = null;
+            // used for comparing strings, ""  instantiates with InvariantCulture
+            CultureInfo culture = new CultureInfo("");
+            // make the search comparisons case insensitive.
+            CompareOptions compare_option = CompareOptions.IgnoreCase;
 
             // if we have multiple search fields
             if (searchParams.options.filter != null && searchParams.options.filter.Length > 0 && searchParams.fields.Count() > 1)
@@ -450,33 +455,42 @@ namespace WPCordovaClassLib.Cordova.Commands
                 {
                     foundContacts.AddRange(from Contact con in e.Results
                                            from ContactEmailAddress a in con.EmailAddresses
-                                           where a.EmailAddress.Contains(searchParams.options.filter)
+                                           where culture.CompareInfo.IndexOf(a.EmailAddress, searchParams.options.filter, compare_option) >= 0
                                            select con);
                 }
                 if (searchParams.fields.Contains("displayName"))
                 {
                     foundContacts.AddRange(from Contact con in e.Results
-                                           where con.DisplayName.Contains(searchParams.options.filter)
+                                           where culture.CompareInfo.IndexOf(con.DisplayName, searchParams.options.filter, compare_option) >= 0
                                            select con);
                 }
                 if (searchParams.fields.Contains("name"))
                 {
-                    foundContacts.AddRange(from Contact con in e.Results
-                                           where con.CompleteName != null && con.CompleteName.ToString().Contains(searchParams.options.filter)
-                                           select con);
+                    foundContacts.AddRange(
+                        from Contact con in e.Results
+                        where con.CompleteName != null && (
+                            (con.CompleteName.FirstName != null     && culture.CompareInfo.IndexOf(con.CompleteName.FirstName, searchParams.options.filter, compare_option) >= 0) ||
+                            (con.CompleteName.LastName != null      && culture.CompareInfo.IndexOf(con.CompleteName.LastName, searchParams.options.filter, compare_option) >= 0) ||
+                            (con.CompleteName.MiddleName != null    && culture.CompareInfo.IndexOf(con.CompleteName.MiddleName, searchParams.options.filter, compare_option) >= 0) ||
+                            (con.CompleteName.Nickname != null      && culture.CompareInfo.IndexOf(con.CompleteName.Nickname, searchParams.options.filter, compare_option) >= 0) ||
+                            (con.CompleteName.Suffix != null        && culture.CompareInfo.IndexOf(con.CompleteName.Suffix, searchParams.options.filter, compare_option) >= 0) ||
+                            (con.CompleteName.Title != null         && culture.CompareInfo.IndexOf(con.CompleteName.Title, searchParams.options.filter, compare_option) >= 0) ||
+                            (con.CompleteName.YomiFirstName != null && culture.CompareInfo.IndexOf(con.CompleteName.YomiFirstName, searchParams.options.filter, compare_option) >= 0) ||
+                            (con.CompleteName.YomiLastName != null  && culture.CompareInfo.IndexOf(con.CompleteName.YomiLastName, searchParams.options.filter, compare_option) >= 0))
+                        select con);
                 }
                 if (searchParams.fields.Contains("phoneNumbers"))
                 {
                     foundContacts.AddRange(from Contact con in e.Results
                                            from ContactPhoneNumber a in con.PhoneNumbers
-                                           where a.PhoneNumber.Contains(searchParams.options.filter)
+                                           where culture.CompareInfo.IndexOf(a.PhoneNumber, searchParams.options.filter, compare_option) >= 0
                                            select con);
                 }
                 if (searchParams.fields.Contains("urls"))
                 {
                     foundContacts.AddRange(from Contact con in e.Results
                                            from string a in con.Websites
-                                           where a.Contains(searchParams.options.filter)
+                                           where culture.CompareInfo.IndexOf(a, searchParams.options.filter, compare_option) >= 0
                                            select con);
                 }
             }

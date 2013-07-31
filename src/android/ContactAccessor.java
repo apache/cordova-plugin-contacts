@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.cordova.core;
+package org.apache.cordova.contacts;
 
 import java.util.HashMap;
 

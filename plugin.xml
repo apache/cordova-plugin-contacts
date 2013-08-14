@@ -71,11 +71,11 @@
             </feature>
         </config-file>
 
-        <js-module src="www/ios/contacts.js" name="contacts">
+        <js-module src="www/ios/contacts.js" name="contacts1">
             <merges target="navigator.contacts" />
         </js-module>
 
-        <js-module src="www/ios/Contact.js" name="Contact">
+        <js-module src="www/ios/Contact.js" name="Contact1">
             <merges target="Contact" />
         </js-module>
 

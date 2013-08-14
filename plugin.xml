@@ -6,7 +6,7 @@
     id="org.apache.cordova.core.contacts"
     version="0.1.0">
 
-    <name>contacts</name>
+    <name>Contacts</name>
     <description>Cordova Contacts Plugin</description>
     <license>Apache 2.0</license>
     <keywords>cordova,contacts</keywords>

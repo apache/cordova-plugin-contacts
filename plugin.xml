@@ -4,7 +4,7 @@
     xmlns:rim="http://www.blackberry.com/ns/widgets"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="org.apache.cordova.core.contacts"
-    version="0.2.0">
+    version="0.2.1">
 
     <name>Contacts</name>
     <description>Cordova Contacts Plugin</description>
@@ -73,11 +73,11 @@
             </feature>
         </config-file>
 
-        <js-module src="www/ios/contacts.js" name="contacts">
+        <js-module src="www/ios/contacts.js" name="contacts-ios">
             <merges target="navigator.contacts" />
         </js-module>
 
-        <js-module src="www/ios/Contact.js" name="Contact">
+        <js-module src="www/ios/Contact.js" name="Contact-iOS">
             <merges target="Contact" />
         </js-module>
 
@@ -85,7 +85,7 @@
         <source-file src="src/ios/CDVContacts.m" />
         <header-file src="src/ios/CDVContact.h" />
         <source-file src="src/ios/CDVContact.m" />
-        
+
         <framework src="AddressBook.framework" weak="true" />
         <framework src="AddressBookUI.framework" weak="true" />
         <framework src="CoreGraphics.framework" />

@@ -68,7 +68,7 @@ public class ContactManager extends CordovaPlugin {
          * older phones.
          */
         if (this.contactAccessor == null) {
-            this.contactAccessor = new ContactAccessorSdk5(this.webView, this.cordova);
+            this.contactAccessor = new ContactAccessorSdk5(this.cordova);
         }
 
         if (action.equals("search")) {

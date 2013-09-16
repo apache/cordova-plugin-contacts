@@ -91,9 +91,11 @@
 
         UINavigationController* navController = [[UINavigationController alloc] initWithRootViewController:npController];
 
-        if ([weakSelf.viewController respondsToSelector:@selector(presentViewController:::)]) {
+        SEL selector = NSSelectorFromString(@"presentViewController:animated:completion:");
+        if ([weakSelf.viewController respondsToSelector:selector]) {
             [weakSelf.viewController presentViewController:navController animated:YES completion:nil];
         } else {
+            // deprecated as of iOS >= 6.0
             [weakSelf.viewController presentModalViewController:navController animated:YES];
         }
     }];
@@ -151,9 +153,11 @@
 
             [navController pushViewController:personController animated:YES];
 
-            if ([self.viewController respondsToSelector:@selector(presentViewController:::)]) {
+            SEL selector = NSSelectorFromString(@"presentViewController:animated:completion:");
+            if ([self.viewController respondsToSelector:selector]) {
                 [self.viewController presentViewController:navController animated:YES completion:nil];
             } else {
+                // deprecated as of iOS >= 6.0
                 [self.viewController presentModalViewController:navController animated:YES];
             }
 
@@ -193,9 +197,11 @@
     pickerController.pickedContactDictionary = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:kABRecordInvalidID], kW3ContactId, nil];
     pickerController.allowsEditing = (BOOL)[options existsValue : @"true" forKey : @"allowsEditing"];
 
-    if ([self.viewController respondsToSelector:@selector(presentViewController:::)]) {
+    SEL selector = NSSelectorFromString(@"presentViewController:animated:completion:");
+    if ([self.viewController respondsToSelector:selector]) {
         [self.viewController presentViewController:pickerController animated:YES completion:nil];
     } else {
+        // deprecated as of iOS >= 6.0
         [self.viewController presentModalViewController:pickerController animated:YES];
     }
 }

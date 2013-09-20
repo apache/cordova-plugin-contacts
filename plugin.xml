@@ -96,10 +96,6 @@
         <config-file target="www/config.xml" parent="/widget">
             <feature name="Contacts" value="Contacts"/>
         </config-file>
-        <config-file target="www/config.xml" parent="/widget">
-            <rim:permissions>
-            </rim:permissions>
-        </config-file>
         <config-file target="www/config.xml" parent="/widget/rim:permissions">
             <rim:permit>access_pimdomain_contacts</rim:permit>
         </config-file>

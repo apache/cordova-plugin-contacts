@@ -148,5 +148,17 @@
 
         <source-file src="src/wp/Contacts.cs" />
     </platform>
+    
+    <!-- firefoxos -->
+    <platform name="firefoxos">
+        <config-file target="config.xml" parent="/*">
+            <feature name="Camera">
+                <param name="firefoxos-package" value="Contacts" />
+            </feature>
+        </config-file>                                         
+        <js-module src="src/firefoxos/ContactsProxy.js" name="ContactsProxy">
+            <runs />
+        </js-module>
+    </platform>    
 
 </plugin>

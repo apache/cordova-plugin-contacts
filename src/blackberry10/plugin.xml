@@ -16,7 +16,7 @@
 -->
 
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
-    id="org.apache.cordova.core.Contacts"
+    id="org.apache.cordova.Contacts"
     version="0.0.1">
 
     <name>Contacts</name>

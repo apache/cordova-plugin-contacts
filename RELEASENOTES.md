@@ -24,3 +24,13 @@
 * [CB-4580] Fixed up duplicate definitions of module id
 * [CB-4432] Copyright notice change
 
+### 0.2.3 (Sept 25, 2013)
+* CB-4889 bumping&resetting version
+* [BlackBerry10] removed uneeded permission tags in plugin.xml
+* [BlackBerry10] removed uneeded permission tags in plugin.xml
+* CB-4889 renaming blackberry10 reference in plugin.xml
+* CB-4888 renaming org.apache.cordova.core.contacts to org.apache.cordova.contacts
+* added contacts api for firefoxos
+* Rename CHANGELOG.md -> RELEASENOTES.md
+* [CB-4824] Fix XCode 5 contacts plugin warnings
+* [CB-4752] Incremented plugin version on dev branch.

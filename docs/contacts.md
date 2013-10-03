@@ -54,7 +54,7 @@ Permissions
 
 #### app/res/xml/config.xml
 
-    <plugin name="Contacts" value="org.apache.cordova.ContactManager" />
+    <plugin name="Contacts" value="org.apache.cordova.contacts.ContactManager" />
 
 #### app/AndroidManifest.xml
 

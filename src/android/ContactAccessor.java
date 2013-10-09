@@ -19,7 +19,6 @@ package org.apache.cordova.contacts;
 import java.util.HashMap;
 
 import android.util.Log;
-import android.webkit.WebView;
 
 import org.apache.cordova.CordovaInterface;
 import org.json.JSONArray;
@@ -37,7 +36,6 @@ public abstract class ContactAccessor {
 
     protected final String LOG_TAG = "ContactsAccessor";
     protected CordovaInterface mApp;
-    protected WebView mView;
 
     /**
      * Check to see if the data associated with the key is required to

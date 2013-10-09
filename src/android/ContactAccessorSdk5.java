@@ -31,7 +31,6 @@ import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.util.Log;
-import android.webkit.WebView;
 
 import org.apache.cordova.CordovaInterface;
 import org.json.JSONArray;
@@ -124,9 +123,8 @@ public class ContactAccessorSdk5 extends ContactAccessor {
     /**
      * Create an contact accessor.
      */
-    public ContactAccessorSdk5(WebView view, CordovaInterface context) {
+    public ContactAccessorSdk5(CordovaInterface context) {
         mApp = context;
-        mView = view;
     }
 
     /**

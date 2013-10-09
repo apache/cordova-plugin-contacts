@@ -34,3 +34,7 @@
 * Rename CHANGELOG.md -> RELEASENOTES.md
 * [CB-4824] Fix XCode 5 contacts plugin warnings
 * [CB-4752] Incremented plugin version on dev branch.
+
+### 0.2.4 (Oct 9, 2013)
+* [CB-4950] Remove the dependence on concrete component android.webkit.WebView.
+* [CB-4915] Incremented plugin version on dev branch.

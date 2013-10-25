@@ -31,7 +31,7 @@
 @synthesize pickedContactDictionary;
 
 @end
-@implementation CDVNewContactsController
+@implementation CDVNewContacts
 
 @synthesize callbackId;
 
@@ -82,12 +82,13 @@
             // permission was denied or other error just return (no error callback)
             return;
         }
-        CDVNewContactsController* npController = [[CDVNewContactsController alloc] init];
+        ABNewPersonViewController* npController = [[ABNewPersonViewController alloc] init];
+        _newContacts  = [[CDVNewContacts alloc] init];
         npController.addressBook = addrBook;     // a CF retaining assign
         CFRelease(addrBook);
 
         npController.newPersonViewDelegate = self;
-        npController.callbackId = callbackId;
+        _newContacts.callbackId = callbackId;
 
         UINavigationController* navController = [[UINavigationController alloc] initWithRootViewController:npController];
 
@@ -104,8 +105,7 @@
 - (void)newPersonViewController:(ABNewPersonViewController*)newPersonViewController didCompleteWithNewPerson:(ABRecordRef)person
 {
     ABRecordID recordId = kABRecordInvalidID;
-    CDVNewContactsController* newCP = (CDVNewContactsController*)newPersonViewController;
-    NSString* callbackId = newCP.callbackId;
+    NSString* callbackId = _newContacts.callbackId;
 
     if (person != NULL) {
         // return the contact id
@@ -142,7 +142,7 @@
         ABRecordRef rec = ABAddressBookGetPersonWithRecordID(addrBook, recordID);
 
         if (rec) {
-            CDVDisplayContactViewController* personController = [[CDVDisplayContactViewController alloc] init];
+            ABPersonViewController* personController = [[ABPersonViewController alloc] init];
             personController.displayedPerson = rec;
             personController.personViewDelegate = self;
             personController.allowsEditing = NO;
@@ -150,6 +150,7 @@
             // create this so DisplayContactViewController will have a "back" button.
             UIViewController* parentController = [[UIViewController alloc] init];
             UINavigationController* navController = [[UINavigationController alloc] initWithRootViewController:parentController];
+            navController.delegate = self;
 
             [navController pushViewController:personController animated:YES];
 
@@ -178,6 +179,13 @@
     }];
 }
 
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
+    if ([viewController class] == [UIViewController class]) {
+        [[viewController parentViewController] dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+
 - (BOOL)personViewController:(ABPersonViewController*)personViewController shouldPerformDefaultActionForPerson:(ABRecordRef)person
                     property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifierForValue
 {
@@ -189,13 +197,14 @@
     NSString* callbackId = command.callbackId;
     NSDictionary* options = [command.arguments objectAtIndex:0 withDefault:[NSNull null]];
 
-    CDVContactsPicker* pickerController = [[CDVContactsPicker alloc] init];
+    ABPeoplePickerNavigationController* pickerController = [[ABPeoplePickerNavigationController alloc] init];
+    _picker = [[CDVContactsPicker alloc] init];
 
     pickerController.peoplePickerDelegate = self;
-    pickerController.callbackId = callbackId;
-    pickerController.options = options;
-    pickerController.pickedContactDictionary = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:kABRecordInvalidID], kW3ContactId, nil];
-    pickerController.allowsEditing = (BOOL)[options existsValue : @"true" forKey : @"allowsEditing"];
+    _picker.callbackId = callbackId;
+    _picker.options = options;
+    _picker.pickedContactDictionary = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:kABRecordInvalidID], kW3ContactId, nil];
+    _picker.allowsEditing = (BOOL)[options existsValue : @"true" forKey : @"allowsEditing"];
 
     SEL selector = NSSelectorFromString(@"presentViewController:animated:completion:");
     if ([self.viewController respondsToSelector:selector]) {
@@ -209,7 +218,7 @@
 - (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController*)peoplePicker
       shouldContinueAfterSelectingPerson:(ABRecordRef)person
 {
-    CDVContactsPicker* picker = (CDVContactsPicker*)peoplePicker;
+    CDVContactsPicker* picker = _picker;
     NSNumber* pickedId = [NSNumber numberWithInt:ABRecordGetRecordID(person)];
 
     if (picker.allowsEditing) {
@@ -231,10 +240,10 @@
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:picker.pickedContactDictionary];
         [self.commandDelegate sendPluginResult:result callbackId:picker.callbackId];
 
-        if ([picker respondsToSelector:@selector(presentingViewController)]) {
-            [[picker presentingViewController] dismissViewControllerAnimated:YES completion:nil];
+        if ([peoplePicker respondsToSelector:@selector(presentingViewController)]) {
+            [[peoplePicker presentingViewController] dismissViewControllerAnimated:YES completion:nil];
         } else {
-            [[picker parentViewController] dismissModalViewControllerAnimated:YES];
+            [[peoplePicker parentViewController] dismissModalViewControllerAnimated:YES];
         }
     }
     return NO;
@@ -249,7 +258,7 @@
 - (void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController*)peoplePicker
 {
     // return contactId or invalid if none picked
-    CDVContactsPicker* picker = (CDVContactsPicker*)peoplePicker;
+    CDVContactsPicker* picker = _picker;
 
     if (picker.allowsEditing) {
         // get the info after possible edit
@@ -522,25 +531,6 @@
 
 @end
 
-/* ABPersonViewController does not have any UI to dismiss.  Adding navigationItems to it does not work properly
- * The navigationItems are lost when the app goes into the background.  The solution was to create an empty
- * NavController in front of the ABPersonViewController. This will cause the ABPersonViewController to have a back button. By subclassing the ABPersonViewController, we can override viewDidDisappear and take down the entire NavigationController.
- */
-@implementation CDVDisplayContactViewController
-@synthesize contactsPlugin;
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-
-    if ([self respondsToSelector:@selector(presentingViewController)]) {
-        [[self presentingViewController] dismissViewControllerAnimated:YES completion:nil];
-    } else {
-        [[self parentViewController] dismissModalViewControllerAnimated:YES];
-    }
-}
-
-@end
 @implementation CDVAddressBookAccessError
 
 @synthesize errorCode;

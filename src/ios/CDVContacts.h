@@ -23,12 +23,19 @@
 #import <Cordova/CDVPlugin.h>
 #import "CDVContact.h"
 
+@class CDVContactsPicker;
+@class CDVNewContacts;
+
 @interface CDVContacts : CDVPlugin <ABNewPersonViewControllerDelegate,
                          ABPersonViewControllerDelegate,
-                         ABPeoplePickerNavigationControllerDelegate
+                         ABPeoplePickerNavigationControllerDelegate,
+                         UINavigationControllerDelegate
                          >
 {
     ABAddressBookRef addressBook;
+
+    CDVContactsPicker* _picker;
+    CDVNewContacts* _newContacts;
 }
 
 /*
@@ -102,7 +109,7 @@
 
 @end
 
-@interface CDVContactsPicker : ABPeoplePickerNavigationController
+@interface CDVContactsPicker : NSObject
 {
     BOOL allowsEditing;
     NSString* callbackId;
@@ -117,23 +124,13 @@
 
 @end
 
-@interface CDVNewContactsController : ABNewPersonViewController
+@interface CDVNewContacts : NSObject
 {
     NSString* callbackId;
 }
 @property (copy) NSString* callbackId;
 @end
 
-/* ABPersonViewController does not have any UI to dismiss.  Adding navigationItems to it does not work properly,  the navigationItems are lost when the app goes into the background.
-    The solution was to create an empty NavController in front of the ABPersonViewController. This
-    causes the ABPersonViewController to have a back button. By subclassing the ABPersonViewController,
-    we can override viewWillDisappear and take down the entire NavigationController at that time.
- */
-@interface CDVDisplayContactViewController : ABPersonViewController
-{}
-@property (nonatomic, strong) CDVPlugin* contactsPlugin;
-
-@end
 @interface CDVAddressBookAccessError : NSObject
 {}
 @property (assign) CDVContactError errorCode;

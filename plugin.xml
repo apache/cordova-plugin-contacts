@@ -4,12 +4,14 @@
     xmlns:rim="http://www.blackberry.com/ns/widgets"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="org.apache.cordova.contacts"
-    version="0.2.4">
+    version="0.2.5">
 
     <name>Contacts</name>
     <description>Cordova Contacts Plugin</description>
     <license>Apache 2.0</license>
     <keywords>cordova,contacts</keywords>
+    <repo>https://git-wip-us.apache.org/repos/asf/cordova-plugin-contacts.git</repo>
+    <issue>https://issues.apache.org/jira/browse/CB/component/12320652</issue>
 
     <js-module src="www/contacts.js" name="contacts">
         <clobbers target="navigator.contacts" />

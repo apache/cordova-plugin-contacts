@@ -38,3 +38,7 @@
 ### 0.2.4 (Oct 9, 2013)
 * [CB-4950] Remove the dependence on concrete component android.webkit.WebView.
 * [CB-4915] Incremented plugin version on dev branch.
+
+ ### 0.2.5 (Oct 28, 2013)
+* CB-5128: added repo + issue tags for contacts
+* [CB-5010] Incremented plugin version on dev branch.

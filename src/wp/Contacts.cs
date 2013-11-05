@@ -1,10 +1,10 @@
-﻿/*  
+﻿/*
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
 	You may obtain a copy of the License at
-	
+
 	http://www.apache.org/licenses/LICENSE-2.0
-	
+
 	Unless required by applicable law or agreed to in writing, software
 	distributed under the License is distributed on an "AS IS" BASIS,
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -403,6 +403,10 @@ namespace WPCordovaClassLib.Cordova.Commands
                 searchParams.options.filter = "";
                 searchParams.options.multiple = true;
             }
+            else if (searchParams.options.filter == null)
+            {
+                searchParams.options.filter = "";
+            }
 
             DeviceContacts deviceContacts = new DeviceContacts();
             deviceContacts.SearchCompleted += new EventHandler<ContactsSearchEventArgs>(contacts_SearchCompleted);
@@ -448,7 +452,8 @@ namespace WPCordovaClassLib.Cordova.Commands
             CompareOptions compare_option = CompareOptions.IgnoreCase;
 
             // if we have multiple search fields
-            if (searchParams.options.filter != null && searchParams.options.filter.Length > 0 && searchParams.fields.Count() > 1)
+
+            if (!String.IsNullOrEmpty(searchParams.options.filter) && searchParams.fields.Count() > 1)
             {
                 foundContacts = new List<Contact>();
                 if (searchParams.fields.Contains("emails"))

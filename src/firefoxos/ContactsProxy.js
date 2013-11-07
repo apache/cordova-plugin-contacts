@@ -27,53 +27,69 @@
 // https://developer.mozilla.org/en-US/docs/Web/API/mozContact
 function saveContacts(successCB, errorCB, contacts) {
     // success and fail will be called every time a contact is saved
-    for (var contact in contacts) {
-        var request;
-
-        function success(result) {
-            // TODO: this will need to amend the result
-            successCB(result);
-        }
-            
-        function exportContactFieldArray(contactFieldArray, key) {
-            if (!key) {
-                key = 'value';
-            }                 
-            
-            var arr = [];
-            
-            for (var i in contactFieldArray) {
-                arr.push(contactFieldArray[i][key]);
-            };                                       
-            
-            return arr;
-        }              
+    function success(result) {
+        // TODO: this will need to amend the result
+        console.log('SUCCESS from moz');
+        successCB(result);
+    }
+    function error(e) {
+        console.log('BOO from moz');
+        errorCB(e);
+    }
         
-        function exportAddress (addresses) {
-            // TODO: check moz address format
-            var arr = [];
+    function exportContactFieldArray(contactFieldArray, key) {
+        if (!key) {
+            key = 'value';
+        }                 
+        
+        var arr = [];
+        
+        for (var i in contactFieldArray) {
+            arr.push(contactFieldArray[i][key]);
+        };                                       
+        
+        return arr;
+    }              
+    
+    function exportAddress (addresses) {
+        // TODO: check moz address format
+        var arr = [];
+        
+        for (var i in addresses) {
+            var addr = {};
+        
+            for (var key in addresses[i]) {
+                addr[key] = addresses[i][key];    
+            } 
             
-            for (var i in addresses) {
-                var addr = {};
+            arr.push(addr);
             
-                for (var key in addresses[i]) {
-                    addr[key] = addresses[i][key];    
-                } 
-                
-                arr.push(addr);
-                
-            }                                 
-            
-            return arr;
-        } 
+        }                                 
+        
+        return arr;
+    } 
+    var i=0;
+    var contact;
 
+    while(contact = contacts[i++]){
+        var request;
         // prepare mozContact object
-        // TODO: find a way to link existing mozContact and Contact by ID
-        var moz = new mozContact({
-            name: [contact.name.familyName, 
-                   contact.name.givenName, 
-                   contact.name.middleName, 
-                   contact.name.nickname],
+        var translatedContact = {};
+        var nameArray = [];
+        var j = 0;
+        var field;
+        var fields = ['honorificPrefix', 'familyName', 'givenName', 'middleName', 'nickname'];
+        while(field = fields[j++]) {
+            if (contact.name[field]) {
+                nameArray.push(contact.name[field]);
+            }
+        }
+        translatedContact.name = nameArray.join(' ');
+        if (contact.name.honorificPrefix) {
+            translatedContact.honorificPrefix = contact.name.honorificPrefix;
+        }
+        translatedContact.familyName = contact.name.familyName;
+        /*
             honorificPrefix: [contact.name.honorificPrefix],
             givenName: [contact.name.givenName],
             familyName: [contact.name.familyName],
@@ -94,11 +110,15 @@ function saveContacts(successCB, errorCB, contacts) {
             // sex
             // genderIdentity
             // key
-        });
+        }
+        */
+        // TODO: find a way to link existing mozContact and Contact by ID
+        var moz = new mozContact(translatedContact);
+        // XXX: moz.name is undefined
         
         request = navigator.mozContacts.save(moz);
         request.onsuccess = success;
-        request.onerror = errorCB;                
+        request.onerror = error;                
     }
 }   
 

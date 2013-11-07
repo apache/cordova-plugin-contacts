@@ -25,83 +25,87 @@
 // http://cordova.apache.org/docs/en/2.5.0/cordova_contacts_contacts.md.html#Contact
 // FxOS contact definition:
 // https://developer.mozilla.org/en-US/docs/Web/API/mozContact
-function saveContact(contacts, success, fail) {
+function saveContacts(successCB, errorCB, contacts) {
     // success and fail will be called every time a contact is saved
     for (var contact in contacts) {
-        var moz = new mozContact(),
-            request;
+        var request;
+
+        function success(result) {
+            // TODO: this will need to amend the result
+            successCB(result);
+        }
             
-            function exportContactFieldArray(contactFieldArray, key) {
-                if (!key) {
-                    key = 'value';
-                }                 
-                
-                var arr = [];
-                
-                for (var i in contactFieldArray) {
-                    arr.push(contactFieldArray[i][key]);
-                };                                       
-                
-                return arr;
-            }              
+        function exportContactFieldArray(contactFieldArray, key) {
+            if (!key) {
+                key = 'value';
+            }                 
             
-            function exportAddress (addresses) {
-                // TODO: check moz address format
-                var arr = [];
-                
-                for (var i in addresses) {
-                    var addr = {};
-                
-                    for (var key in addresses[i]) {
-                        addr[key] = addresses[i][key];    
-                    } 
-                    
-                    arr.push(addr);
-                    
-                }                                 
-                
-                return arr;
-            } 
+            var arr = [];
             
-            // prepare mozContact object
-            // TODO: find a way to link existing mozContact and Contact 
-            // (by ID?)
-            moz.init({
-                name: [contact.name.familyName, 
-                       contact.name.givenName, 
-                       contact.name.middleName, 
-                       contact.name.nickname],
-                honorificPrefix: [contact.name.honorificPrefix],
-                givenName: [contact.name.givenName],
-                familyName: [contact.name.familyName],
-                honorificSuffix: [contact.name.honorificSuffix], 
-                nickname: [contact.nickname],
-                email: exportContactFieldArray(contact.emails),
-                // photo: Blob
-                // url: Array with metadata (?)
-                category: exportContactFieldArray(contact.categories),
-                adr: exportAddress(contact.addresses),
-                tel: exportContactFieldArray(contact.phoneNumbers),
-                org: exportContactFieldArray(contact.organizations, 'name'),
-                jobTitle: exportContactFieldArray(contact.organizations, 'title'),
-                bday: contact.birthday,
-                note: contact.note,
-                // impp: exportIM(contact.ims), TODO: find the moz impp definition
-                // anniversary
-                // sex
-                // genderIdentity
-                // key
-            });
+            for (var i in contactFieldArray) {
+                arr.push(contactFieldArray[i][key]);
+            };                                       
             
-            request = navigator.mozContacts.save(moz);
-            request.onsuccess = success;
-            request.onerror = fail;                
+            return arr;
+        }              
+        
+        function exportAddress (addresses) {
+            // TODO: check moz address format
+            var arr = [];
+            
+            for (var i in addresses) {
+                var addr = {};
+            
+                for (var key in addresses[i]) {
+                    addr[key] = addresses[i][key];    
+                } 
+                
+                arr.push(addr);
+                
+            }                                 
+            
+            return arr;
+        } 
+
+        // prepare mozContact object
+        // TODO: find a way to link existing mozContact and Contact by ID
+        var moz = new mozContact({
+            name: [contact.name.familyName, 
+                   contact.name.givenName, 
+                   contact.name.middleName, 
+                   contact.name.nickname],
+            honorificPrefix: [contact.name.honorificPrefix],
+            givenName: [contact.name.givenName],
+            familyName: [contact.name.familyName],
+            honorificSuffix: [contact.name.honorificSuffix], 
+            nickname: [contact.nickname],
+            email: exportContactFieldArray(contact.emails),
+            // photo: Blob
+            // url: Array with metadata (?)
+            category: exportContactFieldArray(contact.categories),
+            adr: exportAddress(contact.addresses),
+            tel: exportContactFieldArray(contact.phoneNumbers),
+            org: exportContactFieldArray(contact.organizations, 'name'),
+            jobTitle: exportContactFieldArray(contact.organizations, 'title'),
+            bday: contact.birthday,
+            note: contact.note,
+            // impp: exportIM(contact.ims), TODO: find the moz impp definition
+            // anniversary
+            // sex
+            // genderIdentity
+            // key
+        });
+        
+        request = navigator.mozContacts.save(moz);
+        request.onsuccess = success;
+        request.onerror = errorCB;                
     }
 }   
 
 module.exports = {
-    saveContact: saveContact,
-    cleanup: function(){}
+    save: saveContacts,
+    remove: function(){},
+    search: function(){},
 };    
     
 require("cordova/firefoxos/commandProxy").add("Contacts", module.exports); 

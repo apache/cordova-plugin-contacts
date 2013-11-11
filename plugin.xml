@@ -88,6 +88,11 @@
     
     <!-- ubuntu -->
     <platform name="ubuntu">
+        <config-file target="config.xml" parent="/*">
+            <feature name="Camera">
+                <param policy_group="contacts" policy_version="1" />
+            </feature>
+        </config-file>
         <header-file src="src/ubuntu/contacts.h" />
         <source-file src="src/ubuntu/contacts.cpp" />
     </platform>

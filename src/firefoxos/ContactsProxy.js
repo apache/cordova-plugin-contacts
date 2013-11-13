@@ -27,10 +27,13 @@
 // https://developer.mozilla.org/en-US/docs/Web/API/mozContact
 function saveContacts(successCB, errorCB, contacts) {
     // success and fail will be called every time a contact is saved
-    function success(result) {
-        // TODO: this will need to amend the result
-        console.log('SUCCESS from moz');
-        successCB(result);
+    // a closure which is holding the object to be returned to sucessCB
+    function makeSuccess(contact, moz) {
+        return function(result) {
+            // TODO modify contact so it will contain the link to moz
+            // call callback
+            successCB(contact);
+        }
     }
     function error(e) {
         console.log('BOO from moz');
@@ -75,36 +78,42 @@ function saveContacts(successCB, errorCB, contacts) {
         var request;
         // prepare mozContact object
         var translatedContact = {};
+        // building name
         var nameArray = [];
-        var j = 0;
-        var field;
         var fields = ['honorificPrefix', 'familyName', 'givenName', 'middleName', 'nickname'];
-        while(field = fields[j++]) {
+        var j = 0, field; while(field = fields[j++]) {
             if (contact.name[field]) {
                 nameArray.push(contact.name[field]);
             }
         }
         translatedContact.name = nameArray.join(' ');
-        if (contact.name.honorificPrefix) {
-            translatedContact.honorificPrefix = contact.name.honorificPrefix;
+        // adding simple fields [contactField, eventualMozContactField]
+        var simpleFields = [['honorificPrefix'], ['givenName'], ['familyName'], 
+            ['honorificSuffix'], ['nickname'], ['birthday', 'bday'], ['note']];
+        j = 0; while(field = simpleFields[j++]) {
+          if (contact.name[field[0]]) {
+            translatedContact[field[1] || field[0]] = contact.name[field[0]];
+          }
         }
-        translatedContact.familyName = contact.name.familyName;
-        /*
-            honorificPrefix: [contact.name.honorificPrefix],
-            givenName: [contact.name.givenName],
-            familyName: [contact.name.familyName],
-            honorificSuffix: [contact.name.honorificSuffix], 
-            nickname: [contact.nickname],
-            email: exportContactFieldArray(contact.emails),
+        if (contact.emails) {
+            translatedContact.email = exportContactFieldArray(contact.emails);
+        }
+        if (contact.categories) {
+            translatedContact.category = exportContactFieldArray(contact.categories);
+        }
+        if (contact.addresses) {
+            translatedContact.adr = exportAddress(contact.addresses);
+        }
+        if (contact.phoneNumbers) {
+            translatedContact.tel = exportContactFieldArray(contact.phoneNumbers);
+        }
+        if (contact.organizations) {
+            translatedContact.org = exportContactFieldArray(contact.organizations, 'name');
+            translatedContact.jobTitle = exportContactFieldArray(contact.organizations, 'title');
+        }
+        /* 
             // photo: Blob
             // url: Array with metadata (?)
-            category: exportContactFieldArray(contact.categories),
-            adr: exportAddress(contact.addresses),
-            tel: exportContactFieldArray(contact.phoneNumbers),
-            org: exportContactFieldArray(contact.organizations, 'name'),
-            jobTitle: exportContactFieldArray(contact.organizations, 'title'),
-            bday: contact.birthday,
-            note: contact.note,
             // impp: exportIM(contact.ims), TODO: find the moz impp definition
             // anniversary
             // sex
@@ -114,10 +123,8 @@ function saveContacts(successCB, errorCB, contacts) {
         */
         // TODO: find a way to link existing mozContact and Contact by ID
         var moz = new mozContact(translatedContact);
-        // XXX: moz.name is undefined
-        
         request = navigator.mozContacts.save(moz);
-        request.onsuccess = success;
+        request.onsuccess = makeSuccess(contact, moz);
         request.onerror = error;                
     }
 }   

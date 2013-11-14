@@ -67,6 +67,25 @@
         <source-file src="src/android/ContactManager.java" target-dir="src/org/apache/cordova/contacts" />
     </platform>
 
+    <!-- amazon-fireos -->
+    <platform name="amazon-fireos">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="Contacts">
+                <param name="android-package" value="org.apache.cordova.contacts.ContactManager"/>
+            </feature>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.READ_CONTACTS" />
+            <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+            <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+        </config-file>
+
+        <source-file src="src/android/ContactAccessor.java" target-dir="src/org/apache/cordova/contacts" />
+        <source-file src="src/android/ContactAccessorSdk5.java" target-dir="src/org/apache/cordova/contacts" />
+        <source-file src="src/android/ContactManager.java" target-dir="src/org/apache/cordova/contacts" />
+    </platform>
+    
     <!-- ios -->
     <platform name="ios">
         <config-file target="config.xml" parent="/*">

@@ -25,19 +25,18 @@
 // http://cordova.apache.org/docs/en/2.5.0/cordova_contacts_contacts.md.html#Contact
 // FxOS contact definition:
 // https://developer.mozilla.org/en-US/docs/Web/API/mozContact
+
 function saveContacts(successCB, errorCB, contacts) {
-    // success and fail will be called every time a contact is saved
+    // success and/or fail will be called every time a contact is saved
+
     // a closure which is holding the object to be returned to sucessCB
     function makeSuccess(contact, moz) {
         return function(result) {
             // TODO modify contact so it will contain the link to moz
+            contact.id = moz.id;
             // call callback
             successCB(contact);
         }
-    }
-    function error(e) {
-        console.log('BOO from moz');
-        errorCB(e);
     }
         
     function exportContactFieldArray(contactFieldArray, key) {
@@ -73,11 +72,12 @@ function saveContacts(successCB, errorCB, contacts) {
     } 
     var i=0;
     var contact;
-
     while(contact = contacts[i++]){
-        var request;
         // prepare mozContact object
-        var translatedContact = {};
+        var moz = new mozContact();
+        if (contact.id) {
+            moz.id = contact.id;
+        }
         // building name
         var nameArray = [];
         var fields = ['honorificPrefix', 'familyName', 'givenName', 'middleName', 'nickname'];
@@ -86,32 +86,32 @@ function saveContacts(successCB, errorCB, contacts) {
                 nameArray.push(contact.name[field]);
             }
         }
-        translatedContact.name = nameArray.join(' ');
+        moz.name = nameArray.join(' ');
         // adding simple fields [contactField, eventualMozContactField]
         var simpleFields = [['honorificPrefix'], ['givenName'], ['familyName'], 
             ['honorificSuffix'], ['nickname'], ['birthday', 'bday'], ['note']];
         j = 0; while(field = simpleFields[j++]) {
           if (contact.name[field[0]]) {
-            translatedContact[field[1] || field[0]] = contact.name[field[0]];
+            moz[field[1] || field[0]] = contact.name[field[0]];
           }
         }
         if (contact.emails) {
-            translatedContact.email = exportContactFieldArray(contact.emails);
+            moz.email = exportContactFieldArray(contact.emails);
         }
         if (contact.categories) {
-            translatedContact.category = exportContactFieldArray(contact.categories);
+            moz.category = exportContactFieldArray(contact.categories);
         }
         if (contact.addresses) {
-            translatedContact.adr = exportAddress(contact.addresses);
+            moz.adr = exportAddress(contact.addresses);
         }
         if (contact.phoneNumbers) {
-            translatedContact.tel = exportContactFieldArray(contact.phoneNumbers);
+            moz.tel = exportContactFieldArray(contact.phoneNumbers);
         }
         if (contact.organizations) {
-            translatedContact.org = exportContactFieldArray(contact.organizations, 'name');
-            translatedContact.jobTitle = exportContactFieldArray(contact.organizations, 'title');
+            moz.org = exportContactFieldArray(contact.organizations, 'name');
+            moz.jobTitle = exportContactFieldArray(contact.organizations, 'title');
         }
-        /* 
+        /*  Find out how to translate these parameters
             // photo: Blob
             // url: Array with metadata (?)
             // impp: exportIM(contact.ims), TODO: find the moz impp definition
@@ -119,19 +119,28 @@ function saveContacts(successCB, errorCB, contacts) {
             // sex
             // genderIdentity
             // key
-        }
         */
-        // TODO: find a way to link existing mozContact and Contact by ID
-        var moz = new mozContact(translatedContact);
-        request = navigator.mozContacts.save(moz);
+        var request = navigator.mozContacts.save(moz);
         request.onsuccess = makeSuccess(contact, moz);
-        request.onerror = error;                
+        request.onerror = errorCB;                
     }
 }   
 
+function remove(successCB, errorCB, ids) {
+    var i=0;
+    var id;
+    while(id = ids[i++]){
+        var moz = new mozContact();
+        moz.id = id;
+        var request = navigator.mozContacts.remove(moz);
+        request.onsuccess = successCB;
+        request.onerror = errorCB;
+    }
+}
+
 module.exports = {
     save: saveContacts,
-    remove: function(){},
+    remove: remove,
     search: function(){},
 };    
     

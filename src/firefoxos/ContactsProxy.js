@@ -26,102 +26,152 @@
 // FxOS contact definition:
 // https://developer.mozilla.org/en-US/docs/Web/API/mozContact
 
-function saveContacts(successCB, errorCB, contacts) {
-    // success and/or fail will be called every time a contact is saved
 
-    // a closure which is holding the object to be returned to sucessCB
-    function makeSuccess(contact, moz) {
-        return function(result) {
-            // TODO modify contact so it will contain the link to moz
-            contact.id = moz.id;
-            // call callback
-            successCB(contact);
-        }
-    }
-        
+var Contact = require('./Contact');
+var ContactField = require('./ContactField');
+
+function createMozillaFromCordova(contact) {
     function exportContactFieldArray(contactFieldArray, key) {
         if (!key) {
             key = 'value';
         }                 
-        
         var arr = [];
-        
         for (var i in contactFieldArray) {
             arr.push(contactFieldArray[i][key]);
         };                                       
-        
         return arr;
     }              
-    
-    function exportAddress (addresses) {
+
+    function exportAddress(addresses) {
         // TODO: check moz address format
         var arr = [];
         
         for (var i in addresses) {
             var addr = {};
-        
             for (var key in addresses[i]) {
                 addr[key] = addresses[i][key];    
             } 
-            
             arr.push(addr);
-            
         }                                 
-        
         return arr;
     } 
+
+    function exportPhoneNumbers(phoneNumbers) {
+        var mozNumbers = [];
+        for (var i in phoneNumbers) {
+            var number = phoneNumbers[i];
+            mozNumbers.push({
+                type: number.type,
+                value: number.value,
+                pref: number.pref
+            });
+        }
+        return mozNumbers;
+    }
+
+    // prepare mozContact object
+    var moz = new mozContact();
+    if (contact.id) {
+        moz.id = contact.id;
+    }
+    // building name
+    var nameArray = [];
+    var fields = ['honorificPrefix', 'familyName', 'givenName', 'middleName', 'nickname'];
+    var j = 0, field; while(field = fields[j++]) {
+        if (contact.name[field]) {
+            nameArray.push(contact.name[field]);
+        }
+    }
+    moz.name = nameArray.join(' ');
+    // adding simple fields [contactField, eventualMozContactField]
+    var simpleFields = [['honorificPrefix'], ['givenName'], ['familyName'], 
+        ['honorificSuffix'], ['nickname'], ['birthday', 'bday'], ['note']];
+    j = 0; while(field = simpleFields[j++]) {
+      if (contact.name[field[0]]) {
+        moz[field[1] || field[0]] = contact.name[field[0]];
+      }
+    }
+    if (contact.emails) {
+        moz.email = exportContactFieldArray(contact.emails);
+    }
+    if (contact.categories) {
+        moz.category = exportContactFieldArray(contact.categories);
+    }
+    if (contact.addresses) {
+        moz.adr = exportAddress(contact.addresses);
+    }
+    if (contact.phoneNumbers) {
+        moz.tel = exportPhoneNumbers(contact.phoneNumbers);
+    }
+    if (contact.organizations) {
+        moz.org = exportContactFieldArray(contact.organizations, 'name');
+        moz.jobTitle = exportContactFieldArray(contact.organizations, 'title');
+    }
+    /*  Find out how to translate these parameters
+        // photo: Blob
+        // url: Array with metadata (?)
+        // impp: exportIM(contact.ims), TODO: find the moz impp definition
+        // anniversary
+        // sex
+        // genderIdentity
+        // key
+    */
+    return moz;
+}
+
+function createCordovaFromMozilla(moz) {
+    function exportPhoneNumbers(mozNumbers) {
+        var phoneNumbers = [];
+        for (var i in mozNumbers) {
+            var number = mozNumbers[i];
+            phoneNumbers.push(
+                new ContactField( number.type, number.value, number.pref));
+        }
+        return phoneNumbers;
+    }
+
+    var contact = new Contact();
+
+    if (moz.id) {
+        contact.id = moz.id;
+    }
+    // adding simple fields [contactField, eventualCordovaContactField]
+    var simpleFields = [['honorificPrefix'], ['givenName'], ['familyName'], 
+        ['honorificSuffix'], ['nickname'], ['bday', 'birthday'], ['note']];
+    j = 0; while(field = simpleFields[j++]) {
+      if (moz.name[field[0]]) {
+        contact[field[1] || field[0]] = moz.name[field[0]];
+      }
+    }
+    // emails
+    // categories
+    // addresses
+    if (moz.tel) {
+        contact.phoneNumbers = exportPhoneNumbers(moz.tel);
+    }
+    // organizations
+    return contact;
+}
+
+
+function saveContacts(successCB, errorCB, contacts) {
+    // a closure which is holding the right moz contact
+    function makeSaveSuccessCB(moz) {
+        return function(result) {
+            // create contact from FXOS contact (might be different than
+            // the original one due to differences in API)
+            var contact = createCordovaFromMozilla(moz);
+            // call callback
+            successCB(contact);
+        }
+    }
     var i=0;
     var contact;
     while(contact = contacts[i++]){
-        // prepare mozContact object
-        var moz = new mozContact();
-        if (contact.id) {
-            moz.id = contact.id;
-        }
-        // building name
-        var nameArray = [];
-        var fields = ['honorificPrefix', 'familyName', 'givenName', 'middleName', 'nickname'];
-        var j = 0, field; while(field = fields[j++]) {
-            if (contact.name[field]) {
-                nameArray.push(contact.name[field]);
-            }
-        }
-        moz.name = nameArray.join(' ');
-        // adding simple fields [contactField, eventualMozContactField]
-        var simpleFields = [['honorificPrefix'], ['givenName'], ['familyName'], 
-            ['honorificSuffix'], ['nickname'], ['birthday', 'bday'], ['note']];
-        j = 0; while(field = simpleFields[j++]) {
-          if (contact.name[field[0]]) {
-            moz[field[1] || field[0]] = contact.name[field[0]];
-          }
-        }
-        if (contact.emails) {
-            moz.email = exportContactFieldArray(contact.emails);
-        }
-        if (contact.categories) {
-            moz.category = exportContactFieldArray(contact.categories);
-        }
-        if (contact.addresses) {
-            moz.adr = exportAddress(contact.addresses);
-        }
-        if (contact.phoneNumbers) {
-            moz.tel = exportContactFieldArray(contact.phoneNumbers);
-        }
-        if (contact.organizations) {
-            moz.org = exportContactFieldArray(contact.organizations, 'name');
-            moz.jobTitle = exportContactFieldArray(contact.organizations, 'title');
-        }
-        /*  Find out how to translate these parameters
-            // photo: Blob
-            // url: Array with metadata (?)
-            // impp: exportIM(contact.ims), TODO: find the moz impp definition
-            // anniversary
-            // sex
-            // genderIdentity
-            // key
-        */
+        var moz = createMozillaFromCordova(contact);
         var request = navigator.mozContacts.save(moz);
-        request.onsuccess = makeSuccess(contact, moz);
+        // success and/or fail will be called every time a contact is saved
+        request.onsuccess = makeSaveSuccessCB(moz);
         request.onerror = errorCB;                
     }
 }   

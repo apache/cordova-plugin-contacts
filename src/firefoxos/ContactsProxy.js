@@ -249,11 +249,11 @@ function hackedSearch(successCB, errorCB, params) {
         }
     }
     var getall = navigator.mozContacts.getAll({});
+    var contacts = [];
+    
     getall.onsuccess = function() {
-        var contacts = [];
-        var allContacts = getall.result;
-        for (var i=0; i < allContacts.length; i++) {
-            var mozContact = allContacts[i];
+        if (getall.result) {
+            var mozContact = getall.result;
             var valid = false;
             for (var j=0; j < filter.length; j++) {
                 if (mozContact[filter[0]].indexOf(options.filter)) {
@@ -263,8 +263,13 @@ function hackedSearch(successCB, errorCB, params) {
             if (valid) {
                 contacts.push(createCordovaFromMozilla(mozContact));
             }
+            
+            getall.continue();
+            
+        } else {
+            successCB(contacts);
         }
-        successCB(contacts);
+
     };
     getall.onerror = errorCB;
 }

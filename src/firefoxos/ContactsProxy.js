@@ -77,9 +77,13 @@ function createMozillaFromCordova(contact) {
         moz.id = contact.id;
     }
     // adding simple fields [contactField, eventualMozContactField]
-    var simpleFields = [['honorificPrefix'], ['givenName'], ['familyName'], 
-        ['honorificSuffix'], ['nickname'], ['birthday', 'bday'], ['note'],
-        ['displayName', 'name']];
+    var arrayFields = [['givenName'], ['familyName'], ['displayName', 'name']];
+    var simpleFields = [['honorificPrefix'], ['honorificSuffix'], ['nickname'], ['birthday', 'bday'], ['note']];
+    j = 0; while(field = arrayFields[j++]) {
+      if (contact.name[field[0]]) {
+        moz[field[1] || field[0]] = contact.name[field[0]].split(' ');
+      }
+    }
     j = 0; while(field = simpleFields[j++]) {
       if (contact.name[field[0]]) {
         moz[field[1] || field[0]] = contact.name[field[0]];
@@ -129,11 +133,14 @@ function createCordovaFromMozilla(moz) {
     if (moz.id) {
         contact.id = moz.id;
     }
-    // adding simple fields [contactField, eventualCordovaContactField]
-    var simpleFields = [['honorificPrefix'], ['givenName'], ['familyName'], 
-        ['honorificSuffix'], ['nickname'], ['bday', 'birthday'], ['note'],
-        ['name', 'displayName']];
+    var arrayFields = [['givenName'], ['familyName'], ['name', 'displayName']];
+    var simpleFields = [['honorificPrefix'], ['honorificSuffix'], ['nickname'], ['bday', 'birthday'], ['note']];
     var name = new ContactName();
+    var j = 0; while(field = arrayFields[j++]) {
+      if (moz[field[0]]) {
+        name[field[1] || field[0]] = moz[field[0]].join(' ');
+      }
+    }
     j = 0; while(field = simpleFields[j++]) {
       if (moz[field[0]]) {
         name[field[1] || field[0]] = moz[field[0]];
@@ -190,52 +197,56 @@ function remove(successCB, errorCB, ids) {
 var mozContactSearchFields = ['name', 'givenName', 'additionalName', 
     'familyName', 'nickname', 'email', 'tel', 'jobTitle', 'note'];
 
-function search(successCB, errorCB, params) {
-    var options = params[1] || {}; 
-    var filter = [];
-    // filter out inallowed fields
-    for (var i=0; i < params[0].length; i++) {
-        if (mozContactSearchFields.indexOf([params[0][i]])) {
-            filter.push(params[0][i]);
-        } else if (params[0][i] == 'displayName') {
-            filter.push('name');
-        } else {
-            console.log('FXOS ContactProxy: inallowed field passed to search filtered out: ' + params[0][i]);
-        }
-    }
+// function search(successCB, errorCB, params) {
+//     var options = params[1] || {}; 
+//     var filter = [];
+//     // filter out inallowed fields
+//     for (var i=0; i < params[0].length; i++) {
+//         if (mozContactSearchFields.indexOf([params[0][i]])) {
+//             filter.push(params[0][i]);
+//         } else if (params[0][i] == 'displayName') {
+//             filter.push('name');
+//         } else {
+//             console.log('FXOS ContactProxy: inallowed field passed to search filtered out: ' + params[0][i]);
+//         }
+//     }
+// 
+//     var request;
+//     // TODO find out how to handle searching by numbers
+//     // filterOp: The filter comparison operator to use. Possible values are 
+//     //           equals, startsWith, and match, the latter being specific 
+//     //           to telephone numbers.
+//     var mozOptions = {filterBy: filter, filterOp: 'startsWith'};
+//     if (!options.multiple) {
+//         mozOptions.filterLimit = 1;
+//     }
+//     if (!options.filter) {
+//         // this is returning 0 contacts
+//         request = navigator.mozContacts.getAll({});
+//     } else {
+//         // XXX This is searching for regardless of the filterValue !!!
+//         mozOptions.filterValue = options.filter;
+//         console.log('mozoptions: filterBy: ' + mozOptions.filterBy.join(' ') + '; fiterValue: ' + mozOptions.filterValue);
+//         request = navigator.mozContacts.find(mozOptions);
+//     }
+//     request.onsuccess = function() {
+//         var contacts = [];
+//         var mozContacts = request.result;
+//         for (var i=0; i < mozContacts.length; i++) {
+//             contacts.push(createCordovaFromMozilla(mozContacts[i]));
+//         }
+//         successCB(contacts);
+//     };
+//     request.onerror = errorCB;
+// }
 
-    var request;
-    // TODO find out how to handle searching by numbers
-    // filterOp: The filter comparison operator to use. Possible values are 
-    //           equals, startsWith, and match, the latter being specific 
-    //           to telephone numbers.
-    var mozOptions = {filterBy: filter, filterOp: 'startsWith'};
-    if (!options.multiple) {
-        mozOptions.filterLimit = 1;
-    }
-    if (!options.filter) {
-        // this is returning 0 contacts
-        request = navigator.mozContacts.getAll({});
-    } else {
-        // XXX This is searching for regardless of the filterValue !!!
-        mozOptions.filterValue = options.filter;
-        console.log('mozoptions: filterBy: ' + mozOptions.filterBy.join(' ') + '; fiterValue: ' + mozOptions.filterValue);
-        request = navigator.mozContacts.find(mozOptions);
-    }
-    request.onsuccess = function() {
-        var contacts = [];
-        var mozContacts = request.result;
-        for (var i=0; i < mozContacts.length; i++) {
-            contacts.push(createCordovaFromMozilla(mozContacts[i]));
-        }
-        successCB(contacts);
-    };
-    request.onerror = errorCB;
-}
 
-
-/* navigator.mozContacts.find has issues - using getAll */
+/* navigator.mozContacts.find has issues - using getAll 
+ * https://bugzilla.mozilla.org/show_bug.cgi?id=941008
+ */
 function hackedSearch(successCB, errorCB, params) {
+    // [contactField, eventualMozContactField]
+    var arrayFields = ['givenName', 'familyName', 'name'];
     var options = params[1] || {}; 
     var filter = [];
     // filter out inallowed fields
@@ -250,17 +261,24 @@ function hackedSearch(successCB, errorCB, params) {
     }
     var getall = navigator.mozContacts.getAll({});
     var contacts = [];
+
+    function isValid(mozContact) {
+        if (!options.filter) {
+            // get all
+            return true;
+        }
+        for (var j=0; j < filter.length; j++) {
+            var field = filter[0];
+            var value = (arrayFields.indexOf(field) >= 0) ? mozContact[field].join(' ') : mozContact[field];
+            if (value.indexOf(options.filter) >= 0) {
+                return true;
+            }
+        }
+    }
     getall.onsuccess = function() {
         if (getall.result) {
-            var mozContact = getall.result;
-            var valid = false;
-            for (var j=0; j < filter.length; j++) {
-                if (mozContact[filter[0]].indexOf(options.filter)) {
-                    valid = true;
-                }
-            }
-            if (valid) {
-                contacts.push(createCordovaFromMozilla(mozContact));
+            if (isValid(getall.result)) {
+                contacts.push(createCordovaFromMozilla(getall.result));
             }
             getall.continue();
         } else {

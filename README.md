@@ -8,7 +8,4 @@ If you are not using the Cordova Command-line Interface, follow [Using Plugman t
 
 Edit manifest.webapp and add permissions field as described in [Manifest Docs](https://developer.mozilla.org/en-US/Apps/Developing/Manifest#permissions).
 There is also a need to change the webapp type to "privileged"  - [Manifest Docs](https://developer.mozilla.org/en-US/Apps/Developing/Manifest#type).
-All privileged apps enforce [Content Security Policy](https://developer.mozilla.org/en-US/Apps/CSP) which forbids inline script. Initialize your application in another way (i.e. start it on document load in index.js)
-
-    document.onload = app.initialize;
-
+All privileged apps enforce [Content Security Policy](https://developer.mozilla.org/en-US/Apps/CSP) which forbids inline script. Initialize your application in another way.

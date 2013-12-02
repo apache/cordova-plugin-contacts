@@ -89,7 +89,7 @@
     <!-- ubuntu -->
     <platform name="ubuntu">
         <config-file target="config.xml" parent="/*">
-            <feature name="Camera">
+            <feature name="Contacts">
                 <param policy_group="contacts" policy_version="1" />
             </feature>
         </config-file>

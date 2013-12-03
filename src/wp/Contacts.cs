@@ -677,17 +677,9 @@ namespace WPCordovaClassLib.Cordova.Commands
 
             //Debug.WriteLine("jsonContact = " + jsonContact);
             // JSON requires new line characters be escaped
-            return "{" + jsonContact + "}";
-        }
 
-        private static string EscapeJson(string str)
-        {
-            if (String.IsNullOrEmpty(str))
-            {
-                return str;
-            }
+            return "{" + jsonContact.Replace("\n", "\\n").Replace("\r","") + "}";
 
-            return str.Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t").Replace("\"", "\\\"").Replace("&", "\\&");
         }
     }
 }

@@ -284,9 +284,9 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         // Do the id query
         Cursor c = mApp.getActivity().getContentResolver().query(ContactsContract.Data.CONTENT_URI,
                 null,
-                ContactsContract.Data.CONTACT_ID + " = ? ",
+                ContactsContract.Data.RAW_CONTACT_ID + " = ? ",
                 new String[] { id },
-                ContactsContract.Data.CONTACT_ID + " ASC");
+                ContactsContract.Data.RAW_CONTACT_ID + " ASC");
 
         JSONArray fields = new JSONArray();
         fields.put("*");

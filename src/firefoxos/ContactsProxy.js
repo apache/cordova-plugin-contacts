@@ -29,10 +29,21 @@
 
 var Contact = require('./Contact');
 var ContactField = require('./ContactField');
+var ContactAddress = require('./ContactAddress');
 var ContactName = require('./ContactName');
 
+// XXX: a hack to check if id is "empty". Cordova inserts a
+// string "this string is supposed to be a unique identifier that will 
+// never show up on a device" if id is empty
+function hasId(id) {
+    if (!id || id.indexOf(' ') >= 0) {
+        return false;
+    }
+    return true;
+}
 
-function createMozillaFromCordova(contact) {
+mozContact.prototype.updateFromCordova = function(contact) {
+
     function exportContactFieldArray(contactFieldArray, key) {
         if (!key) {
             key = 'value';
@@ -58,52 +69,67 @@ function createMozillaFromCordova(contact) {
         return arr;
     } 
 
-    function exportPhoneNumbers(phoneNumbers) {
-        var mozNumbers = [];
-        for (var i=0; i < phoneNumbers.length; i++) {
-            var number = phoneNumbers[i];
-            mozNumbers.push({
-                type: number.type,
-                value: number.value,
-                pref: number.pref
-            });
+    function exportContactField(data) {
+        var contactFields = [];
+        for (var i=0; i < data.length; i++) {
+            var item = data[i];
+            if (item.value) {
+                var itemData = {value: item.value};
+                if (item.type) {
+                    itemData.type = [item.type];
+                }
+                if (item.pref) {
+                    itemData.pref = item.pref;
+                }
+                contactFields.push(itemData);
+            }
         }
-        return mozNumbers;
-    }
-
-    // prepare mozContact object
-    var moz = new mozContact();
-    if (contact.id) {
-        moz.id = contact.id;
+        return contactFields;
     }
     // adding simple fields [contactField, eventualMozContactField]
-    var arrayFields = [['givenName'], ['familyName'], ['displayName', 'name']];
-    var simpleFields = [['honorificPrefix'], ['honorificSuffix'], ['nickname'], ['birthday', 'bday'], ['note']];
-    j = 0; while(field = arrayFields[j++]) {
+    var nameFields = [['givenName'], ['familyName'],  
+                      ['honorificPrefix'], ['honorificSuffix'],
+                      ['middleName', 'additionalName']];
+    var baseArrayFields = [['displayName', 'name'], ['nickname']];
+    var baseStringFields = [];
+    var j = 0; while(field = nameFields[j++]) {
       if (contact.name[field[0]]) {
-        moz[field[1] || field[0]] = contact.name[field[0]].split(' ');
+        this[field[1] || field[0]] = contact.name[field[0]].split(' ');
+        // console.log(field[0], contact.name[field[0]], this[field[1] || field[0]]);
       }
     }
-    j = 0; while(field = simpleFields[j++]) {
-      if (contact.name[field[0]]) {
-        moz[field[1] || field[0]] = contact.name[field[0]];
+    j = 0; while(field = baseArrayFields[j++]) {
+      if (contact[field[0]]) {
+        this[field[1] || field[0]] = contact[field[0]].split(' ');
       }
+    }
+    j = 0; while(field = baseStringFields[j++]) {
+      if (contact[field[0]]) {
+        this[field[1] || field[0]] = contact[field[0]];
+      }
+    }
+    if (contact.birthday) {
+      this.bday = new Date(contact.birthday);
     }
     if (contact.emails) {
-        moz.email = exportContactFieldArray(contact.emails);
+        var emails = exportContactField(contact.emails)
+        this.email = emails;
     }
     if (contact.categories) {
-        moz.category = exportContactFieldArray(contact.categories);
+        this.category = exportContactFieldArray(contact.categories);
     }
     if (contact.addresses) {
-        moz.adr = exportAddress(contact.addresses);
+        this.adr = exportAddress(contact.addresses);
     }
     if (contact.phoneNumbers) {
-        moz.tel = exportPhoneNumbers(contact.phoneNumbers);
+        this.tel = exportContactField(contact.phoneNumbers);
     }
     if (contact.organizations) {
-        moz.org = exportContactFieldArray(contact.organizations, 'name');
-        moz.jobTitle = exportContactFieldArray(contact.organizations, 'title');
+        this.org = exportContactFieldArray(contact.organizations, 'name');
+        this.jobTitle = exportContactFieldArray(contact.organizations, 'title');
+    }
+    if (contact.note) {
+        this.note = [contact.note];
     }
     /*  Find out how to translate these parameters
         // photo: Blob
@@ -114,18 +140,44 @@ function createMozillaFromCordova(contact) {
         // genderIdentity
         // key
     */
-    return moz;
+}
+
+function createMozillaFromCordova(successCB, errorCB, contact) {
+
+    var mozC;
+    // get contact if exists
+    if (contact.id) {
+      var search = navigator.mozContacts.find({
+        filterBy: ['id'], filterValue: contact.id, filterOp: 'equals'});
+      search.onsuccess = function() {
+        mozC = search.result[0];
+        mozC.updateFromCordova(contact);
+        successCB(mozC);
+      };
+      search.onerror = errorCB;
+      return;
+    }
+
+    var mozC = new mozContact();
+    if ('init' in mozC) {
+      // 1.2 and below compatibility
+      mozC.init();
+    }
+    mozC.updateFromCordova(contact);
+
+    //console.log('cordova2moz ', contact.id, contact.birthday, Date.parse(mozC.bday), mozC.bday.toDateString());
+    successCB(mozC);
 }
 
 function createCordovaFromMozilla(moz) {
-    function exportPhoneNumbers(mozNumbers) {
-        var phoneNumbers = [];
-        for (var i=0; i < mozNumbers.length; i++) {
-            var number = mozNumbers[i];
-            phoneNumbers.push(
-                new ContactField( number.type, number.value, number.pref));
+    function exportContactField(data) {
+        var contactFields = [];
+        for (var i=0; i < data.length; i++) {
+            var item = data[i];
+            var itemData = new ContactField(item.type, item.value, item.pref);
+            contactFields.push(itemData);
         }
-        return phoneNumbers;
+        return contactFields;
     }
 
     var contact = new Contact();
@@ -133,30 +185,51 @@ function createCordovaFromMozilla(moz) {
     if (moz.id) {
         contact.id = moz.id;
     }
-    var arrayFields = [['givenName'], ['familyName'], ['name', 'displayName']];
-    var simpleFields = [['honorificPrefix'], ['honorificSuffix'], ['nickname'], ['bday', 'birthday'], ['note']];
+    var nameFields = [['givenName'], ['familyName'], 
+                       ['honorificPrefix'], ['honorificSuffix'],
+                       ['additionalName', 'middleName']];
+    var baseArrayFields = [['name', 'displayName'], 'nickname', ['note']];
+    var baseStringFields = [];
     var name = new ContactName();
-    var j = 0; while(field = arrayFields[j++]) {
-      if (moz[field[0]]) {
-        name[field[1] || field[0]] = moz[field[0]].join(' ');
-      }
-    }
-    j = 0; while(field = simpleFields[j++]) {
-      if (moz[field[0]]) {
-        name[field[1] || field[0]] = moz[field[0]];
-      }
+    var j = 0; while(field = nameFields[j++]) {
+        if (moz[field[0]]) {
+            name[field[1] || field[0]] = moz[field[0]].join(' ');
+        }
     }
     contact.name = name;
+    j = 0; while(field = baseArrayFields[j++]) {
+        if (moz[field[0]]) {
+            contact[field[1] || field[0]] = moz[field[0]].join(' ');
+        }
+    }
+    j = 0; while(field = baseStringFields[j++]) {
+        if (moz[field[0]]) {
+            contact[field[1] || field[0]] = moz[field[0]];
+        }
+    }
     // emails
+    if (moz.email) {
+        contact.emails = exportContactField(moz.email);
+    }
     // categories
     // addresses
     if (moz.tel) {
-        contact.phoneNumbers = exportPhoneNumbers(moz.tel);
+        contact.phoneNumbers = exportContactField(moz.tel);
+    }
+    // birthday
+    if (moz.bday) {
+      contact.birthday = Date.parse(moz.bday);
     }
     // organizations
     return contact;
 }
 
+
+function _inspect(obj) {
+  for (var k in obj) {
+    console.log(k, obj[k]);
+  }
+}
 
 function saveContacts(successCB, errorCB, contacts) {
     // a closure which is holding the right moz contact
@@ -172,11 +245,13 @@ function saveContacts(successCB, errorCB, contacts) {
     var i=0;
     var contact;
     while(contact = contacts[i++]){
-        var moz = createMozillaFromCordova(contact);
-        var request = navigator.mozContacts.save(moz);
-        // success and/or fail will be called every time a contact is saved
-        request.onsuccess = makeSaveSuccessCB(moz);
-        request.onerror = errorCB;                
+        var moz = createMozillaFromCordova(function(moz) {
+          // console.log('before save ', moz.id, moz);
+          var request = navigator.mozContacts.save(moz);
+          // success and/or fail will be called every time a contact is saved
+          request.onsuccess = makeSaveSuccessCB(moz);
+          request.onerror = function(e) { console.log(e.target); errorCB(e); }                
+        }, function() {}, contact);
     }
 }   
 
@@ -185,6 +260,10 @@ function remove(successCB, errorCB, ids) {
     var i=0;
     var id;
     for (var i=0; i < ids.length; i++){
+        // throw an error if no id provided
+        if (!hasId(ids[i])) {
+          errorCB(0);
+        }
         var moz = new mozContact();
         moz.id = ids[i];
         var request = navigator.mozContacts.remove(moz);
@@ -194,92 +273,86 @@ function remove(successCB, errorCB, ids) {
 }
 
 
-var mozContactSearchFields = ['name', 'givenName', 'additionalName', 
-    'familyName', 'nickname', 'email', 'tel', 'jobTitle', 'note'];
+var mozContactSearchFields = [['name', 'displayName'], ['givenName'], 
+    ['familyName'], ['email'], ['tel'], ['jobTitle'], ['note'], 
+    ['tel', 'phoneNumbers'], ['email', 'emails']]; 
+// nickname and additionalName are forbidden in  1.3 and below
+// name is forbidden in 1.2 and below
 
-// function search(successCB, errorCB, params) {
-//     var options = params[1] || {}; 
-//     var filter = [];
-//     // filter out inallowed fields
-//     for (var i=0; i < params[0].length; i++) {
-//         if (mozContactSearchFields.indexOf([params[0][i]])) {
-//             filter.push(params[0][i]);
-//         } else if (params[0][i] == 'displayName') {
-//             filter.push('name');
-//         } else {
-//             console.log('FXOS ContactProxy: inallowed field passed to search filtered out: ' + params[0][i]);
-//         }
-//     }
-// 
-//     var request;
-//     // TODO find out how to handle searching by numbers
-//     // filterOp: The filter comparison operator to use. Possible values are 
-//     //           equals, startsWith, and match, the latter being specific 
-//     //           to telephone numbers.
-//     var mozOptions = {filterBy: filter, filterOp: 'startsWith'};
-//     if (!options.multiple) {
-//         mozOptions.filterLimit = 1;
-//     }
-//     if (!options.filter) {
-//         // this is returning 0 contacts
-//         request = navigator.mozContacts.getAll({});
-//     } else {
-//         // XXX This is searching for regardless of the filterValue !!!
-//         mozOptions.filterValue = options.filter;
-//         console.log('mozoptions: filterBy: ' + mozOptions.filterBy.join(' ') + '; fiterValue: ' + mozOptions.filterValue);
-//         request = navigator.mozContacts.find(mozOptions);
-//     }
-//     request.onsuccess = function() {
-//         var contacts = [];
-//         var mozContacts = request.result;
-//         for (var i=0; i < mozContacts.length; i++) {
-//             contacts.push(createCordovaFromMozilla(mozContacts[i]));
-//         }
-//         successCB(contacts);
-//     };
-//     request.onerror = errorCB;
-// }
+// finds if a value is inside array array and returns FFOS if different
+function getMozSearchField(arr, value) {
+    if (arr.indexOf([value]) >= 0) {
+        return value;
+    }
+    for (var i=0; i < arr.length; i++) {
+        if (arr[i].length > 1) {
+            if (arr[i][1] === value) {
+                return arr[i][0];
+            }
+        }
+    }
+    return false;
+}
+
+
+function search(successCB, errorCB, params) {
+    var options = params[1] || {}; 
+    if (!options.filter) {
+        return getAll(successCB, errorCB, params);
+    }
+    var filterBy = [];
+    // filter and translate fields
+    for (var i=0; i < params[0].length; i++) {
+        var searchField = params[0][i];
+        var mozField = getMozSearchField(mozContactSearchFields, searchField);
+        if (searchField === 'name') {
+            // Cordova uses name for search by all name fields.
+            filterBy.push('givenName');
+            filterBy.push('familyName');
+            continue;
+        } 
+        if (searchField === 'displayName' && 'init' in new mozContact()) {
+            // ``init`` in ``mozContact`` indicates FFOS version 1.2 or below
+            console.log('FFOS ContactProxy: Unable to search by displayName on FFOS 1.2');
+            continue;
+        } 
+        if (mozField) {
+            filterBy.push(mozField);
+        } else {
+            console.log('FXOS ContactProxy: inallowed field passed to search filtered out: ' + searchField);
+        }
+    }
+
+    var mozOptions = {filterBy: filterBy, filterOp: 'startsWith'};
+    if (!options.multiple) {
+        mozOptions.filterLimit = 1;
+    }
+    mozOptions.filterValue = options.filter;
+    var request = navigator.mozContacts.find(mozOptions);
+    request.onsuccess = function() {
+        var contacts = [];
+        var mozContacts = request.result;
+        var moz = mozContacts[0];
+        for (var i=0; i < mozContacts.length; i++) {
+            contacts.push(createCordovaFromMozilla(mozContacts[i]));
+        }
+        successCB(contacts);
+    };
+    request.onerror = errorCB;
+}
 
 
 /* navigator.mozContacts.find has issues - using getAll 
  * https://bugzilla.mozilla.org/show_bug.cgi?id=941008
  */
-function hackedSearch(successCB, errorCB, params) {
+function getAll(successCB, errorCB, params) {
     // [contactField, eventualMozContactField]
-    var arrayFields = ['givenName', 'familyName', 'name'];
-    var options = params[1] || {}; 
-    var filter = [];
-    // filter out inallowed fields
-    for (var i=0; i < params[0].length; i++) {
-        if (mozContactSearchFields.indexOf([params[0][i]])) {
-            filter.push(params[0][i]);
-        } else if (params[0][i] == 'displayName') {
-            filter.push('name');
-        } else {
-            console.log('FXOS ContactProxy: inallowed field passed to search filtered out: ' + params[0][i]);
-        }
-    }
     var getall = navigator.mozContacts.getAll({});
     var contacts = [];
 
-    function isValid(mozContact) {
-        if (!options.filter) {
-            // get all
-            return true;
-        }
-        for (var j=0; j < filter.length; j++) {
-            var field = filter[0];
-            var value = (arrayFields.indexOf(field) >= 0) ? mozContact[field].join(' ') : mozContact[field];
-            if (value.indexOf(options.filter) >= 0) {
-                return true;
-            }
-        }
-    }
     getall.onsuccess = function() {
         if (getall.result) {
-            if (isValid(getall.result)) {
-                contacts.push(createCordovaFromMozilla(getall.result));
-            }
+            contacts.push(createCordovaFromMozilla(getall.result));
             getall.continue();
         } else {
             successCB(contacts);
@@ -291,7 +364,7 @@ function hackedSearch(successCB, errorCB, params) {
 module.exports = {
     save: saveContacts,
     remove: remove,
-    search: hackedSearch
+    search: search
 };    
     
 require("cordova/firefoxos/commandProxy").add("Contacts", module.exports); 

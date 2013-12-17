@@ -35,7 +35,7 @@ var ContactName = require('./ContactName');
 // XXX: a hack to check if id is "empty". Cordova inserts a
 // string "this string is supposed to be a unique identifier that will 
 // never show up on a device" if id is empty
-function hasId(id) {
+function _hasId(id) {
     if (!id || id.indexOf(' ') >= 0) {
         return false;
     }
@@ -95,7 +95,6 @@ mozContact.prototype.updateFromCordova = function(contact) {
     var j = 0; while(field = nameFields[j++]) {
       if (contact.name[field[0]]) {
         this[field[1] || field[0]] = contact.name[field[0]].split(' ');
-        // console.log(field[0], contact.name[field[0]], this[field[1] || field[0]]);
       }
     }
     j = 0; while(field = baseArrayFields[j++]) {
@@ -146,7 +145,7 @@ function createMozillaFromCordova(successCB, errorCB, contact) {
 
     var mozC;
     // get contact if exists
-    if (contact.id) {
+    if (_hasId(contact.id)) {
       var search = navigator.mozContacts.find({
         filterBy: ['id'], filterValue: contact.id, filterOp: 'equals'});
       search.onsuccess = function() {
@@ -164,8 +163,6 @@ function createMozillaFromCordova(successCB, errorCB, contact) {
       mozC.init();
     }
     mozC.updateFromCordova(contact);
-
-    //console.log('cordova2moz ', contact.id, contact.birthday, Date.parse(mozC.bday), mozC.bday.toDateString());
     successCB(mozC);
 }
 
@@ -225,12 +222,6 @@ function createCordovaFromMozilla(moz) {
 }
 
 
-function _inspect(obj) {
-  for (var k in obj) {
-    console.log(k, obj[k]);
-  }
-}
-
 function saveContacts(successCB, errorCB, contacts) {
     // a closure which is holding the right moz contact
     function makeSaveSuccessCB(moz) {
@@ -246,11 +237,10 @@ function saveContacts(successCB, errorCB, contacts) {
     var contact;
     while(contact = contacts[i++]){
         var moz = createMozillaFromCordova(function(moz) {
-          // console.log('before save ', moz.id, moz);
           var request = navigator.mozContacts.save(moz);
           // success and/or fail will be called every time a contact is saved
           request.onsuccess = makeSaveSuccessCB(moz);
-          request.onerror = function(e) { console.log(e.target); errorCB(e); }                
+          request.onerror = errorCB;                
         }, function() {}, contact);
     }
 }   
@@ -261,7 +251,7 @@ function remove(successCB, errorCB, ids) {
     var id;
     for (var i=0; i < ids.length; i++){
         // throw an error if no id provided
-        if (!hasId(ids[i])) {
+        if (!_hasId(ids[i])) {
           errorCB(0);
         }
         var moz = new mozContact();

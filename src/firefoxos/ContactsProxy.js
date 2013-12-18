@@ -42,6 +42,7 @@ function _hasId(id) {
     return true;
 }
 
+// Extend mozContact prototype to provide update from Cordova
 mozContact.prototype.updateFromCordova = function(contact) {
 
     function exportContactFieldArray(contactFieldArray, key) {
@@ -141,32 +142,9 @@ mozContact.prototype.updateFromCordova = function(contact) {
     */
 }
 
-function createMozillaFromCordova(successCB, errorCB, contact) {
 
-    var mozC;
-    // get contact if exists
-    if (_hasId(contact.id)) {
-      var search = navigator.mozContacts.find({
-        filterBy: ['id'], filterValue: contact.id, filterOp: 'equals'});
-      search.onsuccess = function() {
-        mozC = search.result[0];
-        mozC.updateFromCordova(contact);
-        successCB(mozC);
-      };
-      search.onerror = errorCB;
-      return;
-    }
-
-    var mozC = new mozContact();
-    if ('init' in mozC) {
-      // 1.2 and below compatibility
-      mozC.init();
-    }
-    mozC.updateFromCordova(contact);
-    successCB(mozC);
-}
-
-function createCordovaFromMozilla(moz) {
+// Extend Cordova Contact prototype to provide update from FFOS contact
+Contact.prototype.updateFromMozilla = function(moz) {
     function exportContactField(data) {
         var contactFields = [];
         for (var i=0; i < data.length; i++) {
@@ -177,10 +155,9 @@ function createCordovaFromMozilla(moz) {
         return contactFields;
     }
 
-    var contact = new Contact();
 
     if (moz.id) {
-        contact.id = moz.id;
+        this.id = moz.id;
     }
     var nameFields = [['givenName'], ['familyName'], 
                        ['honorificPrefix'], ['honorificSuffix'],
@@ -193,35 +170,69 @@ function createCordovaFromMozilla(moz) {
             name[field[1] || field[0]] = moz[field[0]].join(' ');
         }
     }
-    contact.name = name;
+    this.name = name;
     j = 0; while(field = baseArrayFields[j++]) {
         if (moz[field[0]]) {
-            contact[field[1] || field[0]] = moz[field[0]].join(' ');
+            this[field[1] || field[0]] = moz[field[0]].join(' ');
         }
     }
     j = 0; while(field = baseStringFields[j++]) {
         if (moz[field[0]]) {
-            contact[field[1] || field[0]] = moz[field[0]];
+            this[field[1] || field[0]] = moz[field[0]];
         }
     }
     // emails
     if (moz.email) {
-        contact.emails = exportContactField(moz.email);
+        this.emails = exportContactField(moz.email);
     }
     // categories
     // addresses
     if (moz.tel) {
-        contact.phoneNumbers = exportContactField(moz.tel);
+        this.phoneNumbers = exportContactField(moz.tel);
     }
     // birthday
     if (moz.bday) {
-      contact.birthday = Date.parse(moz.bday);
+      this.birthday = Date.parse(moz.bday);
     }
     // organizations
+}
+
+
+function createMozillaFromCordova(successCB, errorCB, contact) {
+    var moz;
+    // get contact if exists
+    if (_hasId(contact.id)) {
+      var search = navigator.mozContacts.find({
+        filterBy: ['id'], filterValue: contact.id, filterOp: 'equals'});
+      search.onsuccess = function() {
+        moz = search.result[0];
+        moz.updateFromCordova(contact);
+        successCB(moz);
+      };
+      search.onerror = errorCB;
+      return;
+    }
+
+    // create empty contact
+    moz = new mozContact();
+    if ('init' in moz) {
+      // 1.2 and below compatibility
+      moz.init();
+    }
+    moz.updateFromCordova(contact);
+    successCB(moz);
+}
+
+
+function createCordovaFromMozilla(moz) {
+    var contact = new Contact();
+    contact.updateFromMozilla(moz);
     return contact;
 }
 
 
+// However API requires the ability to save multiple contacts, it is 
+// used to save only one element array
 function saveContacts(successCB, errorCB, contacts) {
     // a closure which is holding the right moz contact
     function makeSaveSuccessCB(moz) {
@@ -246,6 +257,7 @@ function saveContacts(successCB, errorCB, contacts) {
 }   
 
 
+// API provides a list of ids to be removed
 function remove(successCB, errorCB, ids) {
     var i=0;
     var id;
@@ -256,6 +268,7 @@ function remove(successCB, errorCB, ids) {
             errorCB(0);
             return;
         }
+        // check if provided id actually exists 
         var search = navigator.mozContacts.find({
             filterBy: ['id'], filterValue: ids[i], filterOp: 'equals'});
         search.onsuccess = function() {
@@ -277,18 +290,18 @@ function remove(successCB, errorCB, ids) {
 var mozContactSearchFields = [['name', 'displayName'], ['givenName'], 
     ['familyName'], ['email'], ['tel'], ['jobTitle'], ['note'], 
     ['tel', 'phoneNumbers'], ['email', 'emails']]; 
-// nickname and additionalName are forbidden in  1.3 and below
-// name is forbidden in 1.2 and below
+// Searching by nickname and additionalName is forbidden in  1.3 and below
+// Searching by name is forbidden in 1.2 and below
 
-// finds if a value is inside array array and returns FFOS if different
-function getMozSearchField(arr, value) {
-    if (arr.indexOf([value]) >= 0) {
-        return value;
+// finds if a key is allowed and returns FFOS name if different
+function getMozSearchField(key) {
+    if (mozContactSearchFields.indexOf([key]) >= 0) {
+        return key;
     }
-    for (var i=0; i < arr.length; i++) {
-        if (arr[i].length > 1) {
-            if (arr[i][1] === value) {
-                return arr[i][0];
+    for (var i=0; i < mozContactSearchFields.length; i++) {
+        if (mozContactSearchFields[i].length > 1) {
+            if (mozContactSearchFields[i][1] === key) {
+                return mozContactSearchFields[i][0];
             }
         }
     }
@@ -296,16 +309,33 @@ function getMozSearchField(arr, value) {
 }
 
 
+function _getAll(successCB, errorCB, params) {
+    // [contactField, eventualMozContactField]
+    var getall = navigator.mozContacts.getAll({});
+    var contacts = [];
+
+    getall.onsuccess = function() {
+        if (getall.result) {
+            contacts.push(createCordovaFromMozilla(getall.result));
+            getall.continue();
+        } else {
+            successCB(contacts);
+        }
+    };
+    getall.onerror = errorCB;
+}
+
+
 function search(successCB, errorCB, params) {
     var options = params[1] || {}; 
     if (!options.filter) {
-        return getAll(successCB, errorCB, params);
+        return _getAll(successCB, errorCB, params);
     }
     var filterBy = [];
     // filter and translate fields
     for (var i=0; i < params[0].length; i++) {
         var searchField = params[0][i];
-        var mozField = getMozSearchField(mozContactSearchFields, searchField);
+        var mozField = getMozSearchField(searchField);
         if (searchField === 'name') {
             // Cordova uses name for search by all name fields.
             filterBy.push('givenName');
@@ -314,6 +344,7 @@ function search(successCB, errorCB, params) {
         } 
         if (searchField === 'displayName' && 'init' in new mozContact()) {
             // ``init`` in ``mozContact`` indicates FFOS version 1.2 or below
+            // Searching by name (in moz) is then forbidden
             console.log('FFOS ContactProxy: Unable to search by displayName on FFOS 1.2');
             continue;
         } 
@@ -342,25 +373,6 @@ function search(successCB, errorCB, params) {
     request.onerror = errorCB;
 }
 
-
-/* navigator.mozContacts.find has issues - using getAll 
- * https://bugzilla.mozilla.org/show_bug.cgi?id=941008
- */
-function getAll(successCB, errorCB, params) {
-    // [contactField, eventualMozContactField]
-    var getall = navigator.mozContacts.getAll({});
-    var contacts = [];
-
-    getall.onsuccess = function() {
-        if (getall.result) {
-            contacts.push(createCordovaFromMozilla(getall.result));
-            getall.continue();
-        } else {
-            successCB(contacts);
-        }
-    };
-    getall.onerror = errorCB;
-}
 
 module.exports = {
     save: saveContacts,

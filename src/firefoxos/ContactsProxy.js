@@ -252,13 +252,24 @@ function remove(successCB, errorCB, ids) {
     for (var i=0; i < ids.length; i++){
         // throw an error if no id provided
         if (!_hasId(ids[i])) {
-          errorCB(0);
+            console.error('FFOS: Attempt to remove unsaved contact');
+            errorCB(0);
+            return;
         }
-        var moz = new mozContact();
-        moz.id = ids[i];
-        var request = navigator.mozContacts.remove(moz);
-        request.onsuccess = successCB;
-        request.onerror = errorCB;
+        var search = navigator.mozContacts.find({
+            filterBy: ['id'], filterValue: ids[i], filterOp: 'equals'});
+        search.onsuccess = function() {
+            if (search.result.length === 0) {
+                console.error('FFOS: Attempt to remove a non existing contact');
+                errorCB(0);
+                return;
+            }
+            var moz = search.result[0];
+            var request = navigator.mozContacts.remove(moz);
+            request.onsuccess = successCB;
+            request.onerror = errorCB;
+        };
+        search.onerror = errorCB;
     }
 }
 

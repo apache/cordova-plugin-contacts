@@ -163,6 +163,15 @@ Contact.prototype.updateFromMozilla = function(moz) {
         return contactFields;
     }
 
+    function makeContactFieldFromArray(data) {
+        var contactFields = [];
+        for (var i=0; i < data.length; i++) {
+            var itemData = new ContactField(null, data[i]);
+            contactFields.push(itemData);
+        }
+        return contactFields;
+    }
+
     function exportAddresses(addresses) {
         // TODO: check moz address format
         var arr = [];
@@ -182,6 +191,18 @@ Contact.prototype.updateFromMozilla = function(moz) {
         }
         return arr;
     } 
+
+    function createOrganizations(orgs, jobs) {
+        orgs = (orgs) ? orgs : [];
+        jobs = (jobs) ? jobs : [];
+        var max_length = Math.max(orgs.length, jobs.length);
+        var organizations = [];
+        for (var i=0; i < max_length; i++) {
+            organizations.push(new ContactOrganization(
+                  null, null, orgs[i] || null, null, jobs[i] || null));
+        }
+        return organizations;
+    }
 
 
     if (moz.id) {
@@ -214,6 +235,9 @@ Contact.prototype.updateFromMozilla = function(moz) {
         this.emails = exportContactField(moz.email);
     }
     // categories
+    if (moz.category) {
+        this.categories = makeContactFieldFromArray(moz.category);
+    }
 
     // addresses
     if (moz.adr) {
@@ -229,6 +253,9 @@ Contact.prototype.updateFromMozilla = function(moz) {
       this.birthday = Date.parse(moz.bday);
     }
     // organizations
+    if (moz.org || moz.jobTitle) {
+        this.organizations = createOrganizations(moz.org, moz.jobTitle);
+    }
 }
 
 

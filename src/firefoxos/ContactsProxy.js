@@ -63,7 +63,15 @@ mozContact.prototype.updateFromCordova = function(contact) {
         for (var i=0; i < addresses.length; i++) {
             var addr = {};
             for (var key in addresses[i]) {
-                addr[key] = addresses[i][key];    
+                if (key == 'formatted' || key == 'id') {
+                    continue;
+                } else if (key == 'type') {
+                    addr[key] = [addresses[i][key]];
+                } else if (key == 'country') {
+                    addr['countryName'] = addresses[i][key];
+                } else {
+                    addr[key] = addresses[i][key];    
+                }
             } 
             arr.push(addr);
         }                                 
@@ -155,6 +163,26 @@ Contact.prototype.updateFromMozilla = function(moz) {
         return contactFields;
     }
 
+    function exportAddresses(addresses) {
+        // TODO: check moz address format
+        var arr = [];
+        
+        for (var i=0; i < addresses.length; i++) {
+            var addr = {};
+            for (var key in addresses[i]) {
+                if (key == 'countryName') {
+                    addr['country'] = addresses[i][key];
+                } else if (key == 'type') {
+                    addr[key] = addresses[i][key].join(' ');
+                } else {
+                    addr[key] = addresses[i][key];    
+                }
+            } 
+            arr.push(addr);
+        }
+        return arr;
+    } 
+
 
     if (moz.id) {
         this.id = moz.id;
@@ -186,7 +214,13 @@ Contact.prototype.updateFromMozilla = function(moz) {
         this.emails = exportContactField(moz.email);
     }
     // categories
+
     // addresses
+    if (moz.adr) {
+        this.addresses = exportAddresses(moz.adr);
+    }
+
+    // phoneNumbers
     if (moz.tel) {
         this.phoneNumbers = exportContactField(moz.tel);
     }

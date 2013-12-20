@@ -133,6 +133,9 @@ mozContact.prototype.updateFromCordova = function(contact) {
         this.tel = exportContactField(contact.phoneNumbers);
     }
     if (contact.organizations) {
+        // XXX: organizations are saved in 2 arrays - org and jobTitle
+        //      depending on the usecase it might generate issues
+        //      where wrong title will be added to an organization
         this.org = exportContactFieldArray(contact.organizations, 'name');
         this.jobTitle = exportContactFieldArray(contact.organizations, 'title');
     }
@@ -254,6 +257,7 @@ Contact.prototype.updateFromMozilla = function(moz) {
     }
     // organizations
     if (moz.org || moz.jobTitle) {
+        // XXX: organizations array is created from org and jobTitle
         this.organizations = createOrganizations(moz.org, moz.jobTitle);
     }
 }

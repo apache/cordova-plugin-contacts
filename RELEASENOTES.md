@@ -65,3 +65,6 @@
 * 1. Added amazon-fireos platform. 2. Change to use amazon-fireos as the platform if user agent string contains 'cordova-amazon-fireos'.
 * CB-5198 [BlackBerry10] Update dependencies to point to registry
 * handle null filter when fields are specified. ( long standing pull-req from @kevfromireland )
+
+### 0.2.7 (Jan 02, 2014)
+* B-5658 Add doc/index.md for Contacts plugin

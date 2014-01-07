@@ -142,15 +142,6 @@ mozContact.prototype.updateFromCordova = function(contact) {
     if (contact.note) {
         this.note = [contact.note];
     }
-    /*  Find out how to translate these parameters
-        // photo: Blob
-        // url: Array with metadata (?)
-        // impp: exportIM(contact.ims), TODO: find the moz impp definition
-        // anniversary
-        // sex
-        // genderIdentity
-        // key
-    */
 }
 
 
@@ -207,6 +198,20 @@ Contact.prototype.updateFromMozilla = function(moz) {
         return organizations;
     }
 
+    function createFormatted(cordova) {
+        var f = '';
+        if (cordova.name.givenName) {
+            f = cordova.name.givenName;
+        }
+        if (cordova.name.familyName) {
+            if (f) {
+                f += ' ';
+            }
+            f += cordova.name.familyName;
+        }
+        return f;
+    }
+
 
     if (moz.id) {
         this.id = moz.id;
@@ -260,6 +265,18 @@ Contact.prototype.updateFromMozilla = function(moz) {
         // XXX: organizations array is created from org and jobTitle
         this.organizations = createOrganizations(moz.org, moz.jobTitle);
     }
+    // construct a read-only formatted value
+    this.name.formatted = createFormatted(this);
+
+    /*  Find out how to translate these parameters
+        // photo: Blob
+        // url: Array with metadata (?)
+        // impp: exportIM(contact.ims), TODO: find the moz impp definition
+        // anniversary
+        // sex
+        // genderIdentity
+        // key
+    */
 }
 
 

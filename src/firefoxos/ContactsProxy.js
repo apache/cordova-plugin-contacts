@@ -196,16 +196,17 @@ Contact.prototype.updateFromMozilla = function(moz) {
         return organizations;
     }
 
-    function createFormatted(cordova) {
+    function createFormatted(name) {
+        var fields = ['honorificPrefix', 'givenName', 'middleName', 
+                      'familyName', 'honorificSuffix'];
         var f = '';
-        if (cordova.name.givenName) {
-            f = cordova.name.givenName;
-        }
-        if (cordova.name.familyName) {
-            if (f) {
-                f += ' ';
+        for (var i = 0; i < fields.length; i++) {
+            if (name[fields[i]]) {
+                if (f) {
+                    f += ' ';
+                }
+                f += name[fields[i]];
             }
-            f += cordova.name.familyName;
         }
         return f;
     }
@@ -264,7 +265,7 @@ Contact.prototype.updateFromMozilla = function(moz) {
         this.organizations = createOrganizations(moz.org, moz.jobTitle);
     }
     // construct a read-only formatted value
-    this.name.formatted = createFormatted(this);
+    this.name.formatted = createFormatted(this.name);
 
     /*  Find out how to translate these parameters
         // photo: Blob

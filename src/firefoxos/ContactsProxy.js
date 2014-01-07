@@ -19,8 +19,6 @@
  *
 */ 
 
-// somehow call this function by this:
-// exec(success, fail, "Contacts", "save", [dupContact]);
 // Cordova contact definition: 
 // http://cordova.apache.org/docs/en/2.5.0/cordova_contacts_contacts.md.html#Contact
 // FxOS contact definition:

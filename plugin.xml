@@ -4,7 +4,7 @@
     xmlns:rim="http://www.blackberry.com/ns/widgets"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="org.apache.cordova.contacts"
-    version="0.2.5">
+    version="0.2.7">
 
     <name>Contacts</name>
     <description>Cordova Contacts Plugin</description>
@@ -67,6 +67,36 @@
         <source-file src="src/android/ContactManager.java" target-dir="src/org/apache/cordova/contacts" />
     </platform>
 
+    <!-- amazon-fireos -->
+    <platform name="amazon-fireos">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="Contacts">
+                <param name="android-package" value="org.apache.cordova.contacts.ContactManager"/>
+            </feature>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.READ_CONTACTS" />
+            <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+            <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+        </config-file>
+
+        <source-file src="src/android/ContactAccessor.java" target-dir="src/org/apache/cordova/contacts" />
+        <source-file src="src/android/ContactAccessorSdk5.java" target-dir="src/org/apache/cordova/contacts" />
+        <source-file src="src/android/ContactManager.java" target-dir="src/org/apache/cordova/contacts" />
+    </platform>
+    
+    <!-- ubuntu -->
+    <platform name="ubuntu">
+        <config-file target="config.xml" parent="/*">
+            <feature name="Contacts">
+                <param policy_group="contacts" policy_version="1" />
+            </feature>
+        </config-file>
+        <header-file src="src/ubuntu/contacts.h" />
+        <source-file src="src/ubuntu/contacts.cpp" />
+    </platform>
+
     <!-- ios -->
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
@@ -113,8 +143,8 @@
         <source-file src="src/blackberry10/ContactOrganization.js" target-dir="Contacts"></source-file>
         <source-file src="src/blackberry10/ContactPhoto.js" target-dir="Contacts"></source-file>
         <source-file src="src/blackberry10/contactUtils.js" target-dir="Contacts"></source-file>
-        <dependency id="com.blackberry.utils" url="https://github.com/blackberry/cordova-blackberry-plugins.git" commit="plugins" subdir="plugin/com.blackberry.utils"/>
-        <dependency id="org.apache.cordova.blackberry10.pimlib" url="https://github.com/blackberry/cordova-blackberry-plugins.git" commit="plugins" subdir="/plugin/org.apache.cordova.blackberry10.pimlib/"/>
+        <dependency id="com.blackberry.utils" />
+        <dependency id="com.blackberry.pim.lib" />
     </platform>
 
     <!-- wp7 -->

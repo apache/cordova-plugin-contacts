@@ -277,6 +277,12 @@ for details.
 
 - __urls__:  Partially supported. The first URL is stored in BlackBerry __webpage__ field.
 
+### FirefoxOS Quirks
+
+- __categories__: Partially supported. Fields __pref__ and __type__ are returning `null`
+
+- __organizations__: Partially supported. Fields __pref__, __type__ and __department__ are returning `null`. Fields __name__ and __title__ stored in __org__ and __jobTitle__.
+
 ### iOS Quirks
 
 - __displayName__: Not supported on iOS, returning `null` unless there is no `ContactName` specified, in which case it returns the composite name, __nickname__ or `""`, respectively.
@@ -394,6 +400,10 @@ a `ContactAddress[]` array.
 - __postalCode__: Supported.  Stored in BlackBerry __zipPostal__ address field.
 
 - __country__: Supported.
+
+### FirefoxOS Quirks
+
+- __formatted__: Currently not supported
 
 ### iOS Quirks
 
@@ -555,6 +565,10 @@ Contains different kinds of information about a `Contact` object's name.
 - __honorificPrefix__: Not supported, returning `null`.
 
 - __honorificSuffix__: Not supported, returning `null`.
+
+### FirefoxOS Quirks
+
+- __formatted__: Partially supported, and read-only.  Returns a concatenation of `honorificPrefix`, `givenName`, `middleName`, `familyName`, and `honorificSuffix`.
 
 ### iOS Quirks
 

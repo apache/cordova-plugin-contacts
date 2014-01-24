@@ -195,7 +195,12 @@
     pickerController.callbackId = callbackId;
     pickerController.options = options;
     pickerController.pickedContactDictionary = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:kABRecordInvalidID], kW3ContactId, nil];
-    pickerController.allowsEditing = (BOOL)[options existsValue : @"true" forKey : @"allowsEditing"];
+    id allowsEditingValue = [options valueForKey:@"allowsEditing"];
+    BOOL allowsEditing = NO;
+    if ([allowsEditingValue isKindOfClass:[NSNumber class]]) {
+        allowsEditing = [(NSNumber*)allowsEditingValue boolValue];
+    }
+    pickerController.allowsEditing = allowsEditing;
 
     SEL selector = NSSelectorFromString(@"presentViewController:animated:completion:");
     if ([self.viewController respondsToSelector:selector]) {

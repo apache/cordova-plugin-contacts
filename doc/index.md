@@ -44,10 +44,19 @@ contact data.  For more information, please see the Privacy Guide.
 
 ### Firefox OS Quirks
 
-Edit manifest.webapp and add permissions field as described in [Manifest Docs](https://developer.mozilla.org/en-US/Apps/Developing/Manifest#permissions).
+Create __www/manifest.webapp__ as described in 
+[Manifest Docs](https://developer.mozilla.org/en-US/Apps/Developing/Manifest).
+Add relevant permisions.
 There is also a need to change the webapp type to "privileged"  - [Manifest Docs](https://developer.mozilla.org/en-US/Apps/Developing/Manifest#type).
-All privileged apps enforce [Content Security Policy](https://developer.mozilla.org/en-US/Apps/CSP) which forbids inline script. Initialize your application in another way.
+__WARNING__: All privileged apps enforce [Content Security Policy](https://developer.mozilla.org/en-US/Apps/CSP) which forbids inline script. Initialize your application in another way.
 
+	"type": "privileged",
+	"permissions": {
+		"contacts": {
+			"access": "readwrite",
+			"description": "Describe why there is a need for such permission"
+		}
+	}
 
 ## navigator.contacts
 
@@ -77,6 +86,7 @@ database, for which you need to invoke the `Contact.save` method.
 
 - Android
 - BlackBerry 10
+- Firefox OS
 - iOS
 - Windows Phone 7 and 8
 
@@ -122,6 +132,7 @@ _any_ of the specified fields, the contact is returned.
 
 - Android
 - BlackBerry 10
+- Firefox OS
 - iOS
 - Windows Phone 7 and 8
 - Windows 8
@@ -199,6 +210,7 @@ for details.
 - Amazon Fire OS
 - Android
 - BlackBerry 10
+- Firefox OS
 - iOS
 - Windows Phone 7 and 8
 - Windows 8
@@ -277,6 +289,14 @@ for details.
 
 - __urls__:  Partially supported. The first URL is stored in BlackBerry __webpage__ field.
 
+### FirefoxOS Quirks
+
+- __categories__: Partially supported. Fields __pref__ and __type__ are returning `null`
+
+- __ims__: Not supported
+
+- __photos__: Not supported
+
 ### iOS Quirks
 
 - __displayName__: Not supported on iOS, returning `null` unless there is no `ContactName` specified, in which case it returns the composite name, __nickname__ or `""`, respectively.
@@ -340,6 +360,7 @@ a `ContactAddress[]` array.
 - Amazon Fire OS
 - Android
 - BlackBerry 10
+- Firefox OS
 - iOS
 - Windows Phone 7 and 8
 - Windows 8
@@ -453,6 +474,7 @@ string.
 - Amazon Fire OS
 - Android
 - BlackBerry 10
+- Firefox OS
 - iOS
 - Windows Phone 7 and 8
 - Windows 8
@@ -512,6 +534,7 @@ Contains different kinds of information about a `Contact` object's name.
 - Amazon Fire OS
 - Android 2.X
 - BlackBerry 10
+- Firefox OS
 - iOS
 - Windows Phone 7 and 8
 - Windows 8
@@ -584,6 +607,7 @@ properties.  A `Contact` object stores one or more
 
 - Android
 - BlackBerry 10
+- Firefox OS
 - iOS
 - Windows Phone 7 and 8
 - Windows 8
@@ -626,6 +650,16 @@ properties.  A `Contact` object stores one or more
 - __department__: Not supported, returning `null`.
 
 - __title__: Partially supported.  The first organization title is stored in the BlackBerry __jobTitle__ field.
+
+### Firefox OS Quirks
+
+- __pref__: Not supported
+
+- __type__: Not supported
+
+- __department__: Not supported
+
+- Fields __name__ and __title__ stored in __org__ and __jobTitle__.
 
 ### iOS Quirks
 

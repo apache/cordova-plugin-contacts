@@ -68,3 +68,7 @@
 
 ### 0.2.7 (Jan 02, 2014)
 * B-5658 Add doc/index.md for Contacts plugin
+
+### 0.2.8 (Feb 05, 2014)
+* [CB-3208] FFOS docs updated
+* CB-4590 - chooseContact in CDVContacts crashes app

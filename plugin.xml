@@ -4,7 +4,7 @@
     xmlns:rim="http://www.blackberry.com/ns/widgets"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="org.apache.cordova.contacts"
-    version="0.2.8">
+    version="0.2.9-dev">
 
     <name>Contacts</name>
     <description>Cordova Contacts Plugin</description>

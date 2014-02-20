@@ -140,7 +140,7 @@ _any_ of the specified fields, the contact is returned.
 ### Example
 
     function onSuccess(contacts) {
-        alert('Found ' + navigator.contacts.length + ' navigator.contacts.');
+        alert('Found ' + contacts.length + ' navigator.contacts.');
     };
 
     function onError(contactError) {

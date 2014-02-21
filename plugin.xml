@@ -180,7 +180,7 @@
     <!-- firefoxos -->
     <platform name="firefoxos">
         <config-file target="config.xml" parent="/*">
-            <feature name="Camera">
+            <feature name="Contacts">
                 <param name="firefoxos-package" value="Contacts" />
             </feature>
         </config-file>                                         

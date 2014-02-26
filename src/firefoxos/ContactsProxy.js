@@ -41,7 +41,7 @@ function _hasId(id) {
 }
 
 // Extend mozContact prototype to provide update from Cordova
-mozContact.prototype.updateFromCordova = function(contact) {
+function updateFromCordova(contact, fromContact) {
 
     function exportContactFieldArray(contactFieldArray, key) {
         if (!key) {
@@ -100,45 +100,45 @@ mozContact.prototype.updateFromCordova = function(contact) {
     var baseArrayFields = [['displayName', 'name'], ['nickname']];
     var baseStringFields = [];
     var j = 0; while(field = nameFields[j++]) {
-      if (contact.name[field[0]]) {
-        this[field[1] || field[0]] = contact.name[field[0]].split(' ');
+      if (fromContact.name[field[0]]) {
+        contact[field[1] || field[0]] = fromContact.name[field[0]].split(' ');
       }
     }
     j = 0; while(field = baseArrayFields[j++]) {
-      if (contact[field[0]]) {
-        this[field[1] || field[0]] = contact[field[0]].split(' ');
+      if (fromContact[field[0]]) {
+        contact[field[1] || field[0]] = fromContact[field[0]].split(' ');
       }
     }
     j = 0; while(field = baseStringFields[j++]) {
-      if (contact[field[0]]) {
-        this[field[1] || field[0]] = contact[field[0]];
+      if (fromContact[field[0]]) {
+        contact[field[1] || field[0]] = fromContact[field[0]];
       }
     }
-    if (contact.birthday) {
-      this.bday = new Date(contact.birthday);
+    if (fromContact.birthday) {
+      contact.bday = new Date(fromContact.birthday);
     }
-    if (contact.emails) {
-        var emails = exportContactField(contact.emails)
-        this.email = emails;
+    if (fromContact.emails) {
+        var emails = exportContactField(fromContact.emails)
+        contact.email = emails;
     }
-    if (contact.categories) {
-        this.category = exportContactFieldArray(contact.categories);
+    if (fromContact.categories) {
+        contact.category = exportContactFieldArray(fromContact.categories);
     }
-    if (contact.addresses) {
-        this.adr = exportAddress(contact.addresses);
+    if (fromContact.addresses) {
+        contact.adr = exportAddress(fromContact.addresses);
     }
-    if (contact.phoneNumbers) {
-        this.tel = exportContactField(contact.phoneNumbers);
+    if (fromContact.phoneNumbers) {
+        contact.tel = exportContactField(fromContact.phoneNumbers);
     }
-    if (contact.organizations) {
+    if (fromContact.organizations) {
         // XXX: organizations are saved in 2 arrays - org and jobTitle
         //      depending on the usecase it might generate issues
         //      where wrong title will be added to an organization
-        this.org = exportContactFieldArray(contact.organizations, 'name');
-        this.jobTitle = exportContactFieldArray(contact.organizations, 'title');
+        contact.org = exportContactFieldArray(fromContact.organizations, 'name');
+        contact.jobTitle = exportContactFieldArray(fromContact.organizations, 'title');
     }
-    if (contact.note) {
-        this.note = [contact.note];
+    if (fromContact.note) {
+        contact.note = [fromContact.note];
     }
 }
 
@@ -287,7 +287,7 @@ function createMozillaFromCordova(successCB, errorCB, contact) {
         filterBy: ['id'], filterValue: contact.id, filterOp: 'equals'});
       search.onsuccess = function() {
         moz = search.result[0];
-        moz.updateFromCordova(contact);
+        updateFromCordova(moz, contact);
         successCB(moz);
       };
       search.onerror = errorCB;
@@ -296,11 +296,11 @@ function createMozillaFromCordova(successCB, errorCB, contact) {
 
     // create empty contact
     moz = new mozContact();
-    if ('init' in moz) {
+    // if ('init' in moz) {
       // 1.2 and below compatibility
-      moz.init();
-    }
-    moz.updateFromCordova(contact);
+      // moz.init();
+    // }
+    updateFromCordova(moz, contact);
     successCB(moz);
 }
 
@@ -461,4 +461,4 @@ module.exports = {
     search: search
 };    
     
-require("cordova/firefoxos/commandProxy").add("Contacts", module.exports); 
+require("cordova/firefoxos/commandProxy").add("Contacts", module.exports);

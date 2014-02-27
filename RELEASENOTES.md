@@ -72,3 +72,7 @@
 ### 0.2.8 (Feb 05, 2014)
 * [CB-3208] FFOS docs updated
 * CB-4590 - chooseContact in CDVContacts crashes app
+
+### 0.2.9 (Feb 26, 2014)
+* CB-6086 Fix typo in ffos part of plugin.xml: Camera -> Contacts
+* CB-5994 Switch Contact ID lookup to use Raw contact id.

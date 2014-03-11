@@ -1706,7 +1706,7 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
     BOOL bFound = NO;
 
     NSArray* values = [self valuesForProperty:propId inRecord:self.record];  // array of dictionaries (as CFDictionaryRef)
-    int dictCount = [values count];
+    NSUInteger dictCount = [values count];
 
     // for ims dictionary contains with service (w3C type) and username (W3c value)
     // for addresses dictionary contains street, city, state, zip, country

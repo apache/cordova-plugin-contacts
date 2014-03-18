@@ -135,12 +135,12 @@ _any_ of the specified fields, the contact is returned.
 - Firefox OS
 - iOS
 - Windows Phone 7 and 8
-- Windows 8
+- Windows 8 ( read-only support, search requires user interaction, contactFields are ignored, only contactFindOptions.multiple is used )
 
 ### Example
 
     function onSuccess(contacts) {
-        alert('Found ' + navigator.contacts.length + ' navigator.contacts.');
+        alert('Found ' + contacts.length + ' contacts.');
     };
 
     function onError(contactError) {
@@ -257,8 +257,8 @@ for details.
         alert("Error = " + contactError.code);
     };
 
-        // remove the contact from the device
-        contact.remove(onSuccess,onError);
+    // remove the contact from the device
+    contact.remove(onSuccess,onError);
 
 
 ### Android 2.X Quirks
@@ -427,6 +427,10 @@ a `ContactAddress[]` array.
 
 - __formatted__: Currently not supported.
 
+### Windows 8 Quirks
+
+- __pref__: Not supported
+
 
 ## ContactError
 
@@ -515,6 +519,10 @@ string.
 
 - __pref__: Not supported, returning `false`.
 
+### Windows8 Quirks
+
+- __pref__: Not supported, returning `false`.
+
 
 ## ContactName
 
@@ -588,9 +596,24 @@ Contains different kinds of information about a `Contact` object's name.
 
 - __formatted__: Partially supported, and read-only.  Returns a concatenation of `honorificPrefix`, `givenName`, `middleName`, `familyName`, and `honorificSuffix`.
 
+
 ### iOS Quirks
 
 - __formatted__: Partially supported.  Returns iOS Composite Name, but is read-only.
+
+### Windows 8 Quirks
+
+- __formatted__: This is the only name property, and is identical to `displayName`, and `nickname`
+
+- __familyName__: not supported
+
+- __givenName__: not supported
+
+- __middleName__: not supported
+
+- __honorificPrefix__: not supported
+
+- __honorificSuffix__: not supported
 
 
 ## ContactOrganization
@@ -619,7 +642,6 @@ properties.  A `Contact` object stores one or more
 - Firefox OS
 - iOS
 - Windows Phone 7 and 8
-- Windows 8
 
 ### Example
 

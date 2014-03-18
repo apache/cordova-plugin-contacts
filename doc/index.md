@@ -89,6 +89,9 @@ database, for which you need to invoke the `Contact.save` method.
 - Firefox OS
 - iOS
 - Windows Phone 7 and 8
+- Windows 8 ( Note: Windows 8 Contacts are readonly via the Cordova API
+Contacts are not queryable/searchable, you should inform the user to pick a contact as a call to contacts.find will open the 'People' app where the user must choose a contact.
+Any contacts returned are readonly, so your application cannot modify them. )
 
 ### Example
 
@@ -124,9 +127,9 @@ _any_ of the specified fields, the contact is returned.
 
 - __contactFindOptions__: Search options to filter navigator.contacts. [Optional] Keys include:
 
-    - __filter__: The search string used to find navigator.contacts. _(DOMString)_ (Default: `""`)
+- __filter__: The search string used to find navigator.contacts. _(DOMString)_ (Default: `""`)
 
-    - __multiple__: Determines if the find operation returns multiple navigator.contacts. _(Boolean)_ (Default: `false`)
+- __multiple__: Determines if the find operation returns multiple navigator.contacts. _(Boolean)_ (Default: `false`)
 
 ### Supported Platforms
 
@@ -135,7 +138,7 @@ _any_ of the specified fields, the contact is returned.
 - Firefox OS
 - iOS
 - Windows Phone 7 and 8
-- Windows 8 ( read-only support, search requires user interaction, contactFields are ignored, only contactFindOptions.multiple is used )
+- Windows 8 ( read-only support, search requires user interaction, contactFields are ignored, only contactFindOptions.multiple is used to enable the user to select 1 or many contacts. )
 
 ### Example
 
@@ -213,7 +216,6 @@ for details.
 - Firefox OS
 - iOS
 - Windows Phone 7 and 8
-- Windows 8
 
 ### Save Example
 

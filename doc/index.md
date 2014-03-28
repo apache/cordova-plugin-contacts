@@ -89,6 +89,9 @@ database, for which you need to invoke the `Contact.save` method.
 - Firefox OS
 - iOS
 - Windows Phone 7 and 8
+- Windows 8 ( Note: Windows 8 Contacts are readonly via the Cordova API
+Contacts are not queryable/searchable, you should inform the user to pick a contact as a call to contacts.find will open the 'People' app where the user must choose a contact.
+Any contacts returned are readonly, so your application cannot modify them. )
 
 ### Example
 
@@ -124,9 +127,9 @@ _any_ of the specified fields, the contact is returned.
 
 - __contactFindOptions__: Search options to filter navigator.contacts. [Optional] Keys include:
 
-    - __filter__: The search string used to find navigator.contacts. _(DOMString)_ (Default: `""`)
+- __filter__: The search string used to find navigator.contacts. _(DOMString)_ (Default: `""`)
 
-    - __multiple__: Determines if the find operation returns multiple navigator.contacts. _(Boolean)_ (Default: `false`)
+- __multiple__: Determines if the find operation returns multiple navigator.contacts. _(Boolean)_ (Default: `false`)
 
 ### Supported Platforms
 
@@ -135,12 +138,12 @@ _any_ of the specified fields, the contact is returned.
 - Firefox OS
 - iOS
 - Windows Phone 7 and 8
-- Windows 8
+- Windows 8 ( read-only support, search requires user interaction, contactFields are ignored, only contactFindOptions.multiple is used to enable the user to select 1 or many contacts. )
 
 ### Example
 
     function onSuccess(contacts) {
-        alert('Found ' + navigator.contacts.length + ' navigator.contacts.');
+        alert('Found ' + contacts.length + ' contacts.');
     };
 
     function onError(contactError) {
@@ -213,7 +216,6 @@ for details.
 - Firefox OS
 - iOS
 - Windows Phone 7 and 8
-- Windows 8
 
 ### Save Example
 
@@ -257,8 +259,8 @@ for details.
         alert("Error = " + contactError.code);
     };
 
-        // remove the contact from the device
-        contact.remove(onSuccess,onError);
+    // remove the contact from the device
+    contact.remove(onSuccess,onError);
 
 
 ### Android 2.X Quirks
@@ -427,6 +429,10 @@ a `ContactAddress[]` array.
 
 - __formatted__: Currently not supported.
 
+### Windows 8 Quirks
+
+- __pref__: Not supported
+
 
 ## ContactError
 
@@ -515,6 +521,10 @@ string.
 
 - __pref__: Not supported, returning `false`.
 
+### Windows8 Quirks
+
+- __pref__: Not supported, returning `false`.
+
 
 ## ContactName
 
@@ -588,9 +598,24 @@ Contains different kinds of information about a `Contact` object's name.
 
 - __formatted__: Partially supported, and read-only.  Returns a concatenation of `honorificPrefix`, `givenName`, `middleName`, `familyName`, and `honorificSuffix`.
 
+
 ### iOS Quirks
 
 - __formatted__: Partially supported.  Returns iOS Composite Name, but is read-only.
+
+### Windows 8 Quirks
+
+- __formatted__: This is the only name property, and is identical to `displayName`, and `nickname`
+
+- __familyName__: not supported
+
+- __givenName__: not supported
+
+- __middleName__: not supported
+
+- __honorificPrefix__: not supported
+
+- __honorificSuffix__: not supported
 
 
 ## ContactOrganization
@@ -619,7 +644,6 @@ properties.  A `Contact` object stores one or more
 - Firefox OS
 - iOS
 - Windows Phone 7 and 8
-- Windows 8
 
 ### Example
 

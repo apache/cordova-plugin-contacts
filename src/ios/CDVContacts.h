@@ -15,6 +15,8 @@
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
  under the License.
+ 
+ Copyright (c) Microsoft Open Technologies, Inc.
  */
 
 #import <Foundation/Foundation.h>
@@ -64,6 +66,15 @@
 - (void)newPersonViewController:(ABNewPersonViewController*)newPersonViewController didCompleteWithNewPerson:(ABRecordRef)person;
 - (BOOL)personViewController:(ABPersonViewController*)personViewController shouldPerformDefaultActionForPerson:(ABRecordRef)person
                     property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifierForValue;
+/*
+ * Launches the Contact Picker to select a single contact.
+ *
+ * arguments:
+ *	1: this is the javascript function that will be called with the contact data as a JSON object (as the first param)
+ * options:
+ *	desiredFields: ContactFields array to be returned back
+ */
+- (void)pickContact:(CDVInvokedUrlCommand*)command;
 
 /*
  * search - searches for contacts.  Only person records are currently supported.

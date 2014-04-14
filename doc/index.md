@@ -267,27 +267,7 @@ for details.
 
 ### BlackBerry 10 Quirks
 
-- __id__: Supported.  Assigned by the device when saving the contact.
-
-- __displayName__: Supported.  Stored in BlackBerry __user1__ field.
-
-- __nickname__: Not supported, returning `null`.
-
-- __phoneNumbers__: Partially supported.  Phone numbers are stored in BlackBerry fields __homePhone1__ and __homePhone2__ if _type_ is 'home', __workPhone1__ and __workPhone2__ if _type_ is 'work', __mobilePhone__ if _type_ is 'mobile', __faxPhone__ if _type_ is 'fax', __pagerPhone__ if _type_ is 'pager', and __otherPhone__ if _type_ is none of the above.
-
-- __emails__: Partially supported.  The first three email addresses are stored in the BlackBerry __email1__, __email2__, and __email3__ fields, respectively.
-
-- __addresses__: Partially supported.  The first and second addresses are stored in the BlackBerry __homeAddress__ and __workAddress__ fields, respectively.
-
-- __ims__: Not supported, returning `null`.
-
-- __organizations__: Partially supported.  The __name__ and __title__ of the first organization are stored in the BlackBerry __company__ and __title__ fields, respectively.
-
-- __photos__: Partially supported.  A single thumbnail-sized photo is supported.  To set a contact's photo, pass in a either a base64-encoded image, or a URL pointing to the image.  The image is scaled down before saving to the BlackBerry contacts database.   The contact photo is returned as a base64-encoded image.
-
-- __categories__:  Partially supported.  Only _Business_ and _Personal_ categories are supported.
-
-- __urls__:  Partially supported. The first URL is stored in BlackBerry __webpage__ field.
+- __id__: Assigned by the device when saving the contact.
 
 ### FirefoxOS Quirks
 

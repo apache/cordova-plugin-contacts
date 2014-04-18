@@ -17,8 +17,6 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Copyright (c) Microsoft Open Technologies, Inc.
- *
 */
 
 var argscheck = require('cordova/argscheck'),

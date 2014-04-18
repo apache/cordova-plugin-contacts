@@ -1,4 +1,3 @@
-//cordova.define("org.apache.cordova.contacts.ContactProxy", function (require, exports, module) {
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -17,9 +16,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
- * Copyright (c) Microsoft Open Technologies, Inc.
-*/
+ * 
+ */
 
 var ContactField = require('./ContactField'),
     ContactAddress = require('./ContactAddress'),
@@ -121,4 +119,3 @@ module.exports = {
 }
 
 require("cordova/exec/proxy").add("Contacts", module.exports);
-// });

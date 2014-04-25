@@ -24,6 +24,7 @@ namespace WPCordovaClassLib.Cordova.Commands
     using System.Linq;
     using System.Text;
     using Microsoft.Phone.UserData;
+    using System.IO;
 
     /// <summary>
     /// Implements helper functionality to serialize contact to JSON string.
@@ -97,6 +98,7 @@ namespace WPCordovaClassLib.Cordova.Commands
                     { "emails", () => string.Format("\"emails\":[{0}]", FormatJsonEmails(contact)) },
                     { "addresses", () => string.Format("\"addresses\":[{0}]", FormatJsonAddresses(contact)) },
                     { "urls", () => string.Format("\"urls\":[{0}]", FormatJsonWebsites(contact)) },
+                    { "photos", () => string.Format("\"photos\":[{0}]", FormatJsonPhotos(contact)) },
                     { "name", () => string.Format("\"name\":{0}", FormatJsonName(contact)) },
                     { "note", () => string.Format("\"note\":\"{0}\"", EscapeJson(contact.Notes.FirstOrDefault())) },
                     {
@@ -287,6 +289,47 @@ namespace WPCordovaClassLib.Cordova.Commands
                 address.PhysicalAddress.CountryRegion);
 
             return "{" + jsonAddress + "}";
+        }
+
+        /// <summary>
+        /// Formats contact photos to JSON string.
+        /// </summary>
+        /// <param name="con">Contact object</param>
+        /// <returns>JSON string</returns>
+        private static string FormatJsonPhotos(Contact con) {
+
+            // we return single photo since contact object instance contains single picture only
+            var photoStream = con.GetPicture();
+ 
+            if (photoStream == null) {
+                return "";
+            }
+
+            return String.Format("{{value:\"{0}\", type: \"data\", pref: false}}", GetImageContent(photoStream));
+        }
+
+        /// <summary>
+        /// Returns image content in a form of base64 string
+        /// </summary>
+        /// <param name="stream">Image stream</param>
+        /// <returns>Base64 representation of the image</returns>
+        private static string GetImageContent(Stream stream)
+        {
+            byte[] imageContent = null;
+
+            try
+            {
+                int streamLength = (int)stream.Length;
+                imageContent = new byte[streamLength + 1];
+                stream.Read(imageContent, 0, streamLength);
+
+            }
+            finally
+            {
+                stream.Dispose();
+            }
+
+            return Convert.ToBase64String(imageContent);
         }
     }
 }

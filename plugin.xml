@@ -198,10 +198,9 @@
     <!-- firefoxos -->
     <platform name="firefoxos">
         <config-file target="config.xml" parent="/*">
-            <feature name="Contacts">
-                <param name="firefoxos-package" value="Contacts" />
-            </feature>
-        </config-file>                                         
+            <permission name="contacts" access="readwrite" description="Required for accessing address book."
+                        privileged="true"/>
+        </config-file>
         <js-module src="src/firefoxos/ContactsProxy.js" name="ContactsProxy">
             <runs />
         </js-module>

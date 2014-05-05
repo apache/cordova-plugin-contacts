@@ -42,3 +42,43 @@
  ### 0.2.5 (Oct 28, 2013)
 * CB-5128: added repo + issue tags for contacts
 * [CB-5010] Incremented plugin version on dev branch.
+
+### 0.2.6 (Dec 4, 2013)
+* Fix bad commit/merge
+* CB-3035 Fix issue with windows new line char \n\r
+* wrong example given
+* docs added
+* FxOS name fields are arrays hackedSearch refactored search based on find commented out
+* search hacked via getAll
+* search added - no idea if this is working
+* createMozillaFromCordova and vice versa are used to translate contact objects from one API to another.
+* add/remove working
+* save is working
+* attempt to save is failing trying to limit the translated contact fields to name and familyName, but still failing
+* save is linked with the proxy contact.name doesn't exist www/Contact.js#Contact.prototype.save check on which side is the error
+* CB-5214 Make mobile spec tests on WP8 to run w/o user interaction + Sync with cordova-mobile-spec
+* CB-5525 WP8. Contacts Api fails in case of there is special character in contact field
+* fixed ubuntu policy error
+* [ubuntu] specify policy_group
+* add ubuntu platform
+* CB-3035 Fix issue with windows new line char \n\r
+* 1. Added amazon-fireos platform. 2. Change to use amazon-fireos as the platform if user agent string contains 'cordova-amazon-fireos'.
+* CB-5198 [BlackBerry10] Update dependencies to point to registry
+* handle null filter when fields are specified. ( long standing pull-req from @kevfromireland )
+
+### 0.2.7 (Jan 02, 2014)
+* B-5658 Add doc/index.md for Contacts plugin
+
+### 0.2.8 (Feb 05, 2014)
+* [CB-3208] FFOS docs updated
+* CB-4590 - chooseContact in CDVContacts crashes app
+
+### 0.2.9 (Feb 26, 2014)
+* CB-6086 Fix typo in ffos part of plugin.xml: Camera -> Contacts
+* CB-5994 Switch Contact ID lookup to use Raw contact id.
+
+### 0.2.10 (Apr 17, 2014)
+* CB-6126: [BlackBerry10] Update docs quirks section for fields which are supported
+* CB-6212: [iOS] fix warnings compiled under arm64 64-bit
+* CB-6460: Update license headers
+* Add NOTICE file

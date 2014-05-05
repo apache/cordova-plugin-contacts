@@ -1,10 +1,10 @@
-﻿/*  
+﻿/*
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
 	You may obtain a copy of the License at
-	
+
 	http://www.apache.org/licenses/LICENSE-2.0
-	
+
 	Unless required by applicable law or agreed to in writing, software
 	distributed under the License is distributed on an "AS IS" BASIS,
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -403,6 +403,10 @@ namespace WPCordovaClassLib.Cordova.Commands
                 searchParams.options.filter = "";
                 searchParams.options.multiple = true;
             }
+            else if (searchParams.options.filter == null)
+            {
+                searchParams.options.filter = "";
+            }
 
             DeviceContacts deviceContacts = new DeviceContacts();
             deviceContacts.SearchCompleted += new EventHandler<ContactsSearchEventArgs>(contacts_SearchCompleted);
@@ -448,7 +452,8 @@ namespace WPCordovaClassLib.Cordova.Commands
             CompareOptions compare_option = CompareOptions.IgnoreCase;
 
             // if we have multiple search fields
-            if (searchParams.options.filter != null && searchParams.options.filter.Length > 0 && searchParams.fields.Count() > 1)
+
+            if (!String.IsNullOrEmpty(searchParams.options.filter) && searchParams.fields.Count() > 1)
             {
                 foundContacts = new List<Contact>();
                 if (searchParams.fields.Contains("emails"))
@@ -544,7 +549,7 @@ namespace WPCordovaClassLib.Cordova.Commands
             {
                 string contactField = string.Format(contactFieldFormat,
                                                     address.Kind.ToString(),
-                                                    address.EmailAddress);
+                                                    EscapeJson(address.EmailAddress));
 
                 retVal += "{" + contactField + "},";
             }
@@ -563,18 +568,18 @@ namespace WPCordovaClassLib.Cordova.Commands
                           "\"postalCode\":\"{6}\"," +
                           "\"country\":\"{7}\"";
 
-            string formattedAddress = address.PhysicalAddress.AddressLine1 + " "
+            string formattedAddress = EscapeJson(address.PhysicalAddress.AddressLine1 + " "
                                     + address.PhysicalAddress.AddressLine2 + " "
                                     + address.PhysicalAddress.City + " "
                                     + address.PhysicalAddress.StateProvince + " "
                                     + address.PhysicalAddress.CountryRegion + " "
-                                    + address.PhysicalAddress.PostalCode;
+                                    + address.PhysicalAddress.PostalCode);
 
             string jsonAddress = string.Format(addressFormatString,
                                                isPrefered ? "\"true\"" : "\"false\"",
                                                address.Kind.ToString(),
                                                formattedAddress,
-                                               address.PhysicalAddress.AddressLine1 + " " + address.PhysicalAddress.AddressLine2,
+                                               EscapeJson(address.PhysicalAddress.AddressLine1 + " " + address.PhysicalAddress.AddressLine2),
                                                address.PhysicalAddress.City,
                                                address.PhysicalAddress.StateProvince,
                                                address.PhysicalAddress.PostalCode,
@@ -602,7 +607,7 @@ namespace WPCordovaClassLib.Cordova.Commands
             string retVal = "";
             foreach (string website in con.Websites)
             {
-                retVal += "\"" + website + "\",";
+                retVal += "\"" + EscapeJson(website) + "\",";
             }
             return retVal.TrimEnd(',');
         }
@@ -628,12 +633,12 @@ namespace WPCordovaClassLib.Cordova.Commands
             if (con.CompleteName != null)
             {
                 retVal = string.Format(formatStr,
-                                   con.CompleteName.FirstName + " " + con.CompleteName.LastName, // TODO: does this need suffix? middlename?
-                                   con.CompleteName.LastName,
-                                   con.CompleteName.FirstName,
-                                   con.CompleteName.MiddleName,
-                                   con.CompleteName.Title,
-                                   con.CompleteName.Suffix);
+                                   EscapeJson(con.CompleteName.FirstName + " " + con.CompleteName.LastName), // TODO: does this need suffix? middlename?
+                                   EscapeJson(con.CompleteName.LastName),
+                                   EscapeJson(con.CompleteName.FirstName),
+                                   EscapeJson(con.CompleteName.MiddleName),
+                                   EscapeJson(con.CompleteName.Title),
+                                   EscapeJson(con.CompleteName.Suffix));
             }
             else
             {
@@ -660,19 +665,29 @@ namespace WPCordovaClassLib.Cordova.Commands
 
             string jsonContact = String.Format(contactFormatStr,
                                                con.GetHashCode(),
-                                               con.DisplayName,
-                                               con.CompleteName != null ? con.CompleteName.Nickname : "",
+                                               EscapeJson(con.DisplayName),
+                                               EscapeJson(con.CompleteName != null ? con.CompleteName.Nickname : ""),
                                                FormatJSONPhoneNumbers(con),
                                                FormatJSONEmails(con),
                                                FormatJSONAddresses(con),
                                                FormatJSONWebsites(con),
                                                FormatJSONName(con),
-                                               con.Notes.FirstOrDefault(),
-                                               con.Birthdays.FirstOrDefault());
+                                               EscapeJson(con.Notes.FirstOrDefault()),
+                                               EscapeJson(Convert.ToString(con.Birthdays.FirstOrDefault())));
 
-            //Debug.WriteLine("jsonContact = " + jsonContact);
-            // JSON requires new line characters be escaped
-            return "{" + jsonContact.Replace("\n", "\\n") + "}";
+            return "{" + jsonContact + "}";
+
+        }
+
+        
+        private static string EscapeJson(string str)
+        {
+            if (String.IsNullOrEmpty(str))
+            {
+                return str;
+            }
+
+            return str.Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t").Replace("\"", "\\\"").Replace("&", "\\&");
         }
     }
 }

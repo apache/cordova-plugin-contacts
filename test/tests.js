@@ -1,6 +1,4 @@
-// Eventually, require cdvtest plugin, for now its global
-
-registerAutoTests('org.apache.cordova.contacts', function() {
+exports.defineAutoTests = function() {
   // global to store a contact so it doesn't have to be created or retrieved multiple times
   // all of the setup/teardown test methods can reference the following variables to make sure to do the right cleanup
   var gContactObj = null;
@@ -368,4 +366,4 @@ registerAutoTests('org.apache.cordova.contacts', function() {
           });
       });
   });
-});
+};

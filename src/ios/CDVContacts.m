@@ -135,7 +135,7 @@
     [abHelper createAddressBook: ^(ABAddressBookRef addrBook, CDVAddressBookAccessError* errCode) {
         if (addrBook == NULL) {
             // permission was denied or other error - return error
-            CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageToErrorObject:errCode ? errCode.errorCode:UNKNOWN_ERROR];
+            CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageToErrorObject:errCode ? (int)errCode.errorCode:UNKNOWN_ERROR];
             [weakSelf.commandDelegate sendPluginResult:result callbackId:callbackId];
             return;
         }
@@ -269,7 +269,7 @@
             // iOS 4 & 5
             addrBook = ABAddressBookCreate();
         }
-        ABRecordRef person = ABAddressBookGetPersonWithRecordID(addrBook, [[picker.pickedContactDictionary objectForKey:kW3ContactId] integerValue]);
+        ABRecordRef person = ABAddressBookGetPersonWithRecordID(addrBook, (int)[[picker.pickedContactDictionary objectForKey:kW3ContactId] integerValue]);
         if (person) {
             CDVContact* pickedContact = [[CDVContact alloc] initFromABRecord:(ABRecordRef)person];
             NSArray* fields = [picker.options objectForKey:@"fields"];
@@ -304,7 +304,7 @@
         [abHelper createAddressBook: ^(ABAddressBookRef addrBook, CDVAddressBookAccessError* errCode) {
             if (addrBook == NULL) {
                 // permission was denied or other error - return error
-                CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageToErrorObject:errCode ? errCode.errorCode:UNKNOWN_ERROR];
+                CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageToErrorObject:errCode ? (int)errCode.errorCode:UNKNOWN_ERROR];
                 [weakSelf.commandDelegate sendPluginResult:result callbackId:callbackId];
                 return;
             }
@@ -333,7 +333,7 @@
                 if (foundRecords && ([foundRecords count] > 0)) {
                     // create Contacts and put into matches array
                     // doesn't make sense to ask for all records when multiple == NO but better check
-                    int xferCount = multiple == YES ? [foundRecords count] : 1;
+                    int xferCount = multiple == YES ? (int)[foundRecords count] : 1;
                     matches = [NSMutableArray arrayWithCapacity:xferCount];
 
                     for (int k = 0; k < xferCount; k++) {
@@ -346,7 +346,7 @@
                 foundRecords = (__bridge_transfer NSArray*)ABAddressBookCopyArrayOfAllPeople(addrBook);
                 matches = [NSMutableArray arrayWithCapacity:1];
                 BOOL bFound = NO;
-                int testCount = [foundRecords count];
+                int testCount = (int)[foundRecords count];
 
                 for (int j = 0; j < testCount; j++) {
                     CDVContact* testContact = [[CDVContact alloc] initFromABRecord:(__bridge ABRecordRef)[foundRecords objectAtIndex:j]];
@@ -365,7 +365,7 @@
                 // convert to JS Contacts format and return in callback
                 // - returnFields  determines what properties to return
                 @autoreleasepool {
-                    int count = multiple == YES ? [matches count] : 1;
+                    int count = multiple == YES ? (int)[matches count] : 1;
 
                     for (int i = 0; i < count; i++) {
                         CDVContact* newContact = [matches objectAtIndex:i];
@@ -401,7 +401,7 @@
             CDVPluginResult* result = nil;
             if (addrBook == NULL) {
                 // permission was denied or other error - return error
-                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsInt:errorCode ? errorCode.errorCode:UNKNOWN_ERROR];
+                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsInt:errorCode ? (int)errorCode.errorCode:UNKNOWN_ERROR];
                 [weakSelf.commandDelegate sendPluginResult:result callbackId:callbackId];
                 return;
             }
@@ -450,7 +450,7 @@
             CFRelease(addrBook);
 
             if (bIsError) {
-                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsInt:errCode];
+                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsInt:(int)errCode];
             }
 
             if (result) {
@@ -472,7 +472,7 @@
         CDVPluginResult* result = nil;
         if (addrBook == NULL) {
             // permission was denied or other error - return error
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsInt:errorCode ? errorCode.errorCode:UNKNOWN_ERROR];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsInt:errorCode ? (int)errorCode.errorCode:UNKNOWN_ERROR];
             [weakSelf.commandDelegate sendPluginResult:result callbackId:callbackId];
             return;
         }
@@ -516,7 +516,7 @@
             CFRelease(addrBook);
         }
         if (bIsError) {
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsInt:errCode];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsInt:(int)errCode];
         }
         if (result) {
             [weakSelf.commandDelegate sendPluginResult:result callbackId:callbackId];

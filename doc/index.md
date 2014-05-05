@@ -269,27 +269,7 @@ for details.
 
 ### BlackBerry 10 Quirks
 
-- __id__: Supported.  Assigned by the device when saving the contact.
-
-- __displayName__: Supported.  Stored in BlackBerry __user1__ field.
-
-- __nickname__: Not supported, returning `null`.
-
-- __phoneNumbers__: Partially supported.  Phone numbers are stored in BlackBerry fields __homePhone1__ and __homePhone2__ if _type_ is 'home', __workPhone1__ and __workPhone2__ if _type_ is 'work', __mobilePhone__ if _type_ is 'mobile', __faxPhone__ if _type_ is 'fax', __pagerPhone__ if _type_ is 'pager', and __otherPhone__ if _type_ is none of the above.
-
-- __emails__: Partially supported.  The first three email addresses are stored in the BlackBerry __email1__, __email2__, and __email3__ fields, respectively.
-
-- __addresses__: Partially supported.  The first and second addresses are stored in the BlackBerry __homeAddress__ and __workAddress__ fields, respectively.
-
-- __ims__: Not supported, returning `null`.
-
-- __organizations__: Partially supported.  The __name__ and __title__ of the first organization are stored in the BlackBerry __company__ and __title__ fields, respectively.
-
-- __photos__: Partially supported.  A single thumbnail-sized photo is supported.  To set a contact's photo, pass in a either a base64-encoded image, or a URL pointing to the image.  The image is scaled down before saving to the BlackBerry contacts database.   The contact photo is returned as a base64-encoded image.
-
-- __categories__:  Partially supported.  Only _Business_ and _Personal_ categories are supported.
-
-- __urls__:  Partially supported. The first URL is stored in BlackBerry __webpage__ field.
+- __id__: Assigned by the device when saving the contact.
 
 ### FirefoxOS Quirks
 
@@ -373,7 +353,7 @@ a `ContactAddress[]` array.
     // display the address information for all contacts
 
     function onSuccess(contacts) {
-        for (var i = 0; i < navigator.contacts.length; i++) {
+        for (var i = 0; i < contacts.length; i++) {
             for (var j = 0; j < contacts[i].addresses.length; j++) {
                 alert("Pref: "         + contacts[i].addresses[j].pref          + "\n" +
                     "Type: "           + contacts[i].addresses[j].type          + "\n" +
@@ -445,13 +425,13 @@ The `ContactError` object is returned to the user through the
 
 ### Constants
 
-- `ContactError.UNKNOWN_ERROR`
-- `ContactError.INVALID_ARGUMENT_ERROR`
-- `ContactError.TIMEOUT_ERROR`
-- `ContactError.PENDING_OPERATION_ERROR`
-- `ContactError.IO_ERROR`
-- `ContactError.NOT_SUPPORTED_ERROR`
-- `ContactError.PERMISSION_DENIED_ERROR`
+- `ContactError.UNKNOWN_ERROR` (code 0)
+- `ContactError.INVALID_ARGUMENT_ERROR` (code 1)
+- `ContactError.TIMEOUT_ERROR` (code 2)
+- `ContactError.PENDING_OPERATION_ERROR` (code 3)
+- `ContactError.IO_ERROR` (code 4)
+- `ContactError.NOT_SUPPORTED_ERROR` (code 5)
+- `ContactError.PERMISSION_DENIED_ERROR` (code 20)
 
 
 ## ContactField
@@ -557,7 +537,7 @@ Contains different kinds of information about a `Contact` object's name.
 ### Example
 
     function onSuccess(contacts) {
-        for (var i = 0; i < navigator.contacts.length; i++) {
+        for (var i = 0; i < contacts.length; i++) {
             alert("Formatted: "  + contacts[i].name.formatted       + "\n" +
                 "Family Name: "  + contacts[i].name.familyName      + "\n" +
                 "Given Name: "   + contacts[i].name.givenName       + "\n" +
@@ -648,7 +628,7 @@ properties.  A `Contact` object stores one or more
 ### Example
 
     function onSuccess(contacts) {
-        for (var i = 0; i < navigator.contacts.length; i++) {
+        for (var i = 0; i < contacts.length; i++) {
             for (var j = 0; j < contacts[i].organizations.length; j++) {
                 alert("Pref: "      + contacts[i].organizations[j].pref       + "\n" +
                     "Type: "        + contacts[i].organizations[j].type       + "\n" +

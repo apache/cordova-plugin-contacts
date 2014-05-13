@@ -207,9 +207,11 @@
         </js-module>
     </platform>  
 
-        <!-- wp8 -->
-    <js-module src="src/windows8/ContactProxy.js" name="ContactProxy">
-        <merges target="" />
-    </js-module>
+    <!-- windows8 -->
+    <platform name="windows8">
+        <js-module src="src/windows8/ContactProxy.js" name="ContactProxy">
+            <merges target="" />
+        </js-module>
+    </platform>
 
 </plugin>

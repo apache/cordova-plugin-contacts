@@ -191,7 +191,9 @@
         <config-file target="Properties/WMAppManifest.xml" parent="/Deployment/App/Capabilities">
             <Capability Name="ID_CAP_CONTACTS" />
         </config-file>
-
+        <js-module src="src/windows8/ContactProxy.js" name="ContactProxy">
+            <merges target="" />
+        </js-module>
         <source-file src="src/wp/Contacts.cs" />
     </platform>
     
@@ -206,10 +208,5 @@
             <runs />
         </js-module>
     </platform>  
-
-        <!-- wp8 -->
-    <js-module src="src/windows8/ContactProxy.js" name="ContactProxy">
-        <merges target="" />
-    </js-module>
 
 </plugin>

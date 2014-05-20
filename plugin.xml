@@ -198,18 +198,19 @@
     <!-- firefoxos -->
     <platform name="firefoxos">
         <config-file target="config.xml" parent="/*">
-            <feature name="Contacts">
-                <param name="firefoxos-package" value="Contacts" />
-            </feature>
-        </config-file>                                         
+            <permission name="contacts" access="readwrite" description="Required for accessing address book."
+                        privileged="true"/>
+        </config-file>
         <js-module src="src/firefoxos/ContactsProxy.js" name="ContactsProxy">
             <runs />
         </js-module>
     </platform>  
 
-        <!-- wp8 -->
-    <js-module src="src/windows8/ContactProxy.js" name="ContactProxy">
-        <merges target="" />
-    </js-module>
+    <!-- windows8 -->
+    <platform name="windows8">
+        <js-module src="src/windows8/ContactProxy.js" name="ContactProxy">
+            <merges target="" />
+        </js-module>
+    </platform>
 
 </plugin>

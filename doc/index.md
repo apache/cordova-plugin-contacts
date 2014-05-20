@@ -42,22 +42,6 @@ contact data.  For more information, please see the Privacy Guide.
 
     cordova plugin add org.apache.cordova.contacts
 
-### Firefox OS Quirks
-
-Create __www/manifest.webapp__ as described in 
-[Manifest Docs](https://developer.mozilla.org/en-US/Apps/Developing/Manifest).
-Add relevant permisions.
-There is also a need to change the webapp type to "privileged"  - [Manifest Docs](https://developer.mozilla.org/en-US/Apps/Developing/Manifest#type).
-__WARNING__: All privileged apps enforce [Content Security Policy](https://developer.mozilla.org/en-US/Apps/CSP) which forbids inline script. Initialize your application in another way.
-
-	"type": "privileged",
-	"permissions": {
-		"contacts": {
-			"access": "readwrite",
-			"description": "Describe why there is a need for such permission"
-		}
-	}
-
 ## navigator.contacts
 
 ### Methods

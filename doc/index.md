@@ -42,12 +42,34 @@ contact data.  For more information, please see the Privacy Guide.
 
     cordova plugin add org.apache.cordova.contacts
 
+### Firefox OS Quirks
+
+Create __www/manifest.webapp__ as described in 
+[Manifest Docs](https://developer.mozilla.org/en-US/Apps/Developing/Manifest).
+Add relevant permisions.
+There is also a need to change the webapp type to "privileged"  - [Manifest Docs](https://developer.mozilla.org/en-US/Apps/Developing/Manifest#type).
+__WARNING__: All privileged apps enforce [Content Security Policy](https://developer.mozilla.org/en-US/Apps/CSP) which forbids inline script. Initialize your application in another way.
+
+	"type": "privileged",
+	"permissions": {
+		"contacts": {
+			"access": "readwrite",
+			"description": "Describe why there is a need for such permission"
+		}
+	}
+
+### Windows 8 Quirks
+
+Windows 8 Contacts are readonly. Via the Cordova API Contacts are not queryable/searchable, you should inform the user to pick a contact as a call to contacts.pickContact which will open the 'People' app where the user must choose a contact.
+Any contacts returned are readonly, so your application cannot modify them.
+
 ## navigator.contacts
 
 ### Methods
 
 - navigator.contacts.create
 - navigator.contacts.find
+- navigator.contacts.pickContact
 
 ### Objects
 
@@ -58,6 +80,7 @@ contact data.  For more information, please see the Privacy Guide.
 - ContactOrganization
 - ContactFindOptions
 - ContactError
+- ContactFieldType
 
 ## navigator.contacts.create
 
@@ -73,9 +96,6 @@ database, for which you need to invoke the `Contact.save` method.
 - Firefox OS
 - iOS
 - Windows Phone 7 and 8
-- Windows 8 ( Note: Windows 8 Contacts are readonly via the Cordova API
-Contacts are not queryable/searchable, you should inform the user to pick a contact as a call to contacts.find will open the 'People' app where the user must choose a contact.
-Any contacts returned are readonly, so your application cannot modify them. )
 
 ### Example
 
@@ -89,9 +109,7 @@ The resulting objects are passed to the `contactSuccess` callback
 function specified by the __contactSuccess__ parameter.
 
 The __contactFields__ parameter specifies the fields to be used as a
-search qualifier, and only those results are passed to the
-__contactSuccess__ callback function.  A zero-length __contactFields__
-parameter is invalid and results in
+search qualifier.  A zero-length __contactFields__ parameter is invalid and results in
 `ContactError.INVALID_ARGUMENT_ERROR`. A __contactFields__ value of
 `"*"` returns all contact fields.
 
@@ -99,21 +117,24 @@ The __contactFindOptions.filter__ string can be used as a search
 filter when querying the contacts database.  If provided, a
 case-insensitive, partial value match is applied to each field
 specified in the __contactFields__ parameter.  If there's a match for
-_any_ of the specified fields, the contact is returned.
+_any_ of the specified fields, the contact is returned. Use __contactFindOptions.desiredFields__
+parameter to control which contact properties must be returned back.
 
 ### Parameters
-
-- __contactFields__: Contact fields to use as a search qualifier. The resulting `Contact` object only features values for these fields. _(DOMString[])_ [Required]
 
 - __contactSuccess__: Success callback function invoked with the array of Contact objects returned from the database. [Required]
 
 - __contactError__: Error callback function, invoked when an error occurs. [Optional]
+
+- __contactFields__: Contact fields to use as a search qualifier. _(DOMString[])_ [Required]
 
 - __contactFindOptions__: Search options to filter navigator.contacts. [Optional] Keys include:
 
 - __filter__: The search string used to find navigator.contacts. _(DOMString)_ (Default: `""`)
 
 - __multiple__: Determines if the find operation returns multiple navigator.contacts. _(Boolean)_ (Default: `false`)
+
+    - __desiredFields__: Contact fields to be returned back. If specified, the resulting `Contact` object only features values for these fields. _(DOMString[])_ [Optional]
 
 ### Supported Platforms
 
@@ -122,7 +143,6 @@ _any_ of the specified fields, the contact is returned.
 - Firefox OS
 - iOS
 - Windows Phone 7 and 8
-- Windows 8 ( read-only support, search requires user interaction, contactFields are ignored, only contactFindOptions.multiple is used to enable the user to select 1 or many contacts. )
 
 ### Example
 
@@ -138,9 +158,36 @@ _any_ of the specified fields, the contact is returned.
     var options      = new ContactFindOptions();
     options.filter   = "Bob";
     options.multiple = true;
-    var fields       = ["displayName", "name"];
-    navigator.contacts.find(fields, onSuccess, onError, options);
+    options.desiredFields = [navigator.contacts.fieldType.id];
+    var fields       = [navigator.contacts.fieldType.displayName, navigator.contacts.fieldType.name];
+    navigator.contacts.find(onSuccess, onError, fields, options);
 
+## navigator.contacts.pickContact
+
+The `navigator.contacts.pickContact` method launches the Contact Picker to select a single contact.
+The resulting object is passed to the `contactSuccess` callback
+function specified by the __contactSuccess__ parameter.
+
+### Parameters
+
+- __contactSuccess__: Success callback function invoked with the single Contact object. [Required]
+
+- __contactError__: Error callback function, invoked when an error occurs. [Optional]
+
+### Supported Platforms
+
+- Android
+- iOS
+- Windows Phone 8
+- Windows 8
+
+### Example
+
+    navigator.contacts.pickContact(function(contact){
+            console.log('The following contact has been selected:' + JSON.stringify(contact));
+        },function(err){
+            console.log('Error: ' + err);
+        });
 
 ## Contact
 
@@ -200,6 +247,7 @@ for details.
 - Firefox OS
 - iOS
 - Windows Phone 7 and 8
+- Windows 8
 
 ### Save Example
 

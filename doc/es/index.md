@@ -45,12 +45,17 @@ Crear **www/manifest.webapp** como se describe en [Manifestar Docs][1]. Agregar 
     }
     
 
+### Rarezas de Windows 8
+
+Windows 8 contactos son de sólo lectura. Través de los contactos de la API de Córdoba no son consultables/búsqueda, se debe informar al usuario a buscar un contacto como una llamada a contacts.pickContact que se abrirá la aplicación 'Personas' donde el usuario debe elegir un contacto. Cualquier contacto volvió es readonly, su aplicación no puede modificarlos.
+
 ## Navigator.Contacts
 
 ### Métodos
 
 *   navigator.contacts.create
 *   navigator.contacts.find
+*   navigator.contacts.pickContact
 
 ### Objetos
 
@@ -61,6 +66,7 @@ Crear **www/manifest.webapp** como se describe en [Manifestar Docs][1]. Agregar 
 *   ContactOrganization
 *   ContactFindOptions
 *   ContactError
+*   ContactFieldType
 
 ## Navigator.contacts.Create
 
@@ -85,23 +91,25 @@ Este método no retiene el objeto de contacto en la base de contactos de disposi
 
 El `navigator.contacts.find` método se ejecuta asincrónicamente, consultando la base de datos de contactos de dispositivo y devolver una matriz de `Contact` objetos. Los objetos resultantes son pasados a la `contactSuccess` función de devolución de llamada especificada por el parámetro **contactSuccess** .
 
-El parámetro **contactFields** especifica los campos para ser utilizado como un calificador de búsqueda, y sólo esos resultados son pasados a la función de devolución de llamada **contactSuccess** . Un parámetro de longitud cero **contactFields** no es válido y resultados en `ContactError.INVALID_ARGUMENT_ERROR` . Un valor de **contactFields** de `"*"` devuelve todo contacto con los campos.
+El parámetro **contactFields** especifica los campos para ser utilizado como un calificador de búsqueda. Un parámetro de longitud cero **contactFields** no es válido y resultados en `ContactError.INVALID_ARGUMENT_ERROR` . Un valor de **contactFields** de `"*"` devuelve todo contacto con los campos.
 
-La cadena de **contactFindOptions.filter** puede ser usada como un filtro de búsqueda al consultar la base de datos de contactos. Si proporciona, una entre mayúsculas y minúsculas, coincidencia parcial valor se aplica a cada campo especificado en el parámetro **contactFields** . Si hay un partido para *cualquier* de los campos especificados, se devuelve el contacto.
+La cadena de **contactFindOptions.filter** puede ser usada como un filtro de búsqueda al consultar la base de datos de contactos. Si proporciona, una entre mayúsculas y minúsculas, coincidencia parcial valor se aplica a cada campo especificado en el parámetro **contactFields** . Si hay un partido para *cualquier* de los campos especificados, se devuelve el contacto. Uso **contactFindOptions.desiredFields** parámetro al control que Contacta con propiedades debe devolverse atrás.
 
 ### Parámetros
-
-*   **contactFields**: póngase en contacto con campos para usar como un calificador de búsqueda. La resultante `Contact` objeto sólo cuenta con los valores de estos campos. *(DOMString[])* [Obligatorio]
 
 *   **contactSuccess**: función de callback de éxito se invoca con la matriz de objetos contacto devueltos desde la base de datos. [Obligatorio]
 
 *   **contactError**: función de callback de Error, se invoca cuando se produce un error. [Opcional]
 
+*   **contactFields**: póngase en contacto con campos para usar como un calificador de búsqueda. *(DOMString[])* [Obligatorio]
+
 *   **contactFindOptions**: buscar opciones para filtrar navigator.contacts. [Opcional] Claves incluyen:
+
+*   **filtro**: la cadena de búsqueda utilizada para encontrar navigator.contacts. *(DOMString)* (Por defecto:`""`)
+
+*   **múltiples**: determina si la operación de búsqueda devuelve múltiples navigator.contacts. *(Booleano)* (Por defecto:`false`)
     
-    *   **filtro**: la cadena de búsqueda utilizada para encontrar navigator.contacts. *(DOMString)* (Por defecto:`""`)
-    
-    *   **múltiples**: determina si la operación de búsqueda devuelve múltiples navigator.contacts. *(Booleano)* (Por defecto:`false`)
+    *   **desiredFields**: póngase en contacto con campos para volver atrás. Si se especifica, la resultante `Contact` objeto sólo cuenta con los valores de estos campos. *(DOMString[])* [Opcional]
 
 ### Plataformas soportadas
 
@@ -110,12 +118,11 @@ La cadena de **contactFindOptions.filter** puede ser usada como un filtro de bú
 *   Firefox OS
 *   iOS
 *   Windows Phone 7 y 8
-*   Windows 8
 
 ### Ejemplo
 
     function onSuccess(contacts) {
-        alert('Found ' + navigator.contacts.length + ' navigator.contacts.');
+        alert('Found ' + contacts.length + ' contacts.');
     };
     
     function onError(contactError) {
@@ -126,8 +133,35 @@ La cadena de **contactFindOptions.filter** puede ser usada como un filtro de bú
     var options      = new ContactFindOptions();
     options.filter   = "Bob";
     options.multiple = true;
-    var fields       = ["displayName", "name"];
-    navigator.contacts.find(fields, onSuccess, onError, options);
+    options.desiredFields = [navigator.contacts.fieldType.id];
+    var fields       = [navigator.contacts.fieldType.displayName, navigator.contacts.fieldType.name];
+    navigator.contacts.find(onSuccess, onError, fields, options);
+    
+
+## navigator.contacts.pickContact
+
+El `navigator.contacts.pickContact` método lanza el selector para seleccionar un único contacto contacto. El objeto resultante se pasa a la `contactSuccess` función de devolución de llamada especificada por el parámetro **contactSuccess** .
+
+### Parámetros
+
+*   **contactSuccess**: función de callback de éxito se invoca con el único objeto de contacto. [Obligatorio]
+
+*   **contactError**: función de callback de Error, se invoca cuando se produce un error. [Opcional]
+
+### Plataformas soportadas
+
+*   Android
+*   iOS
+*   Windows Phone 8
+*   Windows 8
+
+### Ejemplo
+
+    navigator.contacts.pickContact(function(contact){
+            console.log('The following contact has been selected:' + JSON.stringify(contact));
+        },function(err){
+            console.log('Error: ' + err);
+        });
     
 
 ## Contacto
@@ -228,8 +262,8 @@ El `Contact` objeto representa el contacto de un usuario. Contactos pueden ser c
         alert("Error = " + contactError.code);
     };
     
-        // remove the contact from the device
-        contact.remove(onSuccess,onError);
+    // remove the contact from the device
+    contact.remove(onSuccess,onError);
     
 
 ### Rarezas Android 2.X
@@ -238,27 +272,7 @@ El `Contact` objeto representa el contacto de un usuario. Contactos pueden ser c
 
 ### BlackBerry 10 rarezas
 
-*   **ID**: apoyado. Asignado por el dispositivo cuando se guarda el contacto.
-
-*   **displayName**: apoyado. Almacena en campo **usuario1** BlackBerry.
-
-*   **apodo**: no soportado, regresando`null`.
-
-*   **números**: parcialmente soportado. Números de teléfono se almacenan en BlackBerry campos **homePhone1** y **homePhone2** si el *tipo* es 'casa', **workPhone1** y **workPhone2** si el *tipo* es 'trabajo', **teléfono móvil** si el *tipo* es 'móvil', **faxPhone** si el *tipo* es 'fax', **pagerPhone** si *el tipo* es 'pager' y **otherPhone** si no *tipo de* ninguno de los anteriores.
-
-*   **correo electrónico**: parcialmente soportado. Las primeras direcciones de correo tres electrónico se almacenan en el BlackBerry **electrónico1** **email2**Campos y **email3** , respectivamente.
-
-*   **direcciones**: parcialmente soportado. Las primeras y la segunda direcciones se almacenan en los campos BlackBerry **homeAddress** y **workAddress** , respectivamente.
-
-*   **IMS**: no soportado, regresando`null`.
-
-*   **organizaciones**: parcialmente soportado. El **nombre** y el **título** de la primera organización se almacenan en los campos de la **empresa** y **título** de la BlackBerry, respectivamente.
-
-*   **fotos**: parcialmente soportado. Se admite una sola foto miniatura. Para fijar la foto de un contacto, pasar una o un codificado en base64 imagen, o una dirección URL que apunta a la imagen. La imagen es reducida antes de guardar en la base de datos de contactos de BlackBerry. La foto de contacto se devuelve como una imagen codificada en base64.
-
-*   **categorías**: parcialmente soportado. Se admiten únicamente las categorías de *negocios* y *Personal* .
-
-*   **URL**: parcialmente soportado. La primera URL se almacena en el campo de la **página web** de BlackBerry.
+*   **ID**: asignado por el dispositivo cuando se guarda el contacto.
 
 ### FirefoxOS rarezas
 
@@ -288,17 +302,17 @@ El `Contact` objeto representa el contacto de un usuario. Contactos pueden ser c
 
 *   **correos electrónicos**: no se admite la opción *pref* . Home y referencias misma entrada de correo electrónico. Se permite solamente una entrada para cada *tipo*.
 
-*   **direcciones**: soporta sólo trabajo y hogar/personal *tipo*. La casa y personal *tipo* referencia la misma entrada de dirección. Se permite solamente una entrada para cada *tipo*.
+*   **direcciones**: soporta sólo trabajo y hogar/personal *tipo*. La casa y personales de *tipo* referencia la misma entrada de dirección. Se permite solamente una entrada para cada *tipo*.
 
 *   **organizaciones**: sólo está permitido y no es compatible con los atributos *pref*, *tipo*y *Departamento* .
 
-*   **Nota**: no compatible, volviendo`null`.
+*   **Nota**: no compatible, regresando`null`.
 
-*   **IMS**: no admite, volviendo`null`.
+*   **IMS**: no soportado, regresando`null`.
 
-*   **cumpleaños**: no admite, volviendo`null`.
+*   **cumpleaños**: no soportado, regresando`null`.
 
-*   **categorías**: no admite, volviendo`null`.
+*   **categorías**: no soportado, regresando`null`.
 
 ## ContactAddress
 
@@ -310,7 +324,7 @@ El `ContactAddress` objeto almacena las propiedades de una única dirección de 
 
 *   **tipo**: una cadena que indica qué tipo de campo es, *casa* por ejemplo. *(DOMString)*
 
-*   **formato**: la dirección completa con formato de pantalla. *(DOMString)*
+*   **formato**: la dirección completa con formato de visualización. *(DOMString)*
 
 *   **streetAddress**: la dirección completa. *(DOMString)*
 
@@ -337,7 +351,7 @@ El `ContactAddress` objeto almacena las propiedades de una única dirección de 
     // display the address information for all contacts
     
     function onSuccess(contacts) {
-        for (var i = 0; i < navigator.contacts.length; i++) {
+        for (var i = 0; i < contacts.length; i++) {
             for (var j = 0; j < contacts[i].addresses.length; j++) {
                 alert("Pref: "         + contacts[i].addresses[j].pref          + "\n" +
                     "Type: "           + contacts[i].addresses[j].type          + "\n" +
@@ -364,27 +378,27 @@ El `ContactAddress` objeto almacena las propiedades de una única dirección de 
 
 ### Rarezas Android 2.X
 
-*   **Pref**: no admite, volviendo `false` en dispositivos Android 2.X.
+*   **Pref**: no soportado, volviendo `false` en dispositivos Android 2.X.
 
 ### BlackBerry 10 rarezas
 
-*   **Pref**: no compatible con dispositivos BlackBerry, volviendo`false`.
+*   **Pref**: no compatible con dispositivos BlackBerry, regresando`false`.
 
-*   **tipo**: parcialmente financiado. Sólo uno de *trabajo* y *casa* tipo direcciones puede almacenarse por contacto.
+*   **tipo**: parcialmente soportado. Sólo uno de cada *trabajo* y *casa* tipo direcciones puede ser almacenado por contacto.
 
-*   **formato**: parcialmente financiado. Devuelve una concatenación de todos los campos de dirección de BlackBerry.
+*   **formato**: parcialmente soportado. Devuelve una concatenación de todos los campos de dirección de BlackBerry.
 
-*   **streetAddress**: apoyo. Devuelve una concatenación de BlackBerry **address1** y **2** Campos de dirección.
+*   **streetAddress**: soportado. Devuelve una concatenación de BlackBerry **address1** y **2** Campos de dirección.
 
-*   **localidad**: apoyado. Almacenado en el campo de dirección de la **ciudad** de BlackBerry.
+*   **localidad**: apoyado. Almacenada en el campo de dirección de la **ciudad** de BlackBerry.
 
-*   **región**: apoyado. Almacenado en el campo de dirección de BlackBerry **stateProvince** .
+*   **región**: apoyado. Almacenada en el campo de dirección de BlackBerry **stateProvince** .
 
-*   **Código postal**: apoyado. Almacenado en el campo de dirección de BlackBerry **zipPostal** .
+*   **Código postal**: apoyado. Almacenada en el campo de dirección de BlackBerry **zipPostal** .
 
-*   **país**: apoyo.
+*   **país**: apoyado.
 
-### Rarezas FirefoxOS
+### FirefoxOS rarezas
 
 *   **formato**: actualmente no se admite
 
@@ -394,29 +408,33 @@ El `ContactAddress` objeto almacena las propiedades de una única dirección de 
 
 *   **formato**: actualmente no se admite.
 
+### Rarezas de Windows 8
+
+*   **Pref**: no se admite
+
 ## ContactError
 
 El `ContactError` objeto se devuelve al usuario a través de la `contactError` función de devolución de llamada cuando se produce un error.
 
 ### Propiedades
 
-*   **código**: uno de los códigos de error predefinido a continuación.
+*   **código**: uno de los códigos de error predefinido enumerados a continuación.
 
 ### Constantes
 
-*   `ContactError.UNKNOWN_ERROR`
-*   `ContactError.INVALID_ARGUMENT_ERROR`
-*   `ContactError.TIMEOUT_ERROR`
-*   `ContactError.PENDING_OPERATION_ERROR`
-*   `ContactError.IO_ERROR`
-*   `ContactError.NOT_SUPPORTED_ERROR`
-*   `ContactError.PERMISSION_DENIED_ERROR`
+*   `ContactError.UNKNOWN_ERROR` (code 0)
+*   `ContactError.INVALID_ARGUMENT_ERROR` (code 1)
+*   `ContactError.TIMEOUT_ERROR` (code 2)
+*   `ContactError.PENDING_OPERATION_ERROR` (code 3)
+*   `ContactError.IO_ERROR` (code 4)
+*   `ContactError.NOT_SUPPORTED_ERROR` (code 5)
+*   `ContactError.PERMISSION_DENIED_ERROR` (code 20)
 
 ## ContactField
 
 El `ContactField` objeto es un componente reutilizable que representa en contacto con campos genéricamente. Cada `ContactField` objeto contiene un `value` , `type` , y `pref` propiedad. A `Contact` objeto almacena varias propiedades en `ContactField[]` arreglos de discos, como las direcciones de teléfono números y correo electrónico.
 
-En la mayoría de los casos, no existen previamente determinados valores para un `ContactField` atributo **type** del objeto. Por ejemplo, un número de teléfono puede especificar valores de **tipo** de *hogar*, *trabajo*, *móvil*, *iPhone*o cualquier otro valor que es apoyado por contacto de base de datos de una plataforma dispositivo determinado. Sin embargo, para el `Contact` **fotos de** campo, el campo **tipo** indica el formato de la imagen devuelta: **url** cuando el atributo de **valor** contiene una dirección URL de la imagen de la foto, o *base64* cuando el **valor** contiene una cadena codificada en base64 imagen. 
+En la mayoría de los casos, no existen previamente determinados valores para un `ContactField` atributo **type** del objeto. Por ejemplo, un número de teléfono puede especificar valores de **tipo** de *hogar*, *trabajo*, *móvil*, *iPhone*o cualquier otro valor que es apoyado por contacto de base de datos de una plataforma dispositivo determinado. Sin embargo, para el `Contact` **fotos de** campo, el campo **tipo** indica el formato de la imagen devuelta: **url** cuando el atributo de **valor** contiene una dirección URL de la imagen de la foto, o *base64* cuando el **valor** contiene una cadena codificada en base64 imagen.
 
 ### Propiedades
 
@@ -468,6 +486,10 @@ En la mayoría de los casos, no existen previamente determinados valores para un
 
 *   **Pref**: no soportado, regresando`false`.
 
+### Windows8 rarezas
+
+*   **Pref**: no soportado, regresando`false`.
+
 ## ContactName
 
 Contiene diferentes tipos de información sobre un `Contact` nombre del objeto.
@@ -499,7 +521,7 @@ Contiene diferentes tipos de información sobre un `Contact` nombre del objeto.
 ### Ejemplo
 
     function onSuccess(contacts) {
-        for (var i = 0; i < navigator.contacts.length; i++) {
+        for (var i = 0; i < contacts.length; i++) {
             alert("Formatted: "  + contacts[i].name.formatted       + "\n" +
                 "Family Name: "  + contacts[i].name.familyName      + "\n" +
                 "Given Name: "   + contacts[i].name.givenName       + "\n" +
@@ -521,7 +543,7 @@ Contiene diferentes tipos de información sobre un `Contact` nombre del objeto.
 
 ### Rarezas Android
 
-*   **formato**: parcialmente compatibles y de sólo lectura. Devuelve una cadena de `honorificPrefix` , `givenName` , `middleName` , `familyName` , y`honorificSuffix`.
+*   **formato**: parcialmente compatibles y de sólo lectura. Devuelve una concatenación de `honorificPrefix` , `givenName` , `middleName` , `familyName` , y`honorificSuffix`.
 
 ### BlackBerry 10 rarezas
 
@@ -544,6 +566,20 @@ Contiene diferentes tipos de información sobre un `Contact` nombre del objeto.
 ### iOS rarezas
 
 *   **formato**: parcialmente soportado. Devuelve iOS nombre compuesto, pero es de sólo lectura.
+
+### Rarezas de Windows 8
+
+*   **formato**: este es el único nombre de propiedad y es idéntico al `displayName` , y`nickname`
+
+*   **familia**: no se admite
+
+*   **givenName**: no se admite
+
+*   **middleName**: no se admite
+
+*   **honorificPrefix**: no se admite
+
+*   **honorificSuffix**: no se admite
 
 ## ContactOrganization
 
@@ -568,12 +604,11 @@ El `ContactOrganization` objeto almacena las propiedades de organización de un 
 *   Firefox OS
 *   iOS
 *   Windows Phone 7 y 8
-*   Windows 8
 
 ### Ejemplo
 
     function onSuccess(contacts) {
-        for (var i = 0; i < navigator.contacts.length; i++) {
+        for (var i = 0; i < contacts.length; i++) {
             for (var j = 0; j < contacts[i].organizations.length; j++) {
                 alert("Pref: "      + contacts[i].organizations[j].pref       + "\n" +
                     "Type: "        + contacts[i].organizations[j].type       + "\n" +

@@ -19,7 +19,7 @@
 
 # org.apache.cordova.contacts
 
-Provides access to the device contacts database.
+デバイスの連絡先データベースへのアクセスを提供します。
 
 **警告**: 連絡先データの収集と利用を重要なプライバシーの問題を発生させます。 アプリのプライバシー ポリシー アプリが連絡先データを使用する方法と、他の当事者では共有されているかどうかを話し合う必要があります。 人誰と通信する人々 を明らかにするために、連絡先情報が機密と見なされます。 したがって、アプリのプライバシー ポリシーに加えて、強くする必要がありますデバイスのオペレーティング システムが既にしない場合アプリにアクセスまたは連絡先のデータを使用する前に - 時間のお知らせを提供します。 その通知は、上記の (例えば、 **[ok]**を**おかげで**選択肢を提示する) によってユーザーのアクセス許可を取得するだけでなく、同じ情報を提供する必要があります。 いくつかのアプリのマーケットプ レース - 時間の通知を提供して、連絡先データにアクセスする前にユーザーの許可を取得するアプリをする必要がありますに注意してください。 連絡先データは、ユーザーの混乱を避けるのに役立ちますの使用および連絡先データの知覚の誤用を囲む明確でわかりやすいユーザー エクスペリエンス。 詳細については、プライバシーに関するガイドを参照してください。
 
@@ -28,9 +28,9 @@ Provides access to the device contacts database.
     cordova plugin add org.apache.cordova.contacts
     
 
-### Firefox OS Quirks
+### Firefox OS 癖
 
-Create **www/manifest.webapp** as described in [Manifest Docs][1]. Add relevant permisions. There is also a need to change the webapp type to "privileged" - [Manifest Docs][2]. **WARNING**: All privileged apps enforce [Content Security Policy][3] which forbids inline script. Initialize your application in another way.
+[マニフェストのドキュメント][1]で説明されているように、 **www/manifest.webapp**を作成します。 関連する権限を追加します。 [マニフェストのドキュメント][2]「特権」- に web アプリケーションの種類を変更する必要も。 **警告**: すべての特権を持つアプリケーション インライン スクリプトを禁止している[コンテンツのセキュリティ ポリシー][3]を適用します。 別の方法で、アプリケーションを初期化します。
 
  [1]: https://developer.mozilla.org/en-US/Apps/Developing/Manifest
  [2]: https://developer.mozilla.org/en-US/Apps/Developing/Manifest#type
@@ -45,12 +45,17 @@ Create **www/manifest.webapp** as described in [Manifest Docs][1]. Add relevant 
     }
     
 
+### Windows 8 の癖
+
+Windows 8 の連絡先は、読み取り専用です。 コルドバ API コンタクトを介してされませんクエリ/検索可能で、ユーザーに通知する必要があります連絡先を選択 '人' アプリを開くことが contacts.pickContact への呼び出しとして、ユーザーが連絡先を選択する必要があります。 戻される連絡先は読み取り専用、アプリケーションを変更することはできません。
+
 ## navigator.contacts
 
 ### メソッド
 
 *   navigator.contacts.create
 *   navigator.contacts.find
+*   navigator.contacts.pickContact
 
 ### オブジェクト
 
@@ -61,10 +66,11 @@ Create **www/manifest.webapp** as described in [Manifest Docs][1]. Add relevant 
 *   ContactOrganization
 *   ContactFindOptions
 *   ContactError
+*   ContactFieldType
 
 ## navigator.contacts.create
 
-The `navigator.contacts.create` method is synchronous, and returns a new `Contact` object.
+`navigator.contacts.create`メソッドは同期的にし、新しいを返します `Contact` オブジェクト。
 
 このメソッドを呼び出す必要があるデバイスの連絡先データベースに連絡先オブジェクトを保持しない、 `Contact.save` メソッド。
 
@@ -72,10 +78,9 @@ The `navigator.contacts.create` method is synchronous, and returns a new `Contac
 
 *   アンドロイド
 *   ブラックベリー 10
-*   Firefox OS
+*   Firefox の OS
 *   iOS
 *   Windows Phone 7 と 8
-*   Windows 8 ( Note: Windows 8 Contacts are readonly via the Cordova API Contacts are not queryable/searchable, you should inform the user to pick a contact as a call to contacts.find will open the 'People' app where the user must choose a contact. 戻される連絡先は読み取り専用、アプリケーションを変更することはできません。 )
 
 ### 例
 
@@ -84,34 +89,35 @@ The `navigator.contacts.create` method is synchronous, and returns a new `Contac
 
 ## navigator.contacts.find
 
-The `navigator.contacts.find` method executes asynchronously, querying the device contacts database and returning an array of `Contact` objects. 結果として得られるオブジェクトに渡される、 `contactSuccess` 、 **contactSuccess**パラメーターで指定されたコールバック関数。
+`navigator.contacts.find`デバイスの連絡先データベースをクエリの配列を返すメソッドは、非同期的に実行されます `Contact` オブジェクト。 結果として得られるオブジェクトに渡される、 `contactSuccess` 、 **contactSuccess**パラメーターで指定されたコールバック関数。
 
-**連絡先**パラメーター検索の修飾子として使用するフィールドを指定してだけこれらの結果は**contactSuccess**コールバック関数に渡されます。 **連絡先**のゼロ長さのパラメーターが無効である結果 `ContactError.INVALID_ARGUMENT_ERROR` 。 **連絡先**値 `"*"` すべての連絡先フィールドを返します。
+**連絡先**パラメーター検索の修飾子として使用するフィールドを指定します。 ゼロ長さ**連絡先**パラメーターが有効になり `ContactError.INVALID_ARGUMENT_ERROR` 。 **連絡先**値 `"*"` すべての連絡先フィールドを返します。
 
-**ContactFindOptions.filter**文字列の連絡先データベースを照会するときに検索フィルターとして使用できます。 指定した場合、大文字と小文字、部分的な値の一致する**連絡先**パラメーターで指定されたフィールドごとに適用されます。 一致する*任意*指定のフィールドがある場合は、連絡先が返されます。
+**ContactFindOptions.filter**文字列の連絡先データベースを照会するときに検索フィルターとして使用できます。 指定した場合、大文字と小文字、部分的な値の一致する**連絡先**パラメーターで指定されたフィールドごとに適用されます。 一致する*任意*指定のフィールドがある場合は、連絡先が返されます。 バック連絡先プロパティを制御する**contactFindOptions.desiredFields**パラメーターを使用しますが返される必要があります。
 
 ### パラメーター
 
-*   **連絡先**: 連絡先検索修飾子として使用するフィールド。結果として `Contact` オブジェクトのみ機能のこれらのフィールドの値。*(DOMString[])*[必須]
-
-*   **contactSuccess**: Success callback function invoked with the array of Contact objects returned from the database. [Required]
+*   **contactSuccess**: Contact オブジェクトの配列に呼び出される成功コールバック関数は、データベースから返されます。[必須]
 
 *   **contactError**: エラー コールバック関数は、エラーが発生したときに呼び出されます。[オプション]
 
-*   **contactFindOptions**: Search options to filter navigator.contacts. [Optional] Keys include:
+*   **連絡先**: 連絡先検索修飾子として使用するフィールド。*(DOMString[])*[必須]
+
+*   **contactFindOptions**: navigator.contacts をフィルターするオプションを検索します。[オプション]キーは次のとおりです。
 
 *   **フィルター**: navigator.contacts の検索に使用する検索文字列。*（，）*(既定値します。`""`)
 
-*   **multiple**: Determines if the find operation returns multiple navigator.contacts. *(Boolean)* (Default: `false`)
+*   **複数**: 複数 navigator.contacts かどうかは、検索操作に返すを決定します。*(ブール値)*(既定値します。`false`)
+    
+    *   **desiredFields**： 戻って返されるフィールドに問い合わせてください。指定した場合、結果として `Contact` オブジェクトのみ機能のこれらのフィールドの値。*(DOMString[])*[オプション]
 
 ### サポートされているプラットフォーム
 
 *   アンドロイド
 *   ブラックベリー 10
-*   Firefox OS
+*   Firefox の OS
 *   iOS
 *   Windows Phone 7 と 8
-*   Windows 8 ( read-only support, search requires user interaction, contactFields are ignored, only contactFindOptions.multiple is used to enable the user to select 1 or many contacts. )
 
 ### 例
 
@@ -127,13 +133,40 @@ The `navigator.contacts.find` method executes asynchronously, querying the devic
     var options      = new ContactFindOptions();
     options.filter   = "Bob";
     options.multiple = true;
-    var fields       = ["displayName", "name"];
-    navigator.contacts.find(fields, onSuccess, onError, options);
+    options.desiredFields = [navigator.contacts.fieldType.id];
+    var fields       = [navigator.contacts.fieldType.displayName, navigator.contacts.fieldType.name];
+    navigator.contacts.find(onSuccess, onError, fields, options);
+    
+
+## navigator.contacts.pickContact
+
+`navigator.contacts.pickContact`メソッド連絡先ピッカーを起動します 1 つの連絡先を選択します。 結果として得られるオブジェクトに渡される、 `contactSuccess` 、 **contactSuccess**パラメーターで指定されたコールバック関数。
+
+### パラメーター
+
+*   **contactSuccess**: 1 つの連絡先オブジェクトに呼び出される成功コールバック関数。[必須]
+
+*   **contactError**: エラー コールバック関数は、エラーが発生したときに呼び出されます。[オプション]
+
+### サポートされているプラットフォーム
+
+*   アンドロイド
+*   iOS
+*   Windows Phone 8
+*   Windows 8
+
+### 例
+
+    navigator.contacts.pickContact(function(contact){
+            console.log('The following contact has been selected:' + JSON.stringify(contact));
+        },function(err){
+            console.log('Error: ' + err);
+        });
     
 
 ## お問い合わせ
 
-`Contact`オブジェクトは、ユーザーの連絡先を表します。 連絡先の作成、格納、またはデバイスの連絡先データベースから削除することができます。 Contacts can also be retrieved (individually or in bulk) from the database by invoking the `navigator.contacts.find` method.
+`Contact`オブジェクトは、ユーザーの連絡先を表します。 連絡先の作成、格納、またはデバイスの連絡先データベースから削除することができます。 連絡先も取得できます (個別にまたは一括） をデータベースから呼び出すことによって、 `navigator.contacts.find` メソッド。
 
 **注**: すべて上記の連絡先フィールドのすべてのデバイス プラットフォームでサポートされます。詳細については各プラットフォームの*互換*セクションを確認してください。
 
@@ -180,11 +213,12 @@ The `navigator.contacts.find` method executes asynchronously, querying the devic
 *   アマゾン火 OS
 *   アンドロイド
 *   ブラックベリー 10
-*   Firefox OS
+*   Firefox の OS
 *   iOS
 *   Windows Phone 7 と 8
+*   Windows 8
 
-### Save Example
+### 保存の例
 
     function onSuccess(contact) {
         alert("Save Success");
@@ -209,7 +243,7 @@ The `navigator.contacts.find` method executes asynchronously, querying the devic
     contact.save(onSuccess,onError);
     
 
-### Clone Example
+### クローンの例
 
         // clone the contact object
         var clone = contact.clone();
@@ -218,7 +252,7 @@ The `navigator.contacts.find` method executes asynchronously, querying the devic
         console.log("Cloned contact name = " + clone.name.givenName);
     
 
-### Remove Example
+### 削除の例
 
     function onSuccess() {
         alert("Removal Success");
@@ -238,15 +272,15 @@ The `navigator.contacts.find` method executes asynchronously, querying the devic
 
 ### ブラックベリー 10 癖
 
-*   **id**: Assigned by the device when saving the contact.
+*   **id**: 連絡先を保存するときに、デバイスによって割り当てられます。
 
-### FirefoxOS Quirks
+### FirefoxOS の癖
 
-*   **categories**: Partially supported. Fields **pref** and **type** are returning `null`
+*   **カテゴリ**: 部分的にサポートされます。フィールド**県**・**タイプ**を返す`null`
 
-*   **ims**: Not supported
+*   **ims**: サポートされていません。
 
-*   **photos**: Not supported
+*   **写真**: サポートされていません。
 
 ### iOS の癖
 
@@ -262,7 +296,7 @@ The `navigator.contacts.find` method executes asynchronously, querying the devic
 
 *   **displayName**: 表示名パラメーターの表示名と異なるために提供値を取得、連絡先を検索するとき、連絡先を作成するとき。
 
-*   **url**: 連絡先を検索するときに 1 つだけが利用できるが、ユーザーによる入力し 1 つ以上の web アドレスを保存する連絡先を作成するとき。
+*   **url**: 連絡先を作成するときユーザー入力保存でき、1 つ以上の web アドレスが 1 つだけ、連絡先を検索するとき。
 
 *   **電話番号**:*県*オプションはサポートされていません。 *型*は、*検索*操作ではサポートされていません。 1 つだけ `phoneNumber` は各*タイプ*の許可.
 
@@ -307,7 +341,7 @@ The `navigator.contacts.find` method executes asynchronously, querying the devic
 *   アマゾン火 OS
 *   アンドロイド
 *   ブラックベリー 10
-*   Firefox OS
+*   Firefox の OS
 *   iOS
 *   Windows Phone 7 と 8
 *   Windows 8
@@ -364,9 +398,9 @@ The `navigator.contacts.find` method executes asynchronously, querying the devic
 
 *   **国**: サポートされています。
 
-### FirefoxOS Quirks
+### FirefoxOS の癖
 
-*   **formatted**: Currently not supported
+*   **フォーマット**: 現在サポートされていません
 
 ### iOS の癖
 
@@ -374,9 +408,9 @@ The `navigator.contacts.find` method executes asynchronously, querying the devic
 
 *   **フォーマット**: 現在サポートされていません。
 
-### Windows 8 Quirks
+### Windows 8 の癖
 
-*   **pref**: Not supported
+*   **県**: サポートされていません。
 
 ## ContactError
 
@@ -400,22 +434,22 @@ The `navigator.contacts.find` method executes asynchronously, querying the devic
 
 `ContactField`オブジェクトは連絡先フィールドを総称を表す再利用可能なコンポーネントです。 各 `ContactField` オブジェクトが含まれています、 `value` 、 `type` 、および `pref` プロパティ。 A `Contact` オブジェクトのいくつかのプロパティに格納されます `ContactField[]` 携帯電話番号、メール アドレスなどの配列。
 
-ほとんどの場合、事前に決められた値がない、 `ContactField` オブジェクトの**type**属性。 たとえば、電話番号が*ホーム*、*仕事*、*モバイル*、 *iPhone*、または特定のデバイス プラットフォームの連絡先データベースでサポートされている他の値の**型**の値を指定できます。 ただし、ため、 `Contact` **写真**] フィールドに、**種類**フィールド、返されるイメージの形式を示します: **url** **値**属性**値**を base64 でエンコードされたイメージの文字列が含まれる場合に写真イメージまたは*base64*に URL が含まれる場合。 
+ほとんどの場合、事前に決められた値がない、 `ContactField` オブジェクトの**type**属性。 たとえば、電話番号が*ホーム*、*仕事*、*モバイル*、 *iPhone*、または特定のデバイス プラットフォームの連絡先データベースでサポートされている他の値の**型**の値を指定できます。 ただし、ため、 `Contact` **写真**] フィールドに、**種類**フィールド、返されるイメージの形式を示します: **url** **値**属性**値**を base64 でエンコードされたイメージの文字列が含まれる場合に写真イメージまたは*base64*に URL が含まれる場合。
 
 ### プロパティ
 
-*   **type**: A string that indicates what type of field this is, *home* for example. *(DOMString)*
+*   **タイプ**: たとえばフィールドこれは*ホーム*の種類を示す文字列。*（，）*
 
-*   **value**: The value of the field, such as a phone number or email address. *(DOMString)*
+*   **値**: 電話番号や電子メール アドレスなど、フィールドの値。*（，）*
 
-*   **pref**: Set to `true` if this `ContactField` contains the user's preferred value. *(boolean)*
+*   **県**: に設定されている `true` 場合は、この `ContactField` ユーザーの推奨値が含まれています。*(ブール値)*
 
 ### サポートされているプラットフォーム
 
 *   アマゾン火 OS
 *   アンドロイド
 *   ブラックベリー 10
-*   Firefox OS
+*   Firefox の OS
 *   iOS
 *   Windows Phone 7 と 8
 *   Windows 8
@@ -438,23 +472,23 @@ The `navigator.contacts.find` method executes asynchronously, querying the devic
 
 ### Android の癖
 
-*   **pref**: Not supported, returning `false`.
+*   **県**: サポートされていないを返す`false`.
 
 ### ブラックベリー 10 癖
 
-*   **type**: Partially supported. Used for phone numbers.
+*   **種類**: 部分的にサポートされます。電話番号を使用します。
 
-*   **value**: Supported.
+*   **値**: サポートされています。
 
-*   **pref**: Not supported, returning `false`.
+*   **県**: サポートされていないを返す`false`.
 
 ### iOS の癖
 
-*   **pref**: Not supported, returning `false`.
+*   **県**: サポートされていないを返す`false`.
 
-### Windows8 Quirks
+### Windows8 の癖
 
-*   **pref**: Not supported, returning `false`.
+*   **県**: サポートされていないを返す`false`.
 
 ## 得意先コード
 
@@ -462,9 +496,9 @@ The `navigator.contacts.find` method executes asynchronously, querying the devic
 
 ### プロパティ
 
-*   **formatted**: The complete name of the contact. *(DOMString)*
+*   **フォーマット**: 連絡先の完全な名前。*（，）*
 
-*   **familyName**: The contact's family name. *(DOMString)*
+*   **familyName**: 連絡先の姓。*（，）*
 
 *   **givenName**: 連絡先の名前。*（，）*
 
@@ -509,7 +543,7 @@ The `navigator.contacts.find` method executes asynchronously, querying the devic
 
 ### Android の癖
 
-*   **フォーマット**： 部分的にサポートされると読み取り専用です。 連結を返します `honorificPrefix` 、 `givenName` 、 `middleName` 、 `familyName` と`honorificSuffix`.
+*   **フォーマット**： 部分的にサポートされており、読み取り専用です。 連結を返します `honorificPrefix` 、 `givenName` 、 `middleName` 、 `familyName` と`honorificSuffix`.
 
 ### ブラックベリー 10 癖
 

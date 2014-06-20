@@ -60,7 +60,7 @@ __WARNING__: All privileged apps enforce [Content Security Policy](https://devel
 
 ### Windows 8 Quirks
 
-Windows 8 Contacts are readonly. Via the Cordova API Contacts are not queryable/searchable, you should inform the user to pick a contact as a call to contacts.pickContact which will open the 'People' app where the user must choose a contact.
+Windows 8 Contacts are readonly. Via the Cordova API Contacts are not queryable/searchable, you should inform the user to pick a contact as a call to contacts.chooseContact which will open the 'People' app where the user must choose a contact.
 Any contacts returned are readonly, so your application cannot modify them.
 
 ## navigator.contacts
@@ -69,7 +69,7 @@ Any contacts returned are readonly, so your application cannot modify them.
 
 - navigator.contacts.create
 - navigator.contacts.find
-- navigator.contacts.pickContact
+- navigator.contacts.chooseContact
 
 ### Objects
 
@@ -162,9 +162,9 @@ parameter to control which contact properties must be returned back.
     var fields       = [navigator.contacts.fieldType.displayName, navigator.contacts.fieldType.name];
     navigator.contacts.find(onSuccess, onError, fields, options);
 
-## navigator.contacts.pickContact
+## navigator.contacts.chooseContact
 
-The `navigator.contacts.pickContact` method launches the Contact Picker to select a single contact.
+The `navigator.contacts.chooseContact` method launches the Contact Picker to select a single contact.
 The resulting object is passed to the `contactSuccess` callback
 function specified by the __contactSuccess__ parameter.
 
@@ -183,7 +183,7 @@ function specified by the __contactSuccess__ parameter.
 
 ### Example
 
-    navigator.contacts.pickContact(function(contact){
+    navigator.contacts.chooseContact(function(contact){
             console.log('The following contact has been selected:' + JSON.stringify(contact));
         },function(err){
             console.log('Error: ' + err);

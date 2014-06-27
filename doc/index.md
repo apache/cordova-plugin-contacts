@@ -160,7 +160,7 @@ parameter to control which contact properties must be returned back.
     options.multiple = true;
     options.desiredFields = [navigator.contacts.fieldType.id];
     var fields       = [navigator.contacts.fieldType.displayName, navigator.contacts.fieldType.name];
-    navigator.contacts.find(onSuccess, onError, fields, options);
+    navigator.contacts.find(fields, onSuccess, onError, options);
 
 ## navigator.contacts.pickContact
 

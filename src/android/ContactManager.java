@@ -27,7 +27,8 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.provider.ContactsContract.Contacts;
+import android.database.Cursor;
+import android.provider.ContactsContract.*;
 import android.util.Log;
 
 public class ContactManager extends CordovaPlugin {
@@ -160,9 +161,20 @@ public class ContactManager extends CordovaPlugin {
     public void onActivityResult(int requestCode, int resultCode, final Intent intent) {
         if (requestCode == CONTACT_PICKER_RESULT) {
             if (resultCode == Activity.RESULT_OK) {
-                String contactId = intent.getData().getLastPathSegment();
+                String contactId = intent.getData().getLastPathSegment();         
+                // to populate contact data we require  Raw Contact ID
+                // so we do look up for contact raw id first
+                Cursor c =  this.cordova.getActivity().getContentResolver().query(RawContacts.CONTENT_URI, 
+                            new String[] {RawContacts._ID}, RawContacts.CONTACT_ID + " = " + contactId, null, null); 
+                if (!c.moveToFirst()) {
+                    this.callbackContext.error("Error occured while retrieving contact raw id");
+                    return;
+                }
+                String id = c.getString(c.getColumnIndex(RawContacts._ID));
+                c.close();
+
                 try {
-                    JSONObject contact = contactAccessor.getContactById(contactId);
+                    JSONObject contact = contactAccessor.getContactById(id);
                     this.callbackContext.success(contact);
                     return;
                 } catch (JSONException e) {

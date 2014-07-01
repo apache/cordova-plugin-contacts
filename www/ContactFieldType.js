@@ -49,7 +49,8 @@
         region:         "region",
         streetAddress:  "streetAddress",
         title:          "title",
-        urls:           "urls"
+        urls:           "urls",
+        socialProfiles: "socialProfiles"
     };
 
     module.exports = fieldType;

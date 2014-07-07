@@ -135,7 +135,7 @@ Windows 8 連絡人是唯讀的。 透過科爾多瓦 API 接觸不是可查詢/
     options.multiple = true;
     options.desiredFields = [navigator.contacts.fieldType.id];
     var fields       = [navigator.contacts.fieldType.displayName, navigator.contacts.fieldType.name];
-    navigator.contacts.find(onSuccess, onError, fields, options);
+    navigator.contacts.find(fields, onSuccess, onError, options);
     
 
 ## navigator.contacts.pickContact

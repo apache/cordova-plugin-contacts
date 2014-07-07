@@ -83,7 +83,7 @@
 * CB-6460: Update license headers
 * Add NOTICE file
 
-### 0.2.11 (Jun 05, 2014)
+### 0.2.11 (Jul 2, 2014)
 * CB-6127 Spanish and French Translations added. Github close #25
 * Remove deprecated symbols for iOS < 6
 * CB-6797 Add license
@@ -95,3 +95,5 @@
 * Add ContactError codes to index.md doc (closes #28)
 * CB-6491 add CONTRIBUTING.md
 * Docs typo: navigator.contacts.length -> contacts.length
+* CB-5698 ios: Check to see if photoData exists before using
+* CB-7003 android: Make pickContact pick correct contact on Android 4.3 and 4.4.3

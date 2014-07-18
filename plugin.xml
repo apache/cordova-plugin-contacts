@@ -61,12 +61,6 @@
         <clobbers target="ContactOrganization" />
     </js-module>
 
-    <js-module src="test/tests.js" name="tests">
-    </js-module>
-
-
-
-
     <!-- android -->
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">

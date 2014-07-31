@@ -1,4 +1,25 @@
-exports.defineAutoTests = function() {
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+*/
+
+exports.defineAutoTests = function () {
   // global to store a contact so it doesn't have to be created or retrieved multiple times
   // all of the setup/teardown test methods can reference the following variables to make sure to do the right cleanup
   var gContactObj = null;
@@ -366,4 +387,89 @@ exports.defineAutoTests = function() {
           });
       });
   });
+};
+
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+
+exports.defineManualTests = function (contentEl, createActionButton) {
+    function getContacts() {
+        var results = document.getElementById('contact_results');
+        obj = new ContactFindOptions();
+        // show all contacts, so don't filter
+        obj.multiple = true;
+        navigator.contacts.find(
+            ["displayName", "name", "phoneNumbers", "emails", "urls", "note"],
+            function (contacts) {
+                var s = "";
+                if (contacts.length == 0) {
+                    s = "No contacts found";
+                }
+                else {
+                    s = "Number of contacts: " + contacts.length + "<br><table width='100%'><tr><th>Name</th><td>Phone</td><td>Email</td></tr>";
+                    for (var i = 0; i < contacts.length; i++) {
+                        var contact = contacts[i];
+                        s = s + "<tr><td>" + contact.name.formatted + "</td><td>";
+                        if (contact.phoneNumbers && contact.phoneNumbers.length > 0) {
+                            s = s + contact.phoneNumbers[0].value;
+                        }
+                        s = s + "</td><td>"
+                        if (contact.emails && contact.emails.length > 0) {
+                            s = s + contact.emails[0].value;
+                        }
+                        s = s + "</td></tr>";
+                    }
+                    s = s + "</table>";
+                }
+
+                results.innerHTML = s;
+            },
+            function (e) {
+                results.innerHTML = "Error: " + e.code;
+            },
+            obj);
+    };
+
+    function addContact() {
+        try {
+            var contact = navigator.contacts.create({ "displayName": "Dooney Evans" });
+            var contactName = {
+                formatted: "Dooney Evans",
+                familyName: "Evans",
+                givenName: "Dooney",
+                middleName: ""
+            };
+
+            contact.name = contactName;
+
+            var phoneNumbers = [1];
+            phoneNumbers[0] = new ContactField('work', '512-555-1234', true);
+            contact.phoneNumbers = phoneNumbers;
+
+            contact.save(
+                function () { console.log("Contact saved."); },
+                function (e) { console.log("Contact save failed: " + e.code); }
+            );
+        }
+        catch (e) {
+            alert(e);
+        }
+    };
+
+    /******************************************************************************/
+
+    contentEl.innerHTML = '<div id="info">' +
+        '<b>Results:</b><br>' +
+        '<div id="contact_results"></div>' +
+        '</div>' +
+        '<div id="actions"></div>';
+
+    createActionButton("Get phone's contacts", function () {
+        getContacts();
+    }, 'actions');
+
+    createActionButton("Add a new contact 'Dooney Evans'", function () {
+        addContact();
+    }, 'actions');
 };

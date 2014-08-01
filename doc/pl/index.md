@@ -135,7 +135,7 @@ Ciąg **contactFindOptions.filter** może służyć jako filtr wyszukiwania, gdy
     options.multiple = true;
     options.desiredFields = [navigator.contacts.fieldType.id];
     var fields       = [navigator.contacts.fieldType.displayName, navigator.contacts.fieldType.name];
-    navigator.contacts.find(onSuccess, onError, fields, options);
+    navigator.contacts.find(fields, onSuccess, onError, options);
     
 
 ## navigator.contacts.pickContact

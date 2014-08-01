@@ -128,7 +128,7 @@ parameter to control which contact properties must be returned back.
 
 - __contactFields__: Contact fields to use as a search qualifier. _(DOMString[])_ [Required]
 
-- __contactFindOptions__: Search options to filter navigator.contacts. [Optional] Keys include:
+- __contactFindOptions__: Search options to filter navigator.contacts. Keys include:
 
 - __filter__: The search string used to find navigator.contacts. _(DOMString)_ (Default: `""`)
 

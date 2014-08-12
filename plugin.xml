@@ -220,4 +220,11 @@
         </js-module>
     </platform>
 
+    <!-- Windows -->
+    <platform name="windows">
+        <js-module src="src/windows/ContactProxy.js" name="ContactProxy">
+            <merges target="" />
+        </js-module>
+    </platform>
+
 </plugin>

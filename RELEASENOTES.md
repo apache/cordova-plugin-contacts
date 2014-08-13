@@ -97,3 +97,10 @@
 * Docs typo: navigator.contacts.length -> contacts.length
 * CB-5698 ios: Check to see if photoData exists before using
 * CB-7003 android: Make pickContact pick correct contact on Android 4.3 and 4.4.3
+
+### 0.2.12 (Aug 06, 2014)
+* fixes .find method when 'options' param is not passed. Will return all contacts on missing 'options' param
+* [FFOS] update ContactsProxy.js
+* Removing a stray unicode character
+* CB-6127 Updated translations for docs
+* CB-5698 ios: Check to see if photoData exists before using

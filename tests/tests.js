@@ -463,13 +463,16 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         '<b>Results:</b><br>' +
         '<div id="contact_results"></div>' +
         '</div>' +
-        '<div id="actions"></div>';
+        '<div id="get_contacts"></div>' +
+        'Expected result: Status box will show number of contacts and list them' +
+        '</p> <div id="add_contact"></div>' +
+        'Expected result: Will add a new contact. Log will say "Contact saved." Verify by running Get phone contacts again';
 
     createActionButton("Get phone's contacts", function () {
         getContacts();
-    }, 'actions');
+    }, 'get_contacts');
 
     createActionButton("Add a new contact 'Dooney Evans'", function () {
         addContact();
-    }, 'actions');
+    }, 'add_contact');
 };

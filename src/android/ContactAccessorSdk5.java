@@ -438,7 +438,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                             && isRequired("photos", populate)) {
                         JSONObject photo = photoQuery(c, contactId);
                         if (photo != null) {
-                          photos.put(photo);
+                            photos.put(photo);
                         }
                     }
                 } catch (JSONException e) {
@@ -909,7 +909,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             // Query photo existance
             Cursor photoCursor = mApp.getActivity().getContentResolver().query(photoUri, new String[] {ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
             if (photoCursor == null) {
-              return null;
+                return null;
             } else {
                 if (!photoCursor.moveToFirst()) {
                     photoCursor.close();

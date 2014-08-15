@@ -22,8 +22,9 @@
 exports.defineAutoTests = function () {
   // global to store a contact so it doesn't have to be created or retrieved multiple times
   // all of the setup/teardown test methods can reference the following variables to make sure to do the right cleanup
-  var gContactObj = null;
-  var gContactId = null;
+  var gContactObj = null,
+    gContactId = null,
+    isWindowsPhone = cordova.platformId == 'windowsphone';
 
   var fail = function(done) {
     expect(true).toBe(false);
@@ -61,6 +62,16 @@ exports.defineAutoTests = function () {
               obj.multiple=true;
               navigator.contacts.find(["displayName", "name", "phoneNumbers", "emails"], win, fail.bind(null, done), obj);
           });
+          it("success callback should be called with an array, even if partial ContactFindOptions specified", function (done) {
+              var win = function (result) {
+                  expect(result).toBeDefined();
+                  expect(result instanceof Array).toBe(true);
+                  done();
+              };
+
+              navigator.contacts.find(["displayName", "name", "phoneNumbers", "emails"], win, fail.bind(null, done),
+                  { multiple: true });
+          });
           it("contacts.spec.4 should throw an exception if success callback is empty", function() {
               var obj = new ContactFindOptions();
               obj.filter="";
@@ -87,7 +98,11 @@ exports.defineAutoTests = function () {
 
               afterEach(removeContact);
 
-              it("contacts.spec.6 should be able to find a contact by name", function(done) {
+              it("contacts.spec.6 should be able to find a contact by name", function (done) {
+                  if (isWindowsPhone) {
+                      done();
+                      return;
+                  }
                   var foundName = function(result) {
                           var bFound = false;
                           try {
@@ -259,7 +274,11 @@ exports.defineAutoTests = function () {
           });
       });
       describe('save method', function () {
-          it("contacts.spec.20 should be able to save a contact", function(done) {
+          it("contacts.spec.20 should be able to save a contact", function (done) {
+              if (isWindowsPhone) {
+                  done();
+                  return;
+              }
               var bDay = new Date(1976, 6,4);
               gContactObj = navigator.contacts.create({"gender": "male", "note": "my note", "name": {"familyName": "Delete", "givenName": "Test"}, "emails": [{"value": "here@there.com"}, {"value": "there@here.com"}], "birthday": bDay});
 
@@ -282,7 +301,11 @@ exports.defineAutoTests = function () {
               gContactObj.save(saveSuccess, saveFail);
            });
           // HACK: there is a reliance between the previous and next test. This is bad form.
-          it("contacts.spec.21 update a contact", function(done) {
+          it("contacts.spec.21 update a contact", function (done) {
+              if (isWindowsPhone) {
+                  done();
+                  return;
+              }
               expect(gContactObj).toBeDefined();
 
               var bDay = new Date(1975, 5,4);
@@ -337,7 +360,11 @@ exports.defineAutoTests = function () {
       describe("Round trip Contact tests (creating + save + delete + find).", function () {
           afterEach(removeContact);
 
-          it("contacts.spec.24 Creating, saving, finding a contact should work, removing it should work, after which we should not be able to find it, and we should not be able to delete it again.", function(done) {
+          it("contacts.spec.24 Creating, saving, finding a contact should work, removing it should work, after which we should not be able to find it, and we should not be able to delete it again.", function (done) {
+              if (isWindowsPhone) {
+                  done();
+                  return;
+              }
               gContactObj = new Contact();
               gContactObj.name = new ContactName();
               gContactObj.name.familyName = "DeleteMe";

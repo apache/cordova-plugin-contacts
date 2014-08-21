@@ -225,6 +225,9 @@
         <js-module src="src/windows/ContactProxy.js" name="ContactProxy">
             <merges target="" />
         </js-module>
+        <config-file target="package.phone.appxmanifest" parent="/Package/Capabilities">
+            <m3:Capability Name="contacts" />
+        </config-file>
     </platform>
 
 </plugin>

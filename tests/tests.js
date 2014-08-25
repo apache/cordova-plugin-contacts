@@ -491,7 +491,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         '<div id="contact_results"></div>' +
         '</div>' +
         '<div id="get_contacts"></div>' +
-        'Expected result: Status box will show number of contacts and list them' +
+        'Expected result: Status box will show number of contacts and list them. May be empty on a fresh device until you click Add.' +
         '</p> <div id="add_contact"></div>' +
         'Expected result: Will add a new contact. Log will say "Contact saved." Verify by running Get phone contacts again';
 

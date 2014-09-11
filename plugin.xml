@@ -64,7 +64,7 @@
     </js-module>
 
     <js-module src="www/ContactFieldType.js" name="ContactFieldType">
-            <merge target="" />
+        <merges target="" />
     </js-module>
 
     <!-- android -->

@@ -192,7 +192,7 @@
 - (void)pickContact:(CDVInvokedUrlCommand *)command
 {
     // mimic chooseContact method call with required for us parameters
-    NSArray* desiredFields = [command.arguments objectAtIndex:0 withDefault:[NSNull null]];
+    NSArray* desiredFields = [command.arguments objectAtIndex:0 withDefault:[NSArray array]];
     if (desiredFields == nil || desiredFields.count == 0) {
         desiredFields = [NSArray arrayWithObjects:@"*", nil];
     }

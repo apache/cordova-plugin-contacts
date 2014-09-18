@@ -155,10 +155,10 @@ module.exports = {
                 contactStore.getContactAsync(contact.id).done(function(con) {
                     win(convertToContact(con));
                 }, function() {
-                    fail(new ContactError(ContactError.PENDING_OPERATION_ERROR));
+                    fail(new ContactError(ContactError.UNKNOWN_ERROR));
                 });
             }, function () {
-                fail(new ContactError(ContactError.PENDING_OPERATION_ERROR));
+                fail(new ContactError(ContactError.UNKNOWN_ERROR));
             });
         });
     },
@@ -208,10 +208,10 @@ module.exports = {
                 }
                 win(result);
             }, function() {
-                fail(new ContactError(ContactError.PENDING_OPERATION_ERROR));
+                fail(new ContactError(ContactError.UNKNOWN_ERROR));
             });
         }, function() {
-            fail(new ContactError(ContactError.PENDING_OPERATION_ERROR));
+            fail(new ContactError(ContactError.UNKNOWN_ERROR));
         });
     }
 };

@@ -453,12 +453,18 @@ exports.defineManualTests = function (contentEl, createActionButton) {
                 results.innerHTML = s;
             },
             function (e) {
-                results.innerHTML = "Error: " + e.code;
+                if (e.code === ContactError.NOT_SUPPORTED_ERROR) {
+                    results.innerHTML = "Searching for contacts is not supported.";
+                } else {
+                    results.innerHTML = "Search failed: error " + e.code;
+                }
             },
             obj);
-    };
+    }
 
     function addContact() {
+        var results = document.getElementById('contact_results');
+
         try {
             var contact = navigator.contacts.create({ "displayName": "Dooney Evans" });
             var contactName = {
@@ -475,14 +481,20 @@ exports.defineManualTests = function (contentEl, createActionButton) {
             contact.phoneNumbers = phoneNumbers;
 
             contact.save(
-                function () { console.log("Contact saved."); },
-                function (e) { console.log("Contact save failed: " + e.code); }
+                function () { results.innerHTML = "Contact saved."; },
+                function (e) {
+                    if (e.code === ContactError.NOT_SUPPORTED_ERROR) {
+                        results.innerHTML = "Saving contacts not supported.";
+                    } else {
+                        results.innerHTML = "Contact save failed: error " + e.code;
+                    }
+                }
             );
         }
         catch (e) {
             alert(e);
         }
-    };
+    }
 
     /******************************************************************************/
 
@@ -493,7 +505,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         '<div id="get_contacts"></div>' +
         'Expected result: Status box will show number of contacts and list them. May be empty on a fresh device until you click Add.' +
         '</p> <div id="add_contact"></div>' +
-        'Expected result: Will add a new contact. Log will say "Contact saved." Verify by running Get phone contacts again';
+        'Expected result: Will add a new contact. Log will say "Contact saved." or "Saving contacts not supported." if not supported on current platform. Verify by running Get phone contacts again';
 
     createActionButton("Get phone's contacts", function () {
         getContacts();

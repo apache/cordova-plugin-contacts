@@ -25,14 +25,14 @@ var exec = require('cordova/exec');
  * Provides iOS enhanced contacts API.
  */
 module.exports = {
-    newContactUI : function(successCallback) {
+    newContactUI : function(successCallback, options) {
         /*
          *    Create a contact using the iOS Contact Picker UI
          *    NOT part of W3C spec so no official documentation
          *
          * returns:  the id of the created contact as param to successCallback
          */
-        exec(successCallback, null, "Contacts","newContact", []);
+        exec(successCallback, null, "Contacts","newContact", [options]);
     },
     chooseContact : function(successCallback, options) {
         /*

@@ -29,13 +29,14 @@
                          >
 {
     ABAddressBookRef addressBook;
+    NSString* _currentCallbackId;
 }
 
 /*
  * newContact - create a new contact via the GUI
  *
  * arguments:
- *	1: successCallback: this is the javascript function that will be called with the newly created contactId
+ *  1: successCallback: this is the javascript function that will be called with the newly created contactId
  */
 - (void)newContact:(CDVInvokedUrlCommand*)command;
 
@@ -43,11 +44,11 @@
  * displayContact  - IN PROGRESS
  *
  * arguments:
- *	1: recordID of the contact to display in the iPhone contact display
- *	2: successCallback - currently not used
+ *  1: recordID of the contact to display in the iPhone contact display
+ *  2: successCallback - currently not used
  *  3: error callback
  * options:
- *	allowsEditing: set to true to allow the user to edit the contact - currently not supported
+ *  allowsEditing: set to true to allow the user to edit the contact - currently not supported
  */
 - (void)displayContact:(CDVInvokedUrlCommand*)command;
 
@@ -55,9 +56,9 @@
  * chooseContact
  *
  * arguments:
- *	1: this is the javascript function that will be called with the contact data as a JSON object (as the first param)
+ *  1: this is the javascript function that will be called with the contact data as a JSON object (as the first param)
  * options:
- *	allowsEditing: set to true to not choose the contact, but to edit it in the iPhone contact editor
+ *  allowsEditing: set to true to not choose the contact, but to edit it in the iPhone contact editor
  */
 - (void)chooseContact:(CDVInvokedUrlCommand*)command;
 
@@ -68,9 +69,9 @@
  * Launches the Contact Picker to select a single contact.
  *
  * arguments:
- *	1: this is the javascript function that will be called with the contact data as a JSON object (as the first param)
+ *  1: this is the javascript function that will be called with the contact data as a JSON object (as the first param)
  * options:
- *	desiredFields: ContactFields array to be returned back
+ *  desiredFields: ContactFields array to be returned back
  */
 - (void)pickContact:(CDVInvokedUrlCommand*)command;
 
@@ -81,7 +82,7 @@
  *  1: successcallback - this is the javascript function that will be called with the array of found contacts
  *  2:  errorCallback - optional javascript function to be called in the event of an error with an error code.
  * options:  dictionary containing ContactFields and ContactFindOptions
- *	fields - ContactFields array
+ *  fields - ContactFields array
  *  findOptions - ContactFindOptions object as dictionary
  *
  */
@@ -92,7 +93,7 @@
  *
  * arguments:
  *  1: success callback - this is the javascript function that will be called with the JSON representation of the saved contact
- *		search calls a fixed navigator.service.contacts._findCallback which then calls the success callback stored before making the call into obj-c
+ *      search calls a fixed navigator.service.contacts._findCallback which then calls the success callback stored before making the call into obj-c
  */
 - (void)save:(CDVInvokedUrlCommand*)command;
 
@@ -103,7 +104,7 @@
  *  1:  1: successcallback - this is the javascript function that will be called with a (now) empty contact object
  *
  * options:  dictionary containing Contact object to remove
- *	contact - Contact object as dictionary
+ *  contact - Contact object as dictionary
  */
 - (void)remove:(CDVInvokedUrlCommand*)command;
 

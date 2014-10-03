@@ -123,3 +123,8 @@
 * convert test to new style
 * added documentation for manual tests
 * merged changes for test framework plugin
+
+### 0.2.14 (Oct 03, 2014)
+* CB-7373 Removes unnecessary Error object creation
+* CB-7373 Adds additional output if method is not supported.
+* CB-7357 Adds missing 'capability' element to phone's appxmanifest.

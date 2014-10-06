@@ -303,7 +303,7 @@ Das `Contact` -Objekt repräsentiert einen Benutzer Kontakt. Kontakte können er
 
 *   **Kategorien**: Diese Eigenschaft wird derzeit nicht unterstützt, Rückgabe`null`.
 
-### Windows Phone 7 und 8 Macken
+### Windows Phone 7 und 8 Eigenarten
 
 *   **DisplayName**: Wenn Sie einen Kontakt erstellen, der Nutzen für den Anzeigenamen der Display-Name-Parameter unterscheidet abgerufen, wenn den Kontakt zu finden.
 
@@ -495,7 +495,7 @@ In den meisten Fällen gibt es keine vorher festgelegten Werte für ein `Contact
         contact.save();
     
 
-### Android Macken
+### Android Eigenarten
 
 *   **Pref**: nicht unterstützt, Rückgabe`false`.
 
@@ -571,7 +571,7 @@ Enthält verschiedene Arten von Informationen über ein `Contact` Name des Objek
     navigator.contacts.find(filter, onSuccess, onError, options);
     
 
-### Android Macken
+### Android Eigenarten
 
 *   **formatiert**: teilweise unterstützte "und" Read-only. Gibt eine Verkettung von `honorificPrefix` , `givenName` , `middleName` , `familyName` , und`honorificSuffix`.
 

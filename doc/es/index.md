@@ -21,7 +21,7 @@
 
 Proporciona acceso a la base de datos de contactos de dispositivo.
 
-**ADVERTENCIA**: recopilación y uso de datos plantea cuestiones de privacidad importante. Política de privacidad de su aplicación debe discutir cómo la aplicación utiliza datos de contacto y si es compartida con terceros. Información de contacto se considera sensible porque revela la gente con quien se comunica una persona. Por lo tanto, además de política de privacidad de la app, fuertemente considere dar un aviso de just-in-time antes de la aplicación accede a ellos o utiliza los datos de contacto, si el sistema operativo del dispositivo no hacerlo ya. Que el aviso debe proporcionar la misma información mencionada, además de obtener un permiso del usuario (por ejemplo, presentando opciones para **Aceptar** y **No gracias**). Tenga en cuenta que algunos mercados de aplicación podrán exigir la aplicación para proporcionar un aviso de just-in-time y obtener el permiso del usuario antes de acceder a datos de contacto. Una experiencia de usuario clara y fácil de entender que rodean el uso de contacto datos ayuda a evitar la confusión del usuario y percibe uso indebido de los datos de contacto. Para obtener más información, por favor consulte a la guía de privacidad.
+**ADVERTENCIA**: recopilación y uso de datos plantea cuestiones de privacidad importante. Política de privacidad de su aplicación debe discutir cómo la aplicación utiliza datos de contacto y si es compartida con terceros. Información de contacto se considera sensible porque revela la gente con quien se comunica una persona. Por lo tanto, además de política de privacidad de la app, fuertemente considere dar un aviso de just-in-time antes de la aplicación accede a ellos o utiliza los datos de contacto, si el sistema operativo del dispositivo no hacerlo ya. Que el aviso debe proporcionar la misma información mencionada, además de obtener un permiso del usuario (por ejemplo, presentando opciones para **Aceptar** y **No gracias**). Tenga en cuenta que algunos mercados de aplicación podrán exigir la aplicación para proporcionar un aviso de just-in-time y obtener el permiso del usuario antes de acceder a datos de contacto. Una experiencia de usuario clara y fácil de entender que rodean el uso de contacto datos ayuda a evitar la confusión del usuario y percibe uso indebido de los datos de contacto. Para obtener más información, consulte a la guía de privacidad.
 
 ## Instalación
 
@@ -76,7 +76,7 @@ Windows 8 contactos son de sólo lectura. Través de los contactos de la API de 
 
 El `navigator.contacts.create` método es sincrónico y devuelve una nueva `Contact` objeto.
 
-Este método no retiene el objeto de contacto en la base de contactos de dispositivo, para lo cual necesita invocar el `Contact.save` método.
+Este método no retener el objeto de contacto en la base de contactos de dispositivo, para lo cual necesitas invocar el método `Contact.save`.
 
 ### Plataformas soportadas
 
@@ -93,11 +93,11 @@ Este método no retiene el objeto de contacto en la base de contactos de disposi
 
 ## navigator.contacts.find
 
-El `navigator.contacts.find` método se ejecuta asincrónicamente, consultando la base de datos de contactos de dispositivo y devolver una matriz de `Contact` objetos. Los objetos resultantes son pasados a la `contactSuccess` función de devolución de llamada especificada por el parámetro **contactSuccess** .
+El `navigator.contacts.find` método se ejecuta asincrónicamente, consultando la base de datos de contactos de dispositivo y devolver una matriz de `Contact` objetos. Los objetos resultantes son pasados a la función de callback `contactSuccess` especificada por el parámetro **contactSuccess**.
 
-El parámetro **contactFields** especifica los campos para ser utilizado como un calificador de búsqueda. Un parámetro de longitud cero **contactFields** no es válido y resultados en `ContactError.INVALID_ARGUMENT_ERROR` . Un valor de **contactFields** de `"*"` devuelve todo contacto con los campos.
+El parámetro **contactFields** especifica los campos para ser utilizado como un calificador de búsqueda. Un parámetro de longitud cero **contactFields** no es válido y resultados en `ContactError.INVALID_ARGUMENT_ERROR` . Un valor de **contactFields** de `"*"` devuelve todo contacto con campos.
 
-La cadena de **contactFindOptions.filter** puede ser usada como un filtro de búsqueda al consultar la base de datos de contactos. Si proporciona, una entre mayúsculas y minúsculas, coincidencia parcial valor se aplica a cada campo especificado en el parámetro **contactFields** . Si hay un partido para *cualquier* de los campos especificados, se devuelve el contacto. Uso **contactFindOptions.desiredFields** parámetro al control que Contacta con propiedades debe devolverse atrás.
+La cadena de **contactFindOptions.filter** puede ser usada como un filtro de búsqueda al consultar la base de datos de contactos. Si proporciona, mayúsculas y minúsculas, coincidencia parcial valor se aplica a cada campo especificado en el parámetro **contactFields**. Si hay un partido para *cualquier* de los campos especificados, se devuelve el contacto. Uso **contactFindOptions.desiredFields** parámetro al control que Contacta con propiedades debe devolverse atrás.
 
 ### Parámetros
 
@@ -174,7 +174,7 @@ El `navigator.contacts.pickContact` método lanza el selector para seleccionar u
         });
     
 
-## Contacto
+## Contact
 
 El `Contact` objeto representa el contacto de un usuario. Contactos pueden ser creados, almacenados o eliminados de la base de datos de contactos de dispositivo. Contactos pueden también ser obtenidos (individualmente o a granel) de la base de datos invocando el `navigator.contacts.find` método.
 
@@ -220,7 +220,7 @@ El `Contact` objeto representa el contacto de un usuario. Contactos pueden ser c
 
 ### Plataformas soportadas
 
-*   Amazon fuego OS
+*   Amazon fire OS
 *   Android
 *   BlackBerry 10
 *   Firefox OS
@@ -279,7 +279,7 @@ El `Contact` objeto representa el contacto de un usuario. Contactos pueden ser c
 
 ### Rarezas Android 2.X
 
-*   **categorías**: no compatible con dispositivos Android 2.X, regresando`null`.
+*   **categories**: no compatible con dispositivos Android 2.X, devolver `null`.
 
 ### BlackBerry 10 rarezas
 
@@ -319,7 +319,7 @@ El `Contact` objeto representa el contacto de un usuario. Contactos pueden ser c
 
 *   **Nota**: no compatible, regresando`null`.
 
-*   **IMS**: no soportado, regresando`null`.
+*   **ims**: no soportado, devolver `null`.
 
 *   **cumpleaños**: no soportado, regresando`null`.
 
@@ -335,29 +335,29 @@ El `Contact` objeto representa el contacto de un usuario. Contactos pueden ser c
 
 ## ContactAddress
 
-El `ContactAddress` objeto almacena las propiedades de una única dirección de un contacto. A `Contact` objeto puede incluir más de una dirección en un `ContactAddress[]` matriz.
+El objeto `ContactAddress` almacena las propiedades de una única dirección de un contacto. Un objeto de `Contact` puede incluir más de una dirección en un array `ContactAddress[]`.
 
 ### Propiedades
 
-*   **Pref**: A `true` si este `ContactAddress` contiene el valor del usuario preferido. *(booleano)*
+*   **pref**: establecido en `true` si esta `ContactAddress` contiene el usuario preferido de valor. *(boolean)*
 
-*   **tipo**: una cadena que indica qué tipo de campo es, *casa* por ejemplo. *(DOMString)*
+*   **type**: una cadena que indica qué tipo de campo es, *home* por ejemplo. *(DOMString)*
 
-*   **formato**: la dirección completa con formato de visualización. *(DOMString)*
+*   **formatted**: la dirección completa con formato de visualización. *(DOMString)*
 
 *   **streetAddress**: la dirección completa. *(DOMString)*
 
-*   **localidad**: la ciudad o localidad. *(DOMString)*
+*   **locality**: la ciudad o localidad. *(DOMString)*
 
-*   **región**: el estado o la región. *(DOMString)*
+*   **region**: el estado o la región. *(DOMString)*
 
-*   **Código postal**: el código postal o código postal. *(DOMString)*
+*   **postalCode**: el código postal o código postal. *(DOMString)*
 
-*   **país**: el nombre del país. *(DOMString)*
+*   **country**: el nombre del país. *(DOMString)*
 
 ### Plataformas soportadas
 
-*   Amazon fuego OS
+*   Amazon fire OS
 *   Android
 *   BlackBerry 10
 *   Firefox OS
@@ -398,25 +398,25 @@ El `ContactAddress` objeto almacena las propiedades de una única dirección de 
 
 ### Rarezas Android 2.X
 
-*   **Pref**: no soportado, volviendo `false` en dispositivos Android 2.X.
+*   **pref**: no soportado, devolviendo `false` en dispositivos Android 2.X.
 
 ### BlackBerry 10 rarezas
 
-*   **Pref**: no compatible con dispositivos BlackBerry, regresando`false`.
+*   **pref**: no compatible con dispositivos BlackBerry, devolviendo `false`.
 
-*   **tipo**: parcialmente soportado. Sólo uno de cada *trabajo* y *casa* tipo direcciones puede ser almacenado por contacto.
+*   **type**: parcialmente soportado. Sólo uno de cada *Work* y *Home* tipo direcciones puede ser almacenado por contacto.
 
-*   **formato**: parcialmente soportado. Devuelve una concatenación de todos los campos de dirección de BlackBerry.
+*   **formatted**: parcialmente soportado. Devuelve una concatenación de todos los campos de dirección de BlackBerry.
 
-*   **streetAddress**: soportado. Devuelve una concatenación de BlackBerry **address1** y **2** Campos de dirección.
+*   **streetAddress**: soportado. Devuelve una concatenación de BlackBerry **address1** y **2** campos de dirección.
 
-*   **localidad**: apoyado. Almacenada en el campo de dirección de la **ciudad** de BlackBerry.
+*   **locality**: apoyado. Almacenada en el campo de dirección de la **city** de BlackBerry.
 
-*   **región**: apoyado. Almacenada en el campo de dirección de BlackBerry **stateProvince** .
+*   **region**: apoyado. Almacenada en el campo de dirección de BlackBerry **stateProvince**.
 
-*   **Código postal**: apoyado. Almacenada en el campo de dirección de BlackBerry **zipPostal** .
+*   **postalCode**: apoyado. Almacenada en el campo de dirección de BlackBerry **zipPostal**.
 
-*   **país**: apoyado.
+*   **country**: apoyado.
 
 ### FirefoxOS rarezas
 
@@ -424,9 +424,9 @@ El `ContactAddress` objeto almacena las propiedades de una única dirección de 
 
 ### iOS rarezas
 
-*   **Pref**: no se admite en dispositivos iOS, regresando`false`.
+*   **pref**: no se admite en dispositivos iOS, devolviendo `false`.
 
-*   **formato**: actualmente no se admite.
+*   **formatted**: actualmente no se admite.
 
 ### Rarezas de Windows 8
 
@@ -442,7 +442,7 @@ El `ContactError` objeto se devuelve al usuario a través de la `contactError` f
 
 ### Propiedades
 
-*   **código**: uno de los códigos de error predefinido enumerados a continuación.
+*   **code**: uno de los códigos de error predefinido enumerados a continuación.
 
 ### Constantes
 
@@ -470,7 +470,7 @@ En la mayoría de los casos, no existen previamente determinados valores para un
 
 ### Plataformas soportadas
 
-*   Amazon fuego OS
+*   Amazon fire OS
 *   Android
 *   BlackBerry 10
 *   Firefox OS
@@ -539,7 +539,7 @@ Contiene diferentes tipos de información sobre un `Contact` nombre del objeto.
 
 ### Plataformas soportadas
 
-*   Amazon fuego OS
+*   Amazon fire OS
 *   Android 2.X
 *   BlackBerry 10
 *   Firefox OS
@@ -692,7 +692,7 @@ El `ContactOrganization` objeto almacena las propiedades de organización de un 
 
 ### iOS rarezas
 
-*   **Pref**: no se admite en dispositivos iOS, regresando`false`.
+*   **pref**: no se admite en dispositivos iOS, devolviendo `false`.
 
 *   **tipo**: no se admite en dispositivos iOS, regresando`null`.
 

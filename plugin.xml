@@ -75,6 +75,10 @@
             </feature>
         </config-file>
 
+        <js-module src="www/android/contacts.js" name="contacts-android">
+            <merges target="navigator.contacts" />
+        </js-module>
+
         <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.READ_CONTACTS" />
             <uses-permission android:name="android.permission.WRITE_CONTACTS" />

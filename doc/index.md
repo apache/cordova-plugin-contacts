@@ -116,7 +116,7 @@ function specified by the __contactSuccess__ parameter.
 The __contactFields__ parameter specifies the fields to be used as a
 search qualifier.  A zero-length __contactFields__ parameter is invalid and results in
 `ContactError.INVALID_ARGUMENT_ERROR`. A __contactFields__ value of
-`"*"` returns all contact fields.
+`"*"` searches all contact fields.
 
 The __contactFindOptions.filter__ string can be used as a search
 filter when querying the contacts database.  If provided, a

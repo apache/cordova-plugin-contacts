@@ -127,19 +127,21 @@ parameter to control which contact properties must be returned back.
 
 ### Parameters
 
+- __contactFields__: Contact fields to use as a search qualifier. _(DOMString[])_ [Required]
+
 - __contactSuccess__: Success callback function invoked with the array of Contact objects returned from the database. [Required]
 
 - __contactError__: Error callback function, invoked when an error occurs. [Optional]
 
-- __contactFields__: Contact fields to use as a search qualifier. _(DOMString[])_ [Required]
+- __contactFindOptions__: Search options to filter navigator.contacts. [Optional] 
+	
+	Keys include:
 
-- __contactFindOptions__: Search options to filter navigator.contacts. [Optional] Keys include:
+	- __filter__: The search string used to find navigator.contacts. _(DOMString)_ (Default: `""`)
 
-- __filter__: The search string used to find navigator.contacts. _(DOMString)_ (Default: `""`)
+	- __multiple__: Determines if the find operation returns multiple navigator.contacts. _(Boolean)_ (Default: `false`)
 
-- __multiple__: Determines if the find operation returns multiple navigator.contacts. _(Boolean)_ (Default: `false`)
-
-    - __desiredFields__: Contact fields to be returned back. If specified, the resulting `Contact` object only features values for these fields. _(DOMString[])_ [Optional]
+    	- __desiredFields__: Contact fields to be returned back. If specified, the resulting `Contact` object only features values for these fields. _(DOMString[])_ [Optional]
 
 ### Supported Platforms
 

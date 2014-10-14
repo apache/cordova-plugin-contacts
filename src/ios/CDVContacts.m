@@ -243,7 +243,16 @@
         }
         CFRelease(addrBook);
     }
-    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:picker.pickedContactDictionary];
+    
+    CDVPluginResult* result = nil;
+    NSNumber* recordId = picker.pickedContactDictionary[kW3ContactId];
+    
+    if ([recordId isEqualToNumber:[NSNumber numberWithInt:kABRecordInvalidID]]) {
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
+    } else {
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:picker.pickedContactDictionary];
+    }
+    
     [self.commandDelegate sendPluginResult:result callbackId:picker.callbackId];
 
     [[peoplePicker presentingViewController] dismissViewControllerAnimated:YES completion:nil];

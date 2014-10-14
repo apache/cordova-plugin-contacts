@@ -31,7 +31,7 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
 
 @implementation CDVContact : NSObject
 
-                             @synthesize returnFields;
+@synthesize returnFields;
 
 - (id)init
 {
@@ -107,6 +107,8 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
             kW3ContactBirthday, [NSNumber numberWithInt:kABPersonBirthdayProperty],
             kW3ContactUrls, [NSNumber numberWithInt:kABPersonURLProperty],
             kW3ContactNote, [NSNumber numberWithInt:kABPersonNoteProperty],
+            // For Social Profile
+            kW3ContactSocialProfiles, [NSNumber numberWithInt:kABPersonSocialProfileProperty],
             nil];
     }
 
@@ -138,6 +140,10 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
             [NSNumber numberWithInt:kABPersonBirthdayProperty], kW3ContactBirthday,
             [NSNumber numberWithInt:kABPersonNoteProperty], kW3ContactNote,
             [NSNumber numberWithInt:kABPersonURLProperty], kW3ContactUrls,
+            // For Social Profile
+            [NSNumber numberWithInt:kABPersonSocialProfileProperty], kW3ContactSocialProfiles,
+            kABPersonSocialProfileUsernameKey, kW3ContactSocialValue,
+            kABPersonSocialProfileServiceKey, kW3ContactSocialType,
             kABPersonInstantMessageUsernameKey, kW3ContactImValue,
             kABPersonInstantMessageServiceKey, kW3ContactImType,
             [NSNull null], kW3ContactFieldType,     /* include entries in dictionary to indicate ContactField properties */
@@ -177,6 +183,8 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
             [NSArray arrayWithObjects:kW3ContactFieldType, kW3ContactFieldValue, kW3ContactFieldPrimary, nil], kW3ContactEmails,
             [NSArray arrayWithObjects:kW3ContactFieldType, kW3ContactFieldValue, kW3ContactFieldPrimary, nil], kW3ContactPhotos,
             [NSArray arrayWithObjects:kW3ContactFieldType, kW3ContactFieldValue, kW3ContactFieldPrimary, nil], kW3ContactUrls,
+            // For Social Profile
+            [NSArray arrayWithObjects:kW3ContactSocialValue, kW3ContactSocialType, nil], kW3ContactSocialProfiles,
             [NSArray arrayWithObjects:kW3ContactImValue, kW3ContactImType, nil], kW3ContactIms,
             nil];
     }
@@ -196,6 +204,8 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
             [[CDVContact defaultObjectAndProperties] objectForKey:kW3ContactIms], kW3ContactIms,
             [[CDVContact defaultObjectAndProperties] objectForKey:kW3ContactPhotos], kW3ContactPhotos,
             [[CDVContact defaultObjectAndProperties] objectForKey:kW3ContactUrls], kW3ContactUrls,
+            // For Social Profile
+            [[CDVContact defaultObjectAndProperties] objectForKey:kW3ContactSocialProfiles], kW3ContactSocialProfiles,
             [NSNull null], kW3ContactBirthday,
             [NSNull null], kW3ContactNote,
             nil];
@@ -265,6 +275,12 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
     array = [aContact valueForKey:kW3ContactUrls];
     if ([array isKindOfClass:[NSArray class]]) {
         [self setMultiValueStrings:array forProperty:kABPersonURLProperty inRecord:person asUpdate:bUpdate];
+    }
+    
+    // set socialProfiles
+    array = [aContact valueForKey:kW3ContactSocialProfiles];
+    if ([array isKindOfClass:[NSArray class]]) {
+        [self setMultiValueDictionary:array forProperty:kABPersonSocialProfileProperty inRecord:person asUpdate:bUpdate];
     }
 
     // set multivalue dictionary properties
@@ -544,7 +560,7 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
             if (!addrType) {
                 addrType = (NSString*)kABOtherLabel;
             }
-            NSObject* typeValue = ((prop == kABPersonInstantMessageProperty) ? (NSString*)kABOtherLabel : addrType);
+            NSObject* typeValue = ((prop == kABPersonInstantMessageProperty) || (prop == kABPersonSocialProfileProperty) ? (NSString*)kABOtherLabel : addrType);
             // NSLog(@"typeValue: %@", typeValue);
             [addDict setObject:typeValue forKey:kW3ContactFieldType];    //  im labels will be set as Other and address labels as type from dictionary
             [addDict setObject:newDict forKey:kW3ContactFieldValue];
@@ -571,7 +587,7 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
             if ([CDVContact needsConversion:key]) { // IM types must be converted
                 setValue = (NSString*)[CDVContact convertContactTypeToPropertyLabel:value];
                 // IMs must have a valid AB value!
-                if ((prop == kABPersonInstantMessageProperty) && [setValue isEqualToString:(NSString*)kABOtherLabel]) {
+                if ( ((prop == kABPersonInstantMessageProperty) || (prop == kABPersonSocialProfileProperty)) && [setValue isEqualToString:(NSString*)kABOtherLabel]) {
                     setValue = @""; // try empty string
                 }
             }
@@ -682,7 +698,7 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
                     if (dict) {
                         NSMutableDictionary* addDict = [NSMutableDictionary dictionaryWithCapacity:2];
                         // get the type out of the original dictionary for address
-                        NSObject* typeValue = ((prop == kABPersonInstantMessageProperty) ? (NSString*)kABOtherLabel : (NSString*)[field valueForKey:kW3ContactFieldType]);
+                        NSObject* typeValue = ((prop == kABPersonInstantMessageProperty) || (prop == kABPersonSocialProfileProperty) ? (NSString*)kABOtherLabel : (NSString*)[field valueForKey:kW3ContactFieldType]);
                         // NSLog(@"typeValue: %@", typeValue);
                         [addDict setObject:typeValue forKey:kW3ContactFieldType];        //  im labels will be set as Other and address labels as type from dictionary
                         [addDict setObject:dict forKey:kW3ContactFieldValue];
@@ -708,7 +724,7 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
 {
     BOOL bConvert = NO;
 
-    if ([W3Label isEqualToString:kW3ContactFieldType] || [W3Label isEqualToString:kW3ContactImType]) {
+    if ([W3Label isEqualToString:kW3ContactFieldType] || [W3Label isEqualToString:kW3ContactImType] || [W3Label isEqualToString:kW3ContactSocialType]) { // check for additional Social Profile Type
         bConvert = YES;
     }
     return bConvert;
@@ -727,7 +743,7 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
 + (CFStringRef)convertContactTypeToPropertyLabel:(NSString*)label
 {
     CFStringRef type;
-
+    
     if ([label isKindOfClass:[NSNull class]] || ![label isKindOfClass:[NSString class]]) {
         type = NULL; // no label
     } else if ([label caseInsensitiveCompare:kW3ContactWorkLabel] == NSOrderedSame) {
@@ -738,8 +754,16 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
         type = kABOtherLabel;
     } else if ([label caseInsensitiveCompare:kW3ContactPhoneMobileLabel] == NSOrderedSame) {
         type = kABPersonPhoneMobileLabel;
+    } else if ([label caseInsensitiveCompare:kW3ContactPhoneHomeFaxLabel] == NSOrderedSame) {
+        type = kABPersonPhoneHomeFAXLabel;
+    } else if ([label caseInsensitiveCompare:kW3ContactPhoneWorkFaxLabel] == NSOrderedSame) {
+        type = kABPersonPhoneWorkFAXLabel;
     } else if ([label caseInsensitiveCompare:kW3ContactPhonePagerLabel] == NSOrderedSame) {
         type = kABPersonPhonePagerLabel;
+    } else if ([label caseInsensitiveCompare:kW3ContactPhoneIPhoneLabel] == NSOrderedSame) {
+        type = kABPersonPhoneIPhoneLabel;
+    } else if ([label caseInsensitiveCompare:kW3ContactPhoneMainLabel] == NSOrderedSame) {
+        type = kABPersonPhoneMainLabel;
     } else if ([label caseInsensitiveCompare:kW3ContactImAIMLabel] == NSOrderedSame) {
         type = kABPersonInstantMessageServiceAIM;
     } else if ([label caseInsensitiveCompare:kW3ContactImICQLabel] == NSOrderedSame) {
@@ -748,14 +772,40 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
         type = kABPersonInstantMessageServiceMSN;
     } else if ([label caseInsensitiveCompare:kW3ContactImYahooLabel] == NSOrderedSame) {
         type = kABPersonInstantMessageServiceYahoo;
+    } else if ([label caseInsensitiveCompare:kW3ContactImSkypeLabel] == NSOrderedSame) {
+        type = kABPersonInstantMessageServiceSkype;
+    } else if ([label caseInsensitiveCompare:kW3ContactImJabberLabel] == NSOrderedSame) {
+        type = kABPersonInstantMessageServiceJabber;
+    } else if ([label caseInsensitiveCompare:kW3ContactImFacebookMessengerLabel] == NSOrderedSame) {
+        type = kABPersonInstantMessageServiceFacebook;
+    } else if ([label caseInsensitiveCompare:kW3ContactImGoogleTalkLabel] == NSOrderedSame) {
+        type = kABPersonInstantMessageServiceGoogleTalk;
+    } else if ([label caseInsensitiveCompare:kW3ContactImQQLabel] == NSOrderedSame) {
+        type = kABPersonInstantMessageServiceQQ;
+    } else if ([label caseInsensitiveCompare:kW3ContactImGaduGaduLabel] == NSOrderedSame) {
+        type = kABPersonInstantMessageServiceGaduGadu;
     } else if ([label caseInsensitiveCompare:kW3ContactUrlProfile] == NSOrderedSame) {
         type = kABPersonHomePageLabel;
+    } else if ([label caseInsensitiveCompare:kW3ContactUrlBlog] == NSOrderedSame) {
+        type = (CFStringRef)@"Blog"; // Custom field for blog url
+    } else if ([label caseInsensitiveCompare:kW3ContactSocialFacebookLabel] == NSOrderedSame){ // Social Profile Facebook
+        type = kABPersonSocialProfileServiceFacebook;
+    } else if ([label caseInsensitiveCompare:kW3ContactSocialTwitterLabel] == NSOrderedSame){ // Social Profile Twitter
+        type = kABPersonSocialProfileServiceTwitter;
+    } else if ([label caseInsensitiveCompare:kW3ContactSocialLinkedInLabel] == NSOrderedSame){ // Social Profile LinkedIn
+        type = kABPersonSocialProfileServiceLinkedIn;
+    } else if ([label caseInsensitiveCompare:kW3ContactSocialFlickrLabel] == NSOrderedSame){ // Social Profile Flickr
+        type = kABPersonSocialProfileServiceFlickr;
+    } else if ([label caseInsensitiveCompare:kW3ContactSocialMyspaceLabel] == NSOrderedSame){ // Social Profile Myspace
+        type = kABPersonSocialProfileServiceMyspace;
+    } else if ([label caseInsensitiveCompare:kW3ContactSocialSinaWeiboLabel] == NSOrderedSame){ // Social Profile SinaWeibo
+        type = kABPersonSocialProfileServiceSinaWeibo;
+    } else if ([label caseInsensitiveCompare:kW3ContactSocialGameCenterLabel] == NSOrderedSame){ // Social Profile GameCenter
+        type = kABPersonSocialProfileServiceGameCenter;
     } else {
         type = kABOtherLabel;
     }
-
-    return type;
-}
+    return type;}
 
 + (NSString*)convertPropertyLabelToContactType:(NSString*)label
 {
@@ -764,11 +814,16 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
     if (label != nil) { // improve efficiency......
         if ([label isEqualToString:(NSString*)kABPersonPhoneMobileLabel]) {
             type = kW3ContactPhoneMobileLabel;
-        } else if ([label isEqualToString:(NSString*)kABPersonPhoneHomeFAXLabel] ||
-            [label isEqualToString:(NSString*)kABPersonPhoneWorkFAXLabel]) {
-            type = kW3ContactPhoneFaxLabel;
+        } else if ([label isEqualToString:(NSString*)kABPersonPhoneHomeFAXLabel]) {
+            type = kW3ContactPhoneHomeFaxLabel;
+        } else if ([label isEqualToString:(NSString*)kABPersonPhoneWorkFAXLabel]) {
+            type = kW3ContactPhoneWorkFaxLabel;
         } else if ([label isEqualToString:(NSString*)kABPersonPhonePagerLabel]) {
             type = kW3ContactPhonePagerLabel;
+        } else if ([label isEqualToString:(NSString*)kABPersonPhoneIPhoneLabel]) {
+            type = kW3ContactPhoneIPhoneLabel;
+        } else if ([label isEqualToString:(NSString*)kABPersonPhoneMainLabel]) {
+            type = kW3ContactPhoneMainLabel;
         } else if ([label isEqualToString:(NSString*)kABHomeLabel]) {
             type = kW3ContactHomeLabel;
         } else if ([label isEqualToString:(NSString*)kABWorkLabel]) {
@@ -780,13 +835,39 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
         } else if ([label isEqualToString:(NSString*)kABPersonInstantMessageServiceICQ]) {
             type = kW3ContactImICQLabel;
         } else if ([label isEqualToString:(NSString*)kABPersonInstantMessageServiceJabber]) {
-            type = kW3ContactOtherLabel;
+            type = kW3ContactImJabberLabel;
         } else if ([label isEqualToString:(NSString*)kABPersonInstantMessageServiceMSN]) {
             type = kW3ContactImMSNLabel;
         } else if ([label isEqualToString:(NSString*)kABPersonInstantMessageServiceYahoo]) {
             type = kW3ContactImYahooLabel;
+        } else if ([label isEqualToString:(NSString*)kABPersonInstantMessageServiceSkype]) {
+            type = kW3ContactImSkypeLabel;
+        } else if ([label isEqualToString:(NSString*)kABPersonInstantMessageServiceFacebook]) {
+            type = kW3ContactImFacebookMessengerLabel;
+        } else if ([label isEqualToString:(NSString*)kABPersonInstantMessageServiceGoogleTalk]) {
+            type = kW3ContactImGoogleTalkLabel;
+        } else if ([label isEqualToString:(NSString*)kABPersonInstantMessageServiceQQ]) {
+            type = kW3ContactImQQLabel;
+        } else if ([label isEqualToString:(NSString*)kABPersonInstantMessageServiceGaduGadu]) {
+            type = kW3ContactImGaduGaduLabel;
+        } else if ([label isEqualToString:(NSString*)kABPersonSocialProfileServiceFacebook]) { // Social Profile Facebook
+            type = kW3ContactSocialFacebookLabel;
+        } else if ([label isEqualToString:(NSString*)kABPersonSocialProfileServiceTwitter]) { // Social Profile Twitter
+            type = kW3ContactSocialTwitterLabel;
+        } else if ([label isEqualToString:(NSString*)kABPersonSocialProfileServiceLinkedIn]) { // Social Profile LinkedIn
+            type = kW3ContactSocialLinkedInLabel;
+        } else if ([label isEqualToString:(NSString*)kABPersonSocialProfileServiceFlickr]) { // Social Profile Flickr
+            type = kW3ContactSocialFlickrLabel;
+        } else if ([label isEqualToString:(NSString*)kABPersonSocialProfileServiceMyspace]) { // Social Profile Myspace
+            type = kW3ContactSocialMyspaceLabel;
+        } else if ([label isEqualToString:(NSString*)kABPersonSocialProfileServiceSinaWeibo]) { // Social Profile SinaWeibo
+            type = kW3ContactSocialSinaWeiboLabel;
+        } else if ([label isEqualToString:(NSString*)kABPersonSocialProfileServiceGameCenter]) { // Social Profile GameCenter
+            type = kW3ContactSocialGameCenterLabel;
         } else if ([label isEqualToString:(NSString*)kABPersonHomePageLabel]) {
             type = kW3ContactUrlProfile;
+        } else if ([label isEqualToString:(NSString*)@"Blog"]) { // Custom field for blog url
+            type = kW3ContactUrlBlog;
         } else {
             type = kW3ContactOtherLabel;
         }
@@ -813,7 +894,15 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
         isValid = YES;
     } else if ([label caseInsensitiveCompare:kW3ContactPhoneMobileLabel] == NSOrderedSame) {
         isValid = YES;
+    } else if ([label caseInsensitiveCompare:kW3ContactPhoneHomeFaxLabel] == NSOrderedSame) {
+        isValid = YES;
+    } else if ([label caseInsensitiveCompare:kW3ContactPhoneWorkFaxLabel] == NSOrderedSame) {
+        isValid = YES;
     } else if ([label caseInsensitiveCompare:kW3ContactPhonePagerLabel] == NSOrderedSame) {
+        isValid = YES;
+    } else if ([label caseInsensitiveCompare:kW3ContactPhoneIPhoneLabel] == NSOrderedSame) {
+        isValid = YES;
+    } else if ([label caseInsensitiveCompare:kW3ContactPhoneMainLabel] == NSOrderedSame) {
         isValid = YES;
     } else if ([label caseInsensitiveCompare:kW3ContactImAIMLabel] == NSOrderedSame) {
         isValid = YES;
@@ -822,6 +911,34 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
     } else if ([label caseInsensitiveCompare:kW3ContactImMSNLabel] == NSOrderedSame) {
         isValid = YES;
     } else if ([label caseInsensitiveCompare:kW3ContactImYahooLabel] == NSOrderedSame) {
+        isValid = YES;
+    } else if ([label caseInsensitiveCompare:kW3ContactImSkypeLabel] == NSOrderedSame) {
+        isValid = YES;
+    } else if ([label caseInsensitiveCompare:kW3ContactImJabberLabel] == NSOrderedSame) {
+        isValid = YES;
+    } else if ([label caseInsensitiveCompare:kW3ContactImFacebookMessengerLabel] == NSOrderedSame) {
+        isValid = YES;
+    } else if ([label caseInsensitiveCompare:kW3ContactImGoogleTalkLabel] == NSOrderedSame) {
+        isValid = YES;
+    } else if ([label caseInsensitiveCompare:kW3ContactImQQLabel] == NSOrderedSame) {
+        isValid = YES;
+    } else if ([label caseInsensitiveCompare:kW3ContactImGaduGaduLabel] == NSOrderedSame) {
+        isValid = YES;
+    }
+    // For Social Profile
+    else if ([label caseInsensitiveCompare:kW3ContactSocialFacebookLabel] == NSOrderedSame) {
+        isValid = YES;
+    } else if ([label caseInsensitiveCompare:kW3ContactSocialTwitterLabel] == NSOrderedSame) {
+        isValid = YES;
+    } else if ([label caseInsensitiveCompare:kW3ContactSocialLinkedInLabel] == NSOrderedSame) {
+        isValid = YES;
+    } else if ([label caseInsensitiveCompare:kW3ContactSocialFlickrLabel] == NSOrderedSame) {
+        isValid = YES;
+    } else if ([label caseInsensitiveCompare:kW3ContactSocialMyspaceLabel] == NSOrderedSame) {
+        isValid = YES;
+    } else if ([label caseInsensitiveCompare:kW3ContactSocialSinaWeiboLabel] == NSOrderedSame) {
+        isValid = YES;
+    } else if ([label caseInsensitiveCompare:kW3ContactSocialGameCenterLabel] == NSOrderedSame) {
         isValid = YES;
     } else {
         isValid = NO;
@@ -936,6 +1053,13 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
     if (value != nil) {
         [nc setObject:value forKey:kW3ContactIms];
     }
+    
+    // social profile array
+    value = [self extractSocialProfiles];
+    if (value != nil) {
+        [nc setObject:value forKey:kW3ContactSocialProfiles];
+    }
+    
     // organization array (only info for one organization in iOS)
     // NSLog(@"getting organizations");
     value = [self extractOrganizations];
@@ -1269,6 +1393,71 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
     return imArray;
 }
 
+/* Create array of Dictionaries to match JavaScript ContactField object for socialProfiles
+ * type one of [Facebook, Twitter, LinkedIn] needs other as well
+ * value
+ * (bool) primary
+ * id
+ *
+ *	iOS Social Profiles are a MultiValue Properties with label, value=dictionary of Social Profile details (service, username), and id
+ */
+- (NSObject*)extractSocialProfiles
+{
+    NSArray* fields = [self.returnFields objectForKey:kW3ContactSocialProfiles];
+    
+    if (fields == nil) { // no name fields requested
+        return nil;
+    }
+    NSObject* imArray;
+    ABMultiValueRef multi = ABRecordCopyValue(self.record, kABPersonSocialProfileProperty);
+    CFIndex count = multi ? ABMultiValueGetCount(multi) : 0;
+    if (count) {
+        imArray = [NSMutableArray arrayWithCapacity:count];
+        
+        for (CFIndex i = 0; i < ABMultiValueGetCount(multi); i++) {
+            NSMutableDictionary* newDict = [NSMutableDictionary dictionaryWithCapacity:3];
+            // iOS has label property (work, home, other) for each IM but W3C contact API doesn't use
+            CFDictionaryRef dict = (CFDictionaryRef)ABMultiValueCopyValueAtIndex(multi, i);
+            CFStringRef value;  // all values should be CFStringRefs / NSString*
+            bool bFound;
+            if ([fields containsObject:kW3ContactFieldValue]) {
+                // value = user name
+                bFound = CFDictionaryGetValueIfPresent(dict, kABPersonSocialProfileUsernameKey, (void*)&value);
+                if (bFound && (value != NULL)) {
+                    CFRetain(value);
+                    [newDict setObject:(__bridge id)value forKey:kW3ContactFieldValue];
+                    CFRelease(value);
+                } else {
+                    [newDict setObject:[NSNull null] forKey:kW3ContactFieldValue];
+                }
+            }
+            if ([fields containsObject:kW3ContactFieldType]) {
+                bFound = CFDictionaryGetValueIfPresent(dict, kABPersonSocialProfileServiceKey, (void*)&value);
+                if (bFound && (value != NULL)) {
+                    CFRetain(value);
+                    [newDict setObject:(id)[[CDVContact class] convertPropertyLabelToContactType : (__bridge NSString*)value] forKey:kW3ContactFieldType];
+                    CFRelease(value);
+                } else {
+                    [newDict setObject:[NSNull null] forKey:kW3ContactFieldType];
+                }
+            }
+            // always set ID
+            id identifier = [NSNumber numberWithUnsignedInt:ABMultiValueGetIdentifierAtIndex(multi, i)];
+            [newDict setObject:(identifier != nil) ? identifier:[NSNull null] forKey:kW3ContactFieldId];
+            
+            [(NSMutableArray*)imArray addObject : newDict];
+            CFRelease(dict);
+        }
+    } else {
+        imArray = [NSNull null];
+    }
+    
+    if (multi) {
+        CFRelease(multi);
+    }
+    return imArray;
+}
+
 /* Create array of Dictionaries to match JavaScript ContactOrganization object
  *	pref - not supported in iOS
  *  type - not supported in iOS
@@ -1512,6 +1701,12 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
         bFound = [self searchContactFields:[searchFields valueForKey:kW3ContactIms]
                    forMVDictionaryProperty:kABPersonInstantMessageProperty withValue:testValue];
     }
+    
+    // For Social Profile
+    if (!bFound && [searchFields valueForKeyIsArray:kW3ContactSocialProfiles]) {
+        bFound = [self searchContactFields:[searchFields valueForKey:kW3ContactSocialProfiles]
+                   forMVDictionaryProperty:kABPersonSocialProfileProperty withValue:testValue];
+    }
 
     if (!bFound && [searchFields valueForKeyIsArray:kW3ContactOrganizations]) {
         NSArray* fields = [searchFields valueForKey:kW3ContactOrganizations];
@@ -1722,7 +1917,7 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
             CFStringRef abValue = nil;
             if (abKey) {
                 NSString* testString = nil;
-                if ([member isEqualToString:kW3ContactImType]) {
+                if ([member isEqualToString:kW3ContactImType] || [member isEqualToString:kW3ContactSocialType]) {
                     if ([CDVContact isValidW3ContactType:testValue]) {
                         // only search service/types if the filter string is a valid ContactField.type
                         testString = (NSString*)[CDVContact convertContactTypeToPropertyLabel:testValue];

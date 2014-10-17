@@ -39,6 +39,8 @@
 
 @implementation CDVContacts
 
+// This is the custom cordova contacts plugin
+
 // no longer used since code gets AddressBook for each operation.
 // If address book changes during save or remove operation, may get error but not much we can do about it
 // If address book changes during UI creation, display or edit, we don't control any saves so no need for callback
@@ -69,37 +71,84 @@
     // NSLog(@"Contacts::onAppTerminate");
 }
 
+- (void)addNumber:(NSString*)number toContact:(ABRecordRef)contact
+{
+    CFErrorRef error = NULL;
+    ABMutableMultiValueRef phoneNumberMultiValue = ABMultiValueCreateMutable(kABMultiStringPropertyType);
+    ABMultiValueAddValueAndLabel(phoneNumberMultiValue, CFBridgingRetain(number), kABPersonPhoneMobileLabel, NULL);
+    ABRecordSetValue(contact, kABPersonPhoneProperty, phoneNumberMultiValue, &error);
+}
+
+- (ABRecordRef)initNewContactRecord:(CDVInvokedUrlCommand*)command
+{
+    if ([command.arguments count] <= 0) return nil;
+    NSDictionary* options = [command.arguments objectAtIndex:0];
+    // We only accept a dictionary of options of the form {number: "1234567", name: "John"}
+    if (![options isKindOfClass:[NSDictionary class]]) return nil;
+    
+    ABRecordRef record = ABPersonCreate();
+    NSString *number = [options valueForKey:@"number"];
+    [self addNumber:number toContact:record];
+    
+    return record;
+}
+
 // iPhone only method to create a new contact through the GUI
 - (void)newContact:(CDVInvokedUrlCommand*)command
 {
     NSString* callbackId = command.callbackId;
-
     CDVAddressBookHelper* abHelper = [[CDVAddressBookHelper alloc] init];
     CDVContacts* __weak weakSelf = self;  // play it safe to avoid retain cycles
-
+    
     [abHelper createAddressBook: ^(ABAddressBookRef addrBook, CDVAddressBookAccessError* errCode) {
         if (addrBook == NULL) {
             // permission was denied or other error just return (no error callback)
             return;
         }
-        CDVNewContactsController* npController = [[CDVNewContactsController alloc] init];
+        ABNewPersonViewController* npController = [[ABNewPersonViewController alloc] init];
+        // CDVNewContactsController* npController = [[CDVNewContactsController alloc] init];
         npController.addressBook = addrBook;     // a CF retaining assign
         CFRelease(addrBook);
-
+        
+        ABRecordRef record = [self initNewContactRecord:command];
+        if (record) npController.displayedPerson = record;
         npController.newPersonViewDelegate = self;
-        npController.callbackId = callbackId;
-
+        _currentCallbackId = callbackId;
+        
         UINavigationController* navController = [[UINavigationController alloc] initWithRootViewController:npController];
-
+        
         [weakSelf.viewController presentViewController:navController animated:YES completion:nil];
     }];
+    
+}
+
+- (void)addToExistingContact:(CDVInvokedUrlCommand*)command
+{
+    NSString* callbackId = command.callbackId;
+    if ([command.arguments count] <= 0) return;
+    NSDictionary* options = [command.arguments objectAtIndex:0];
+    // We only accept a dictionary of options of the form {number: "1234567", name: "John"}
+    if (![options isKindOfClass:[NSDictionary class]]) return;
+    
+    CDVContactsPicker* pickerController = [[CDVContactsPicker alloc] init];
+    
+    pickerController.peoplePickerDelegate = self;
+    pickerController.callbackId = callbackId;
+    pickerController.options = options;
+    pickerController.pickedContactDictionary = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:kABRecordInvalidID], kW3ContactId, nil];
+    pickerController.allowsEditing = true;
+    
+    NSString *number = [options valueForKey:@"number"];
+    if (number) {
+        pickerController.phoneNumberToAdd = number;
+    }
+    
+    [self.viewController presentViewController:pickerController animated:YES completion:nil];
 }
 
 - (void)newPersonViewController:(ABNewPersonViewController*)newPersonViewController didCompleteWithNewPerson:(ABRecordRef)person
 {
     ABRecordID recordId = kABRecordInvalidID;
-    CDVNewContactsController* newCP = (CDVNewContactsController*)newPersonViewController;
-    NSString* callbackId = newCP.callbackId;
 
     if (person != NULL) {
         // return the contact id
@@ -108,8 +157,11 @@
 
     [[newPersonViewController presentingViewController] dismissViewControllerAnimated:YES completion:nil];
 
-    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:recordId];
-    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+    if (_currentCallbackId) {
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:recordId];
+        [self.commandDelegate sendPluginResult:result callbackId:_currentCallbackId];
+        _currentCallbackId = nil;
+    }
 }
 
 - (void)displayContact:(CDVInvokedUrlCommand*)command
@@ -265,10 +317,15 @@
     NSNumber* pickedId = [NSNumber numberWithInt:ABRecordGetRecordID(person)];
     
     if (picker.allowsEditing) {
-        ABPersonViewController* personController = [[ABPersonViewController alloc] init];
+        ABNewPersonViewController* personController = [[ABNewPersonViewController alloc] init];
+        if (picker.phoneNumberToAdd) {
+            [self addNumber:picker.phoneNumberToAdd toContact:person];
+        }
+
         personController.displayedPerson = person;
-        personController.personViewDelegate = self;
-        personController.allowsEditing = picker.allowsEditing;
+        personController.newPersonViewDelegate = self;
+        //personController.allowsEditing = picker.allowsEditing;
+        
         // store id so can get info in peoplePickerNavigationControllerDidCancel
         picker.pickedContactDictionary = [NSDictionary dictionaryWithObjectsAndKeys:pickedId, kW3ContactId, nil];
         

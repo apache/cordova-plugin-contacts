@@ -71,6 +71,14 @@
     // NSLog(@"Contacts::onAppTerminate");
 }
 
+- (void)addNumber:(NSString*)number toContact:(ABRecordRef)contact
+{
+    CFErrorRef error = NULL;
+    ABMutableMultiValueRef phoneNumberMultiValue = ABMultiValueCreateMutable(kABMultiStringPropertyType);
+    ABMultiValueAddValueAndLabel(phoneNumberMultiValue, CFBridgingRetain(number), kABPersonPhoneMobileLabel, NULL);
+    ABRecordSetValue(contact, kABPersonPhoneProperty, phoneNumberMultiValue, &error);
+}
+
 - (ABRecordRef)initNewContactRecord:(CDVInvokedUrlCommand*)command
 {
     if ([command.arguments count] <= 0) return nil;
@@ -79,13 +87,8 @@
     if (![options isKindOfClass:[NSDictionary class]]) return nil;
     
     ABRecordRef record = ABPersonCreate();
-    CFErrorRef error = NULL;
     NSString *number = [options valueForKey:@"number"];
-    if (number) {
-        ABMutableMultiValueRef phoneNumberMultiValue = ABMultiValueCreateMutable(kABMultiStringPropertyType);
-        ABMultiValueAddValueAndLabel(phoneNumberMultiValue, CFBridgingRetain(number), kABPersonPhoneMobileLabel, NULL);
-        ABRecordSetValue(record, kABPersonPhoneProperty, phoneNumberMultiValue, &error);
-    }
+    [self addNumber:number toContact:record];
     
     return record;
 }
@@ -117,6 +120,30 @@
         [weakSelf.viewController presentViewController:navController animated:YES completion:nil];
     }];
     
+}
+
+- (void)addToExistingContact:(CDVInvokedUrlCommand*)command
+{
+    NSString* callbackId = command.callbackId;
+    if ([command.arguments count] <= 0) return;
+    NSDictionary* options = [command.arguments objectAtIndex:0];
+    // We only accept a dictionary of options of the form {number: "1234567", name: "John"}
+    if (![options isKindOfClass:[NSDictionary class]]) return;
+    
+    CDVContactsPicker* pickerController = [[CDVContactsPicker alloc] init];
+    
+    pickerController.peoplePickerDelegate = self;
+    pickerController.callbackId = callbackId;
+    pickerController.options = options;
+    pickerController.pickedContactDictionary = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:kABRecordInvalidID], kW3ContactId, nil];
+    pickerController.allowsEditing = true;
+    
+    NSString *number = [options valueForKey:@"number"];
+    if (number) {
+        pickerController.phoneNumberToAdd = number;
+    }
+    
+    [self.viewController presentViewController:pickerController animated:YES completion:nil];
 }
 
 - (void)newPersonViewController:(ABNewPersonViewController*)newPersonViewController didCompleteWithNewPerson:(ABRecordRef)person
@@ -281,10 +308,15 @@
     NSNumber* pickedId = [NSNumber numberWithInt:ABRecordGetRecordID(person)];
     
     if (picker.allowsEditing) {
-        ABPersonViewController* personController = [[ABPersonViewController alloc] init];
+        ABNewPersonViewController* personController = [[ABNewPersonViewController alloc] init];
+        if (picker.phoneNumberToAdd) {
+            [self addNumber:picker.phoneNumberToAdd toContact:person];
+        }
+
         personController.displayedPerson = person;
-        personController.personViewDelegate = self;
-        personController.allowsEditing = picker.allowsEditing;
+        personController.newPersonViewDelegate = self;
+        //personController.allowsEditing = picker.allowsEditing;
+        
         // store id so can get info in peoplePickerNavigationControllerDidCancel
         picker.pickedContactDictionary = [NSDictionary dictionaryWithObjectsAndKeys:pickedId, kW3ContactId, nil];
         

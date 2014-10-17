@@ -1,4 +1,4 @@
-/*
+cordova.define("org.apache.cordova.contacts.contacts-ios", function(require, exports, module) { /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -34,6 +34,9 @@ module.exports = {
          */
         exec(successCallback, null, "Contacts","newContact", [options]);
     },
+    addToExistingContactUI : function(successCallback, options) {
+        exec(successCallback, null, "Contacts","addToExistingContact", [options]);
+    },
     chooseContact : function(successCallback, options) {
         /*
          *    Select a contact using the iOS Contact Picker UI
@@ -60,3 +63,5 @@ module.exports = {
         exec(win, null, "Contacts","chooseContact", [options]);
     }
 };
+
+});

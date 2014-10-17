@@ -118,10 +118,12 @@
     NSString* callbackId;
     NSDictionary* options;
     NSDictionary* pickedContactDictionary;
+    NSString* phoneNumberToAdd;
 }
 
 @property BOOL allowsEditing;
 @property (copy) NSString* callbackId;
+@property (copy) NSString* phoneNumberToAdd;
 @property (nonatomic, strong) NSDictionary* options;
 @property (nonatomic, strong) NSDictionary* pickedContactDictionary;
 

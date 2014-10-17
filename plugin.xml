@@ -22,7 +22,7 @@
     xmlns:rim="http://www.blackberry.com/ns/widgets"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="org.apache.cordova.contacts"
-    version="0.2.14-dev">
+    version="0.2.15-dev">
 
     <name>Contacts</name>
     <description>Cordova Contacts Plugin</description>
@@ -74,6 +74,10 @@
                 <param name="android-package" value="org.apache.cordova.contacts.ContactManager"/>
             </feature>
         </config-file>
+
+        <js-module src="www/android/contacts.js" name="contacts-android">
+            <merges target="navigator.contacts" />
+        </js-module>
 
         <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.READ_CONTACTS" />

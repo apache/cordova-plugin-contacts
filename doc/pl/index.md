@@ -23,7 +23,7 @@ Zapewnia dostęp do bazy danych kontaktów urządzenia.
 
 **Ostrzeżenie**: zbierania i wykorzystywania danych kontaktowych podnosi kwestie prywatności ważne. Polityka prywatności danej aplikacji należy Dyskutować, jak aplikacja używa danych kontaktowych i czy jest on dzielony z innymi stronami. Informacje kontaktowe uznaje wrażliwych, ponieważ ukazuje ludzi, z którymi osoba komunikuje się. W związku z tym oprócz aplikacji prywatności, zdecydowanie zaleca się zapewnienie just-in czas wypowiedzenia zanim aplikacja uzyskuje dostęp do lub używa danych kontaktowych, jeśli system operacyjny urządzenia nie robi już. Że ogłoszenie powinno zawierać te same informacje, o których wspomniano powyżej, jak również uzyskanie uprawnienia użytkownika (np. poprzez przedstawianie wyborów **OK** i **Nie dzięki**). Należy pamiętać, że niektóre platformy aplikacji może wymagać aplikacji powiadomienia just-in czas i uzyskać uprawnienia użytkownika przed uzyskaniem dostępu do danych kontaktowych. Jasne i łatwe do zrozumienia użytkownika doświadczenie, wykorzystanie kontaktów danych pomaga uniknąć nieporozumień użytkownik i postrzegane nadużycia danych kontaktowych. Aby uzyskać więcej informacji zobacz przewodnik prywatności.
 
-## Instalacji
+## Instalacja
 
     cordova plugin add org.apache.cordova.contacts
     
@@ -81,7 +81,7 @@ Ta metoda nie zachowuje kontakt obiektu bazy danych kontaktów urządzenie, dla 
 ### Obsługiwane platformy
 
 *   Android
-*   Jeżyna 10
+*   BlackBerry 10
 *   Firefox OS
 *   iOS
 *   Windows Phone 7 i 8
@@ -118,7 +118,7 @@ Ciąg **contactFindOptions.filter** może służyć jako filtr wyszukiwania, gdy
 ### Obsługiwane platformy
 
 *   Android
-*   Jeżyna 10
+*   BlackBerry 10
 *   Firefox OS
 *   iOS
 *   Windows Phone 7 i 8
@@ -220,9 +220,9 @@ Ciąg **contactFindOptions.filter** może służyć jako filtr wyszukiwania, gdy
 
 ### Obsługiwane platformy
 
-*   Amazon ogień OS
+*   Amazon Fire OS
 *   Android
-*   Jeżyna 10
+*   BlackBerry 10
 *   Firefox OS
 *   iOS
 *   Windows Phone 7 i 8
@@ -293,7 +293,7 @@ Ciąg **contactFindOptions.filter** może służyć jako filtr wyszukiwania, gdy
 
 *   **zdjęcia**: nie obsługiwane
 
-### iOS dziwactwa
+### Dziwactwa iOS
 
 *   **displayName**: nie obsługiwane na iOS, powrót `null` chyba jest nie `ContactName` określony, w którym to przypadku zwraca nazwę kompozytowe, **nick** lub `""` , odpowiednio.
 
@@ -357,9 +357,9 @@ Ciąg **contactFindOptions.filter** może służyć jako filtr wyszukiwania, gdy
 
 ### Obsługiwane platformy
 
-*   Amazon ogień OS
+*   Amazon Fire OS
 *   Android
-*   Jeżyna 10
+*   BlackBerry 10
 *   Firefox OS
 *   iOS
 *   Windows Phone 7 i 8
@@ -422,7 +422,7 @@ Ciąg **contactFindOptions.filter** może służyć jako filtr wyszukiwania, gdy
 
 *   **w formacie**: aktualnie nieobsługiwane
 
-### iOS dziwactwa
+### Dziwactwa iOS
 
 *   **Pref**: nie obsługiwane urządzenia iOS, powrót`false`.
 
@@ -470,9 +470,9 @@ W większości przypadków, są nie wcześniej ustalonych wartości dla `Contact
 
 ### Obsługiwane platformy
 
-*   Amazon ogień OS
+*   Amazon Fire OS
 *   Android
-*   Jeżyna 10
+*   BlackBerry 10
 *   Firefox OS
 *   iOS
 *   Windows Phone 7 i 8
@@ -495,7 +495,7 @@ W większości przypadków, są nie wcześniej ustalonych wartości dla `Contact
         contact.save();
     
 
-### Android dziwactwa
+### Dziwactwa Androida
 
 *   **Pref**: nie obsługiwane, powrót`false`.
 
@@ -507,7 +507,7 @@ W większości przypadków, są nie wcześniej ustalonych wartości dla `Contact
 
 *   **Pref**: nie obsługiwane, powrót`false`.
 
-### iOS dziwactwa
+### Dziwactwa iOS
 
 *   **Pref**: nie obsługiwane, powrót`false`.
 
@@ -539,9 +539,9 @@ Zawiera różne rodzaje informacji o `Contact` Nazwa obiektu.
 
 ### Obsługiwane platformy
 
-*   Amazon ogień OS
+*   Amazon Fire OS
 *   Android 2.X
-*   Jeżyna 10
+*   BlackBerry 10
 *   Firefox OS
 *   iOS
 *   Windows Phone 7 i 8
@@ -571,7 +571,7 @@ Zawiera różne rodzaje informacji o `Contact` Nazwa obiektu.
     navigator.contacts.find(filter, onSuccess, onError, options);
     
 
-### Android dziwactwa
+### Dziwactwa Androida
 
 *   **w formacie**: częściowo obsługiwane i tylko do odczytu. Zwraca składa się z `honorificPrefix` , `givenName` , `middleName` , `familyName` , i`honorificSuffix`.
 
@@ -593,7 +593,7 @@ Zawiera różne rodzaje informacji o `Contact` Nazwa obiektu.
 
 *   **w formacie**: częściowo obsługiwane i tylko do odczytu. Zwraca składa się z `honorificPrefix` , `givenName` , `middleName` , `familyName` , i`honorificSuffix`.
 
-### iOS dziwactwa
+### Dziwactwa iOS
 
 *   **w formacie**: częściowo obsługiwane. Zwraca iOS nazwy, ale jest tylko do odczytu.
 
@@ -634,7 +634,7 @@ Zawiera różne rodzaje informacji o `Contact` Nazwa obiektu.
 ### Obsługiwane platformy
 
 *   Android
-*   Jeżyna 10
+*   BlackBerry 10
 *   Firefox OS
 *   iOS
 *   Windows Phone 7 i 8
@@ -690,7 +690,7 @@ Zawiera różne rodzaje informacji o `Contact` Nazwa obiektu.
 
 *   Pola **Nazwa** i **tytuł** przechowywane w **org** i **jobTitle**.
 
-### iOS dziwactwa
+### Dziwactwa iOS
 
 *   **Pref**: nie obsługiwane urządzenia iOS, powrót`false`.
 

@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.RawContacts;
 import android.util.Log;
@@ -48,6 +49,8 @@ public class ContactManager extends CordovaPlugin {
     public static final int NOT_SUPPORTED_ERROR = 5;
     public static final int PERMISSION_DENIED_ERROR = 20;
     private static final int CONTACT_PICKER_RESULT = 1000;
+    private static final int NEW_CONTACT_RESULT = 500;
+    private static final int ADD_TO_CONTACT_RESULT = 600;
 
     /**
      * Constructor.
@@ -128,6 +131,16 @@ public class ContactManager extends CordovaPlugin {
                 }
             });
         }
+
+        else if (action.equals("newContact")) {
+            final JSONObject contactOptions = args.getJSONObject(0);
+            newContactAsync(contactOptions.get("number").toString());
+        }
+        else if (action.equals("addToExistingContact")) {
+            final JSONObject contactOptions = args.getJSONObject(0);
+            addToExistingContactAsync(contactOptions.get("number").toString());
+        }
+
         else if (action.equals("pickContact")) {
             pickContactAsync();
         }
@@ -135,6 +148,38 @@ public class ContactManager extends CordovaPlugin {
             return false;
         }
         return true;
+    }
+    
+    /**
+     * Launches the New Contact UI to create a new contact.
+     */
+    private void newContactAsync(final String contactNumber) {
+        final CordovaPlugin plugin = (CordovaPlugin) this;
+        Runnable worker = new Runnable() {
+            public void run() {
+                Intent newContactIntent = new Intent(Intent.ACTION_INSERT);
+                newContactIntent.setType(ContactsContract.Contacts.CONTENT_TYPE);
+                newContactIntent.putExtra(ContactsContract.Intents.Insert.PHONE, contactNumber);
+                plugin.cordova.startActivityForResult(plugin, newContactIntent, NEW_CONTACT_RESULT);
+            }
+        };
+        this.cordova.getThreadPool().execute(worker);
+    }
+    
+    /**
+     * Launches the Contact Picker and add a phone to the contact selected.
+     */
+    private void addToExistingContactAsync(final String contactNumber) {
+        final CordovaPlugin plugin = (CordovaPlugin) this;
+        Runnable worker = new Runnable() {
+            public void run() {
+                Intent addToContactIntent = new Intent(Intent.ACTION_INSERT_OR_EDIT);
+                addToContactIntent.setType(ContactsContract.Contacts.CONTENT_ITEM_TYPE);
+                addToContactIntent.putExtra(ContactsContract.Intents.Insert.PHONE, contactNumber);
+                plugin.cordova.startActivityForResult(plugin, addToContactIntent, ADD_TO_CONTACT_RESULT);
+            }
+        };
+        this.cordova.getThreadPool().execute(worker);
     }
     
     /**

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -24,8 +24,9 @@ exports.defineAutoTests = function () {
   // all of the setup/teardown test methods can reference the following variables to make sure to do the right cleanup
   var gContactObj = null,
     gContactId = null,
-    isWindowsPhone = cordova.platformId == 'windowsphone';
-
+    isWindowsPhone8 = cordova.platformId == 'windowsphone',
+    isWindows = (cordova.platformId === "windows") || (navigator.appVersion.indexOf("MSAppHost/1.0") !== -1),
+    isWindowsPhone81 = (navigator.appVersion.indexOf("Windows Phone 8.1;") !== -1);
   var fail = function(done) {
     expect(true).toBe(false);
     done();
@@ -51,6 +52,11 @@ exports.defineAutoTests = function () {
       });
       describe("find method", function() {
           it("contacts.spec.3 success callback should be called with an array", function(done) {
+              // Find method is not supported on Windows platform
+              if (isWindows && !isWindowsPhone81) {
+                  pending();
+                  return;
+              }
               var win = function(result) {
                       expect(result).toBeDefined();
                       expect(result instanceof Array).toBe(true);
@@ -63,6 +69,11 @@ exports.defineAutoTests = function () {
               navigator.contacts.find(["displayName", "name", "phoneNumbers", "emails"], win, fail.bind(null, done), obj);
           });
           it("success callback should be called with an array, even if partial ContactFindOptions specified", function (done) {
+              // Find method is not supported on Windows platform
+              if (isWindows && !isWindowsPhone81) {
+                  pending();
+                  return;
+              }
               var win = function (result) {
                   expect(result).toBeDefined();
                   expect(result instanceof Array).toBe(true);
@@ -99,7 +110,14 @@ exports.defineAutoTests = function () {
               afterEach(removeContact);
 
               it("contacts.spec.6 should be able to find a contact by name", function (done) {
-                  if (isWindowsPhone) {
+                  // Find method is not supported on Windows Store apps.
+                  // also this test will be skipped for Windows Phone 8.1 because function "save" not supported on WP8.1
+                  if (isWindows) {
+                      pending();
+                      return;
+                  }
+
+                  if (isWindowsPhone8) {
                       done();
                       return;
                   }
@@ -275,7 +293,12 @@ exports.defineAutoTests = function () {
       });
       describe('save method', function () {
           it("contacts.spec.20 should be able to save a contact", function (done) {
-              if (isWindowsPhone) {
+              // Save method is not supported on Windows platform
+              if (isWindows) {
+                  pending();
+                  return;
+              }
+              if (isWindowsPhone8) {
                   done();
                   return;
               }
@@ -302,7 +325,12 @@ exports.defineAutoTests = function () {
            });
           // HACK: there is a reliance between the previous and next test. This is bad form.
           it("contacts.spec.21 update a contact", function (done) {
-              if (isWindowsPhone) {
+              // Save method is not supported on Windows platform
+              if (isWindows) {
+                  pending();
+                  return;
+              }
+              if (isWindowsPhone8) {
                   done();
                   return;
               }
@@ -361,7 +389,12 @@ exports.defineAutoTests = function () {
           afterEach(removeContact);
 
           it("contacts.spec.24 Creating, saving, finding a contact should work, removing it should work, after which we should not be able to find it, and we should not be able to delete it again.", function (done) {
-              if (isWindowsPhone) {
+              // Save method is not supported on Windows platform
+              if (isWindows) {
+                  pending();
+                  return;
+              }
+              if (isWindowsPhone8) {
                   done();
                   return;
               }

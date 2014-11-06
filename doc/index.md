@@ -19,7 +19,14 @@
 
 # org.apache.cordova.contacts
 
-Provides access to the device contacts database.
+This plugin defines a global `navigator.contacts` object, which provides access to the device contacts database.
+
+Although the object is attached to the global scoped `navigator`, it is not available until after the `deviceready` event.
+
+    document.addEventListener("deviceready", onDeviceReady, false);
+    function onDeviceReady() {
+        console.log(navigator.contacts);
+    }
 
 __WARNING__: Collection and use of contact data raises
 important privacy issues.  Your app's privacy policy should discuss

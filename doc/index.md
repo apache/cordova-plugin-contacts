@@ -44,7 +44,7 @@ contact data.  For more information, please see the Privacy Guide.
 
 ### Firefox OS Quirks
 
-Create __www/manifest.webapp__ as described in 
+Create __www/manifest.webapp__ as described in
 [Manifest Docs](https://developer.mozilla.org/en-US/Apps/Developing/Manifest).
 Add relevant permisions.
 There is also a need to change the webapp type to "privileged"  - [Manifest Docs](https://developer.mozilla.org/en-US/Apps/Developing/Manifest#type).
@@ -133,7 +133,7 @@ parameter to control which contact properties must be returned back.
 
 - __contactError__: Error callback function, invoked when an error occurs. [Optional]
 
-- __contactFindOptions__: Search options to filter navigator.contacts. [Optional] 
+- __contactFindOptions__: Search options to filter navigator.contacts. [Optional]
 	
 	Keys include:
 

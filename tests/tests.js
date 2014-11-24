@@ -25,8 +25,8 @@ exports.defineAutoTests = function () {
   var gContactObj = null,
     gContactId = null,
     isWindowsPhone8 = cordova.platformId == 'windowsphone',
-    isWindows = (cordova.platformId === "windows") || (navigator.appVersion.indexOf("MSAppHost/1.0") !== -1),
-    isWindowsPhone81 = (navigator.appVersion.indexOf("Windows Phone 8.1;") !== -1);
+    isWindows = (cordova.platformId === "windows") || (cordova.platformId === "windows8"),
+    isWindowsPhone81 =  isWindows && WinJS.Utilities.isPhone;
   var fail = function(done) {
     expect(true).toBe(false);
     done();

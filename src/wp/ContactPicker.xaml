@@ -29,7 +29,7 @@
     shell:SystemTray.IsVisible="False">
 
     <Grid x:Name="ContentRoot" Background="Transparent">
-        
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
@@ -37,14 +37,14 @@
 
         <TextBlock Name="HeaderBlock"
                    Text="CHOOSE A CONTACT" 
-                   Margin="20,50,0,50" 
+                   Margin="20,93,0,7" 
                    FontSize="{StaticResource PhoneFontSizeMedium}"
                    FontFamily="{StaticResource PhoneFontFamilySemiBold}"
                    Grid.Row="0"
                    />
-
+        <TextBox x:Name="txtSearchBox" Margin="7,21,10,59"></TextBox>
         <TextBlock Name="NoContactsBlock"
-                   Margin="20,0,0,0" 
+                   Margin="20,93,0,7" 
                    Text="Sorry, we couldn't find any contacts."
                    TextWrapping="Wrap"
                    FontSize="{StaticResource PhoneFontSizeLarge}"
@@ -52,7 +52,7 @@
                    Visibility="Collapsed"
                    Grid.Row="1"
                    />
-        
+
         <phone:LongListSelector Name="lstContacts"
                                 SelectionChanged="ContactsListSelectionChanged"
                                 Grid.Row="1">
@@ -68,6 +68,6 @@
                 </DataTemplate>
             </phone:LongListSelector.ItemTemplate>
         </phone:LongListSelector>
-        
+
     </Grid>
 </phone:PhoneApplicationPage>

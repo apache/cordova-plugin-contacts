@@ -318,10 +318,12 @@
             // get the findOptions values
             BOOL multiple = NO;         // default is false
             NSString* filter = nil;
+            NSInteger limit = 0;
             NSArray* desiredFields = nil;
             if (![findOptions isKindOfClass:[NSNull class]]) {
                 id value = nil;
                 filter = (NSString*)[findOptions objectForKey:@"filter"];
+                limit = [[findOptions objectForKey:@"limit"] integerValue];
                 value = [findOptions objectForKey:@"multiple"];
                 if ([value isKindOfClass:[NSNumber class]]) {
                     // multiple is a boolean that will come through as an NSNumber
@@ -352,6 +354,8 @@
                         CDVContact* xferContact = [[CDVContact alloc] initFromABRecord:(__bridge ABRecordRef)[foundRecords objectAtIndex:k]];
                         [matches addObject:xferContact];
                         xferContact = nil;
+                        if (limit && [matches count] >= limit)
+                            break;
                     }
                 }
             } else {
@@ -368,6 +372,8 @@
                             [matches addObject:testContact];
                         }
                         testContact = nil;
+                        if (limit && [matches count] >= limit)
+                            break;
                     }
                 }
             }

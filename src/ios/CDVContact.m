@@ -61,7 +61,7 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
         CFRelease(record);
     }
     if (aRecord != NULL) {
-        record = CFRetain(aRecord);
+        record = aRecord;
     }
 }
 

@@ -128,3 +128,13 @@
 * CB-7373 Removes unnecessary Error object creation
 * CB-7373 Adds additional output if method is not supported.
 * CB-7357 Adds missing 'capability' element to phone's appxmanifest.
+
+### 0.2.15 (Dec 02, 2014)
+* CB-7131 Check for profile photo existance
+* CB-7896 Better way to detect **Windows** and **WindowsPhone8.1**
+* CB-7896 Pending tests for `Save` and `Find` methods for **Windows** cause they are not supported yet
+* CB-7977 Mention `deviceready` in plugin docs
+* CB-7772 - [Contacts] Cancelling `pickContact` should call the error callback, not the success callback
+* CB-7761 - Misleading text in documentation
+* CB-7762 - Parameter list is incorrect for `contacts.find`
+* CB-7700 cordova-plugin-contacts documentation translation: cordova-plugin-contacts

@@ -598,7 +598,7 @@ Contains different kinds of information about a `Contact` object's name.
 ### Supported Platforms
 
 - Amazon Fire OS
-- Android 2.X
+- Android
 - BlackBerry 10
 - Firefox OS
 - iOS

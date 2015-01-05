@@ -22,14 +22,11 @@
 /**
 * Contact organization.
 * @constructor
-* @param {DOMString} id unique identifier, should only be set by native code // NOTE: not a W3C standard
+* @param pref
+* @param type
 * @param name
 * @param dept
 * @param title
-* @param startDate
-* @param endDate
-* @param location
-* @param desc
 */
 
 var ContactOrganization = function(pref, type, name, dept, title) {

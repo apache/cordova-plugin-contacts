@@ -115,8 +115,8 @@
 - (void)displayContact:(CDVInvokedUrlCommand*)command
 {
     NSString* callbackId = command.callbackId;
-    ABRecordID recordID = [[command.arguments objectAtIndex:0] intValue];
-    NSDictionary* options = [command.arguments objectAtIndex:1 withDefault:[NSNull null]];
+    ABRecordID recordID = [[command argumentAtIndex:0] intValue];
+    NSDictionary* options = [command argumentAtIndex:1 withDefault:[NSNull null]];
     bool bEdit = [options isKindOfClass:[NSNull class]] ? false : [options existsValue:@"true" forKey:@"allowsEditing"];
 
     CDVAddressBookHelper* abHelper = [[CDVAddressBookHelper alloc] init];
@@ -171,7 +171,7 @@
 - (void)chooseContact:(CDVInvokedUrlCommand*)command
 {
     NSString* callbackId = command.callbackId;
-    NSDictionary* options = [command.arguments objectAtIndex:0 withDefault:[NSNull null]];
+    NSDictionary* options = [command argumentAtIndex:0 withDefault:[NSNull null]];
 
     CDVContactsPicker* pickerController = [[CDVContactsPicker alloc] init];
 
@@ -192,7 +192,7 @@
 - (void)pickContact:(CDVInvokedUrlCommand *)command
 {
     // mimic chooseContact method call with required for us parameters
-    NSArray* desiredFields = [command.arguments objectAtIndex:0 withDefault:[NSArray array]];
+    NSArray* desiredFields = [command argumentAtIndex:0 withDefault:[NSArray array]];
     if (desiredFields == nil || desiredFields.count == 0) {
         desiredFields = [NSArray arrayWithObjects:@"*", nil];
     }
@@ -296,8 +296,8 @@
 - (void)search:(CDVInvokedUrlCommand*)command
 {
     NSString* callbackId = command.callbackId;
-    NSArray* fields = [command.arguments objectAtIndex:0];
-    NSDictionary* findOptions = [command.arguments objectAtIndex:1 withDefault:[NSNull null]];
+    NSArray* fields = [command argumentAtIndex:0];
+    NSDictionary* findOptions = [command argumentAtIndex:1 withDefault:[NSNull null]];
 
     [self.commandDelegate runInBackground:^{
         // from Apple:  Important You must ensure that an instance of ABAddressBookRef is used by only one thread.
@@ -403,7 +403,7 @@
 - (void)save:(CDVInvokedUrlCommand*)command
 {
     NSString* callbackId = command.callbackId;
-    NSDictionary* contactDict = [command.arguments objectAtIndex:0];
+    NSDictionary* contactDict = [command argumentAtIndex:0];
 
     [self.commandDelegate runInBackground:^{
         CDVAddressBookHelper* abHelper = [[CDVAddressBookHelper alloc] init];
@@ -475,7 +475,7 @@
 - (void)remove:(CDVInvokedUrlCommand*)command
 {
     NSString* callbackId = command.callbackId;
-    NSNumber* cId = [command.arguments objectAtIndex:0];
+    NSNumber* cId = [command argumentAtIndex:0];
 
     CDVAddressBookHelper* abHelper = [[CDVAddressBookHelper alloc] init];
     CDVContacts* __weak weakSelf = self;  // play it safe to avoid retain cycles

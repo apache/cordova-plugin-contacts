@@ -112,12 +112,24 @@
     [self.commandDelegate sendPluginResult:result callbackId:callbackId];
 }
 
+- (bool)existsValue:(NSDictionary*)dict val:(NSString*)expectedValue forKey:(NSString*)key
+{
+    id val = [dict valueForKey:key];
+    bool exists = false;
+    
+    if (val != nil) {
+        exists = [(NSString*)val compare : expectedValue options : NSCaseInsensitiveSearch] == 0;
+    }
+    
+    return exists;
+}
+
 - (void)displayContact:(CDVInvokedUrlCommand*)command
 {
     NSString* callbackId = command.callbackId;
     ABRecordID recordID = [[command argumentAtIndex:0] intValue];
     NSDictionary* options = [command argumentAtIndex:1 withDefault:[NSNull null]];
-    bool bEdit = [options isKindOfClass:[NSNull class]] ? false : [options existsValue:@"true" forKey:@"allowsEditing"];
+    bool bEdit = [options isKindOfClass:[NSNull class]] ? false : [self existsValue:options val:@"true" forKey:@"allowsEditing"];
 
     CDVAddressBookHelper* abHelper = [[CDVAddressBookHelper alloc] init];
     CDVContacts* __weak weakSelf = self;  // play it safe to avoid retain cycles

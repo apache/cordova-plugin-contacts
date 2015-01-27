@@ -1433,6 +1433,19 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
     return d;
 }
 
+
+- (BOOL)valueForKeyIsArray:(NSDictionary*)dict key:(NSString*)key
+{
+    BOOL bArray = NO;
+    NSObject* value = [dict objectForKey:key];
+    
+    if (value) {
+        bArray = [value isKindOfClass:[NSArray class]];
+    }
+    return bArray;
+}
+
+
 /*
  * Search for the specified value in each of the fields specified in the searchFields dictionary.
  * NSString* value - the string value to search for (need clarification from W3C on how to search for dates)
@@ -1473,7 +1486,7 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
         }
     }
 
-    if ([searchFields valueForKeyIsArray:kW3ContactName]) {
+    if ([self valueForKeyIsArray:searchFields key:kW3ContactName]) {
         // test name fields.  All are string properties obtained via ABRecordCopyValue except kW3ContactFormattedName
         NSArray* fields = [searchFields valueForKey:kW3ContactName];
 
@@ -1494,26 +1507,26 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
             }
         }
     }
-    if (!bFound && [searchFields valueForKeyIsArray:kW3ContactPhoneNumbers]) {
+    if (!bFound && [self valueForKeyIsArray:searchFields key:kW3ContactPhoneNumbers]) {
         bFound = [self searchContactFields:(NSArray*)[searchFields valueForKey:kW3ContactPhoneNumbers]
                        forMVStringProperty:kABPersonPhoneProperty withValue:testValue];
     }
-    if (!bFound && [searchFields valueForKeyIsArray:kW3ContactEmails]) {
+    if (!bFound && [self valueForKeyIsArray:searchFields key:kW3ContactEmails]) {
         bFound = [self searchContactFields:(NSArray*)[searchFields valueForKey:kW3ContactEmails]
                        forMVStringProperty:kABPersonEmailProperty withValue:testValue];
     }
 
-    if (!bFound && [searchFields valueForKeyIsArray:kW3ContactAddresses]) {
+    if (!bFound && [self valueForKeyIsArray:searchFields key:kW3ContactAddresses]) {
         bFound = [self searchContactFields:[searchFields valueForKey:kW3ContactAddresses]
                    forMVDictionaryProperty:kABPersonAddressProperty withValue:testValue];
     }
 
-    if (!bFound && [searchFields valueForKeyIsArray:kW3ContactIms]) {
+    if (!bFound && [self valueForKeyIsArray:searchFields key:kW3ContactIms]) {
         bFound = [self searchContactFields:[searchFields valueForKey:kW3ContactIms]
                    forMVDictionaryProperty:kABPersonInstantMessageProperty withValue:testValue];
     }
 
-    if (!bFound && [searchFields valueForKeyIsArray:kW3ContactOrganizations]) {
+    if (!bFound && [self valueForKeyIsArray:searchFields key:kW3ContactOrganizations]) {
         NSArray* fields = [searchFields valueForKey:kW3ContactOrganizations];
 
         for (NSString* testItem in fields) {
@@ -1532,12 +1545,23 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
     if (!bFound && [searchFields valueForKey:kW3ContactBirthday]) {
         bFound = [self testDateValue:testValue forW3CProperty:kW3ContactBirthday];
     }
-    if (!bFound && [searchFields valueForKeyIsArray:kW3ContactUrls]) {
+    if (!bFound && [self valueForKeyIsArray:searchFields key:kW3ContactUrls]) {
         bFound = [self searchContactFields:(NSArray*)[searchFields valueForKey:kW3ContactUrls]
                        forMVStringProperty:kABPersonURLProperty withValue:testValue];
     }
 
     return bFound;
+}
+
+- (BOOL)valueForKeyIsNumber:(NSDictionary*)dict key:(NSString*)key
+{
+    BOOL bNumber = NO;
+    NSObject* value = [dict objectForKey:key];
+    
+    if (value) {
+        bNumber = [value isKindOfClass:[NSNumber class]];
+    }
+    return bNumber;
 }
 
 /*
@@ -1554,7 +1578,7 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
 {
     BOOL bFound = NO;
 
-    if ([[CDVContact defaultW3CtoAB] valueForKeyIsNumber:property]) {
+    if ([self valueForKeyIsNumber:[CDVContact defaultW3CtoAB] key:property]) {
         ABPropertyID propId = [[[CDVContact defaultW3CtoAB] objectForKey:property] intValue];
         if (ABPersonGetTypeOfProperty(propId) == kABStringPropertyType) {
             NSString* propValue = (__bridge_transfer NSString*)ABRecordCopyValue(self.record, propId);
@@ -1583,7 +1607,7 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
 {
     BOOL bFound = NO;
 
-    if ([[CDVContact defaultW3CtoAB] valueForKeyIsNumber:property]) {
+    if ([self valueForKeyIsNumber:[CDVContact defaultW3CtoAB] key:property]) {
         ABPropertyID propId = [[[CDVContact defaultW3CtoAB] objectForKey:property] intValue];
         if (ABPersonGetTypeOfProperty(propId) == kABDateTimePropertyType) {
             NSDate* date = (__bridge_transfer NSDate*)ABRecordCopyValue(self.record, propId);

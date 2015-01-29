@@ -222,11 +222,9 @@ for details.
 
 ### Methods
 
-- __clone__ 
-
-- __remove__
-
-- __save__
+- clone
+- remove
+- save
 
 ### Properties
 

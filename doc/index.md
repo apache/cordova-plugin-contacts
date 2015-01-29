@@ -220,6 +220,13 @@ __NOTE__: Not all of the contact fields listed above are supported on
 every device platform.  Please check each platform's _Quirks_ section
 for details.
 
+### Methods
+
+- __clone__ 
+
+- __remove__
+
+- __save__
 
 ### Properties
 
@@ -251,24 +258,13 @@ for details.
 
 - __urls__:  An array of web pages associated with the contact. _(ContactField[])_
 
-### Methods
+### save
 
-- __clone__: Returns a new `Contact` object that is a deep copy of the calling object, with the `id` property set to `null`.
+Saves a new contact to the device contacts database, or updates an existing contact if a contact with the same __id__ already exists.
 
-- __remove__: Removes the contact from the device contacts database, otherwise executes an error callback with a `ContactError` object.
-
-- __save__: Saves a new contact to the device contacts database, or updates an existing contact if a contact with the same __id__ already exists.
-
-### Supported Platforms
-
-- Amazon Fire OS
-- Android
-- BlackBerry 10
-- Firefox OS
-- iOS
-- Windows Phone 7 and 8
-- Windows 8
-- Windows
+### Parameters
+- __contactSuccess__:Success callback function invoked with the single Contact object which is saved if the id already exists or a new contact saved to device contacts database.
+- __contactError__:Error callback function, invoked with ContactError object when an error occurs.
 
 ### Save Example
 
@@ -294,13 +290,13 @@ for details.
     // save to device
     contact.save(onSuccess,onError);
 
-### Clone Example
+### remove
 
-        // clone the contact object
-        var clone = contact.clone();
-        clone.name.givenName = "John";
-        console.log("Original contact name = " + contact.name.givenName);
-        console.log("Cloned contact name = " + clone.name.givenName);
+Removes the contact from the device contacts database, otherwise executes an error callback with a `ContactError` object.
+
+### Parameters
+- __onSuccess__:Success callback function when the contact is removed successfully from the device contacts database.
+- __contactError__:Error callback function, invoked with ContactError object when an error occurs.
 
 ### Remove Example
 
@@ -315,6 +311,28 @@ for details.
     // remove the contact from the device
     contact.remove(onSuccess,onError);
 
+### clone
+
+Returns a new `Contact` object that is a deep copy of the calling object, with the `id` property set to `null`.
+
+### Clone Example
+
+        // clone the contact object
+        var clone = contact.clone();
+        clone.name.givenName = "John";
+        console.log("Original contact name = " + contact.name.givenName);
+        console.log("Cloned contact name = " + clone.name.givenName);
+
+### Supported Platforms
+
+- Amazon Fire OS
+- Android
+- BlackBerry 10
+- Firefox OS
+- iOS
+- Windows Phone 7 and 8
+- Windows 8
+- Windows
 
 ### Android 2.X Quirks
 

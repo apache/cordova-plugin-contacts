@@ -112,15 +112,10 @@ exports.defineAutoTests = function () {
               it("contacts.spec.6 should be able to find a contact by name", function (done) {
                   // Find method is not supported on Windows Store apps.
                   // also this test will be skipped for Windows Phone 8.1 because function "save" not supported on WP8.1
-                  if (isWindows) {
+                  if (isWindows || isWindowsPhone8) {
                       pending();
-                      return;
                   }
 
-                  if (isWindowsPhone8) {
-                      done();
-                      return;
-                  }
                   var foundName = function(result) {
                           var bFound = false;
                           try {
@@ -294,14 +289,10 @@ exports.defineAutoTests = function () {
       describe('save method', function () {
           it("contacts.spec.20 should be able to save a contact", function (done) {
               // Save method is not supported on Windows platform
-              if (isWindows) {
+              if (isWindows || isWindowsPhone8) {
                   pending();
-                  return;
               }
-              if (isWindowsPhone8) {
-                  done();
-                  return;
-              }
+
               var bDay = new Date(1976, 6,4);
               gContactObj = navigator.contacts.create({"gender": "male", "note": "my note", "name": {"familyName": "Delete", "givenName": "Test"}, "emails": [{"value": "here@there.com"}, {"value": "there@here.com"}], "birthday": bDay});
 
@@ -326,14 +317,10 @@ exports.defineAutoTests = function () {
           // HACK: there is a reliance between the previous and next test. This is bad form.
           it("contacts.spec.21 update a contact", function (done) {
               // Save method is not supported on Windows platform
-              if (isWindows) {
+              if (isWindows || isWindowsPhone8) {
                   pending();
-                  return;
               }
-              if (isWindowsPhone8) {
-                  done();
-                  return;
-              }
+
               expect(gContactObj).toBeDefined();
 
               var bDay = new Date(1975, 5,4);
@@ -390,14 +377,10 @@ exports.defineAutoTests = function () {
 
           it("contacts.spec.24 Creating, saving, finding a contact should work, removing it should work, after which we should not be able to find it, and we should not be able to delete it again.", function (done) {
               // Save method is not supported on Windows platform
-              if (isWindows) {
+              if (isWindows || isWindowsPhone8) {
                   pending();
-                  return;
               }
-              if (isWindowsPhone8) {
-                  done();
-                  return;
-              }
+
               gContactObj = new Contact();
               gContactObj.name = new ContactName();
               gContactObj.name.familyName = "DeleteMe";

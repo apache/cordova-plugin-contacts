@@ -138,3 +138,9 @@
 * CB-7761 - Misleading text in documentation
 * CB-7762 - Parameter list is incorrect for `contacts.find`
 * CB-7700 cordova-plugin-contacts documentation translation: cordova-plugin-contacts
+
+### 0.2.16 (Feb 04, 2015)
+* CB-8351 ios: Stop using (newly) deprecated CordovaLib functions
+* CB-8351 ios: Use argumentForIndex rather than NSArray extension
+* android: Update ContactName support
+* Updated the comments for ContactOrganization constructor.

@@ -360,6 +360,11 @@ exports.defineAutoTests = function () {
               rmContact.remove(win, fail);
           });
           it("contacts.spec.23 calling remove on a contact that does not exist should return ContactError.UNKNOWN_ERROR", function(done) {
+               // remove method is not supported on Windows platform
+              if (isWindows) {
+                  pending();
+                  return;
+              }
               var rmWin = fail;
               var rmFail = function(result) {
                   expect(result.code).toBe(ContactError.UNKNOWN_ERROR);

@@ -19,7 +19,15 @@
 
 # org.apache.cordova.contacts
 
-Fornisce l'accesso al database di contatti del dispositivo.
+Questo plugin definisce un oggetto globale `navigator.contacts`, che fornisce l'accesso al database di contatti del dispositivo.
+
+Anche se l'oggetto è associato con ambito globale del `navigator`, non è disponibile fino a dopo l'evento `deviceready`.
+
+    document.addEventListener("deviceready", onDeviceReady, false);
+    function onDeviceReady() {
+        console.log(navigator.contacts);
+    }
+    
 
 **Avviso**: raccolta e utilizzo dei dati di contatto solleva questioni di privacy importante. Politica sulla privacy dell'app dovrebbe discutere come app utilizza i dati di contatto e se è condiviso con altre parti. Informazioni di contatto sono considerate sensibile perché rivela le persone con cui una persona comunica. Pertanto, oltre alla politica di privacy dell'app, è fortemente consigliabile fornendo un preavviso di just-in-time prima app accede o utilizza i dati di contatto, se il sistema operativo del dispositivo non farlo già. Tale comunicazione deve fornire le informazioni stesse notate sopra, oltre ad ottenere l'autorizzazione (ad esempio, presentando scelte per **OK** e **No grazie**). Si noti che alcuni mercati app possono richiedere l'app per fornire un preavviso di just-in-time e ottenere l'autorizzazione dell'utente prima di accedere ai dati di contatto. Un'esperienza utente chiara e facile--capisce che circonda l'uso del contatto dati aiuta a evitare la confusione dell'utente e percepito un uso improprio dei dati di contatto. Per ulteriori informazioni, vedere la guida sulla Privacy.
 
@@ -30,7 +38,7 @@ Fornisce l'accesso al database di contatti del dispositivo.
 
 ### Firefox OS stranezze
 
-Creare **www/manifest.webapp** come descritto nel [Manifesto Docs][1]. Aggiungi permisions rilevanti. C'è anche la necessità di modificare il tipo di webapp in "privilegiato" - [Manifesto Docs][2]. **AVVERTENZA**: tutte le apps privilegiato applicare [Content Security Policy][3] che vieta script inline. Inizializzare l'applicazione in un altro modo.
+Creare **www/manifest.webapp** come descritto nel [Manifest Docs][1]. Aggiungi permisions rilevanti. C'è anche la necessità di modificare il tipo di webapp in "privilegiato" - [Manifest Docs][2]. **AVVERTENZA**: tutte le apps privilegiato applicare [Content Security Policy][3] che vieta script inline. Inizializzare l'applicazione in un altro modo.
 
  [1]: https://developer.mozilla.org/en-US/Apps/Developing/Manifest
  [2]: https://developer.mozilla.org/en-US/Apps/Developing/Manifest#type
@@ -47,7 +55,7 @@ Creare **www/manifest.webapp** come descritto nel [Manifesto Docs][1]. Aggiungi 
 
 ### Stranezze di Windows
 
-Eventuali contatti restituiti da `find` e `pickContact` metodi sono readonly, quindi l'applicazione non può modificarli. `find`Metodo disponibile solo sui dispositivi Windows Phone 8.1.
+Eventuali contatti restituiti dai metodi `find` e `pickContact` sono readonly, quindi l'applicazione non può modificarli. Metodo `find` disponibile solo sui dispositivi Windows Phone 8.1.
 
 ### Stranezze di Windows 8
 
@@ -63,7 +71,7 @@ Windows 8 contatti sono readonly. Tramite i contatti di Cordova API non sono que
 
 ### Oggetti
 
-*   Contatto
+*   Contact
 *   ContactName
 *   ContactField
 *   ContactAddress
@@ -72,11 +80,11 @@ Windows 8 contatti sono readonly. Tramite i contatti di Cordova API non sono que
 *   ContactError
 *   ContactFieldType
 
-## Navigator.contacts.Create
+## navigator.contacts.create
 
-Il `navigator.contacts.create` metodo sincrono e restituisce un nuovo `Contact` oggetto.
+Il metodo `navigator.contacts.create` è sincrono e restituisce un nuovo oggetto di `Contact`.
 
-Questo metodo non mantiene l'oggetto contatto nel database contatti dispositivo, per cui è necessario richiamare il `Contact.save` metodo.
+Questo metodo non mantiene l'oggetto contatto nel database contatti dispositivo, per cui è necessario richiamare il metodo `Contact.save`.
 
 ### Piattaforme supportate
 
@@ -93,27 +101,29 @@ Questo metodo non mantiene l'oggetto contatto nel database contatti dispositivo,
 
 ## navigator.contacts.find
 
-Il `navigator.contacts.find` metodo in modo asincrono, esegue una query sul database di contatti del dispositivo e restituisce una matrice di `Contact` oggetti. Gli oggetti risultanti sono passati per la `contactSuccess` funzione di callback specificato dal parametro **contactSuccess** .
+Il metodo `navigator.contacts.find` in modo asincrono, esegue una query sul database di contatti del dispositivo e restituisce una matrice di oggetti `Contact`. Gli oggetti risultanti vengono passati alla funzione di callback `contactSuccess` specificata dal parametro **contactSuccess**.
 
-Il parametro **contactFields** specifica i campi per essere utilizzato come un qualificatore di ricerca. Un parametro di lunghezza zero, **contactFields** non è valido e si traduce in `ContactError.INVALID_ARGUMENT_ERROR` . Un valore di **contactFields** di `"*"` restituisce tutti i contatti di campi.
+Il parametro **contactFields** specifica i campi per essere utilizzato come un qualificatore di ricerca. Un parametro di lunghezza zero, **contactFields** non è valido e si traduce in `ContactError.INVALID_ARGUMENT_ERROR`. Un valore di **contactFields** di `"*"` ricerche campi tutti i contatti.
 
-La stringa di **contactFindOptions.filter** può essere utilizzata come un filtro di ricerca quando una query sul database di contatti. Se fornito, una distinzione, corrispondenza parziale valore viene applicato a ogni campo specificato nel parametro **contactFields** . Se esiste una corrispondenza per *qualsiasi* dei campi specificati, viene restituito il contatto. Uso **contactFindOptions.desiredFields** parametro di controllo quale contattare la proprietà deve essere rispedito indietro.
+La stringa di **contactFindOptions.filter** può essere utilizzata come un filtro di ricerca quando una query sul database di contatti. Se fornito, una distinzione, corrispondenza parziale valore viene applicato a ogni campo specificato nel parametro **contactFields**. Se esiste una corrispondenza per *qualsiasi* dei campi specificati, viene restituito il contatto. Uso **contactFindOptions.desiredFields** parametro di controllo quale contattare la proprietà deve essere rispedito indietro.
 
 ### Parametri
 
-*   **contactSuccess**: funzione di callback successo richiamato con la matrice di oggetti contatto restituiti dal database. [Richiesto]
+*   **contactFields**: contattare campi da utilizzare come un qualificatore di ricerca. *(DOMString[])* [Required]
+
+*   **contactSuccess**: funzione di callback successo richiamato con la matrice di oggetti contatto restituiti dal database. [Required]
 
 *   **contactError**: funzione di callback di errore, viene richiamato quando si verifica un errore. [Facoltativo]
 
-*   **contactFields**: contattare campi da utilizzare come un qualificatore di ricerca. *(DOMString[])* [Richiesto]
-
-*   **contactFindOptions**: opzioni per filtrare navigator.contacts di ricerca. [Facoltativo] I tasti sono:
-
-*   **filtro**: la stringa di ricerca utilizzata per trovare navigator.contacts. *(DOMString)* (Default:`""`)
-
-*   **multiple**: determina se l'operazione di ricerca restituisce più navigator.contacts. *(Booleano)* (Default:`false`)
+*   **contactFindOptions**: opzioni per filtrare navigator.contacts di ricerca. [Optional]
     
-    *   **desiredFields**: contattare i campi per essere tornato indietro. Se specificato, il conseguente `Contact` oggetto presenta solo i valori per questi campi. *(DOMString[])* [Facoltativo]
+    I tasti sono:
+    
+    *   **filter**: la stringa di ricerca utilizzata per trovare navigator.contacts. *(DOMString)* (Default: `""`)
+    
+    *   **multiple**: determina se l'operazione di ricerca restituisce più navigator.contacts. *(Boolean)* (Default: `false`)
+        
+        *   **desiredFields**: contattare i campi per essere tornato indietro. Se specificato, il risultante `contatto` oggetto solo caratteristiche valori per questi campi. *(DOMString[])* [Optional]
 
 ### Piattaforme supportate
 
@@ -149,7 +159,7 @@ La stringa di **contactFindOptions.filter** può essere utilizzata come un filtr
 
 ## navigator.contacts.pickContact
 
-Il `navigator.contacts.pickContact` Metodo lancia il contatto selettore per selezionare un singolo contatto. L'oggetto risultante è passato per la `contactSuccess` funzione di callback specificato dal parametro **contactSuccess** .
+Il metodo `navigator.contacts.pickContact` lancia il contatto selettore per selezionare un singolo contatto. L'oggetto risultante viene passato alla funzione di callback `contactSuccess` specificata dal parametro **contactSuccess**.
 
 ### Parametri
 
@@ -174,9 +184,9 @@ Il `navigator.contacts.pickContact` Metodo lancia il contatto selettore per sele
         });
     
 
-## Contatto
+## Contact
 
-Il `Contact` oggetto rappresenta il contatto di un utente. Contatti possono essere creati, memorizzati o rimossi dal database di contatti dispositivo. Contatti possono anche essere estratto (singolarmente o in blocco) dal database richiamando il `navigator.contacts.find` metodo.
+L'oggetto `Contact` rappresenta il contatto di un utente. Contatti possono essere creati, memorizzati o rimossi dal database di contatti dispositivo. Contatti possono anche essere estratto (singolarmente o in blocco) dal database richiamando il metodo `navigator.contacts.find`.
 
 **Nota**: non tutti i campi di contatto sopra elencati sono supportati su ogni piattaforma del dispositivo. Consultare la sezione di *stranezze* su ogni piattaforma per dettagli.
 
@@ -335,7 +345,7 @@ Il `Contact` oggetto rappresenta il contatto di un utente. Contatti possono esse
 
 ## ContactAddress
 
-Il `ContactAddress` oggetto memorizza le proprietà di un singolo indirizzo di un contatto. A `Contact` oggetto può includere più di un indirizzo in un `ContactAddress[]` matrice.
+L'oggetto `ContactAddress` memorizza le proprietà di un singolo indirizzo di un contatto. Un oggetto `Contact` può includere più di un indirizzo in una matrice `[] ContactAddress`.
 
 ### Proprietà
 
@@ -438,7 +448,7 @@ Il `ContactAddress` oggetto memorizza le proprietà di un singolo indirizzo di u
 
 ## ContactError
 
-Il `ContactError` oggetto viene restituito all'utente attraverso la `contactError` funzione di callback quando si verifica un errore.
+L'oggetto `ContactError` viene restituito all'utente tramite la funzione di callback `contactError` quando si verifica un errore.
 
 ### Proprietà
 
@@ -456,9 +466,9 @@ Il `ContactError` oggetto viene restituito all'utente attraverso la `contactErro
 
 ## ContactField
 
-Il `ContactField` oggetto è un componente riutilizzabile che rappresenta Contatta campi genericamente. Ogni `ContactField` oggetto contiene un `value` , `type` , e `pref` proprietà. A `Contact` oggetto memorizza diverse proprietà in `ContactField[]` matrici, come indirizzi di e-mail e numeri di telefono.
+L'oggetto `ContactField` è un componente riutilizzabile che rappresenta Contatta campi genericamente. Ogni oggetto `ContactField` contiene una proprietà di `value`, `type` e `pref`. Un oggetto `Contact` memorizza diverse proprietà in matrici `[] ContactField`, come numeri di telefono e indirizzi email.
 
-Nella maggior parte dei casi, non esistono valori pre-determinati per un `ContactField` **tipo** attributo oggetto. Ad esempio, un numero di telefono può specificare valori di **tipo** di *casa*, *lavoro*, *mobile*, *iPhone*o qualsiasi altro valore che è supportato dal database dei contatti su una piattaforma particolare dispositivo. Tuttavia, per la `Contact` **foto** campo, il campo **tipo** indica il formato dell'immagine restituita: **url** quando il **valore** di attributo contiene un URL per l'immagine fotografica, o *base64* , quando il **valore** contiene una stringa con codifica base64 immagine.
+Nella maggior parte dei casi, esistono pre-determinati valori per l'attributo `type` di un oggetto **ContactField**. Ad esempio, un numero di telefono può specificare valori di **type** di *casa*, *lavoro*, *mobile*, *iPhone* o qualsiasi altro valore che è supportato dal database dei contatti su una piattaforma particolare dispositivo. Tuttavia, per il campo di **photo** del `Contacto`, il campo **type** indica il formato dell'immagine restituita: **url** quando il **value** di attributo contiene un URL per l'immagine fotografica, o *base64*, quando il **value** contiene una stringa con codifica base64 immagine.
 
 ### Proprietà
 
@@ -521,7 +531,7 @@ Nella maggior parte dei casi, non esistono valori pre-determinati per un `Contac
 
 ## ContactName
 
-Contiene diversi tipi di informazioni circa un `Contact` nome dell'oggetto.
+Contiene diversi tipi di informazioni sul nome di un oggetto `Contact`.
 
 ### Proprietà
 
@@ -540,7 +550,7 @@ Contiene diversi tipi di informazioni circa un `Contact` nome dell'oggetto.
 ### Piattaforme supportate
 
 *   Amazon fuoco OS
-*   Android 2. x
+*   Android
 *   BlackBerry 10
 *   Firefox OS
 *   iOS
@@ -617,7 +627,7 @@ Contiene diversi tipi di informazioni circa un `Contact` nome dell'oggetto.
 
 ## ContactOrganization
 
-Il `ContactOrganization` oggetto memorizza la proprietà di organizzazione di un contatto. A `Contact` oggetto memorizza uno o più `ContactOrganization` gli oggetti in una matrice.
+L'oggetto `ContactOrganization` memorizza la proprietà di organizzazione di un contatto. Un oggetto `Contact` memorizza uno o più oggetti `ContactOrganization` in una matrice.
 
 ### Proprietà
 

@@ -19,13 +19,19 @@
 
 # org.apache.cordova.contacts
 
-Donne accès à la base de données de contacts de dispositif.
+Ce plugin définit un global `navigator.contacts` objet, ce qui permet d'accéder à la base de données de contacts de dispositif.
 
-**Avertissement**: collecte et utilisation des données de contact soulève des questions importantes de la vie privée. La politique de confidentialité de votre application doit examiner comment l'application utilise les données de contact et si elles sont partagées avec d'autres parties. Les information de contact sont considérés comme sensibles parce qu'elles révèlent les gens avec lesquels une personne communique. Par conséquent, en plus de la politique de confidentialité de l'application, vous devez envisager fortement fournissant un avis juste-à-temps, avant que l'application accède ou utilise des données de contact, si le système d'exploitation de périphérique ne fait donc pas déjà. Cet avis doit fournir les mêmes renseignements mentionnés précédemment, ainsi qu'obtenir l'autorisation de l'utilisateur (par exemple, en présentant des choix **OK** et **Non merci**). Notez que certains marchés app peuvent exiger l'application de fournir un avis juste-à-temps et obtenir la permission de l'utilisateur avant d'accéder à des données de contact. Une expérience utilisateur claire et facile à comprendre qui entourent l'utilisation de données permettent d'éviter la confusion des utilisateurs de contact et une utilisation jugée abusive des données de contact. Pour plus d'informations, consultez le Guide de la vie privée.
+Bien que l'objet est attaché à la portée globale `navigator` , il n'est pas disponible jusqu'après la `deviceready` événement.
+
+    document.addEventListener (« deviceready », onDeviceReady, false) ;
+    function onDeviceReady() {console.log(navigator.contacts);}
+    
+
+**Avertissement**: collecte et utilisation des données de contact soulève des questions importantes de la vie privée. Politique de confidentialité de votre application doit examiner comment l'application utilise les données de contact et si il est partagé avec d'autres parties. Information de contact est considéré comme sensible parce qu'il révèle les gens avec lesquels une personne communique. Par conséquent, en plus de la politique de confidentialité de l'application, vous devez envisager fortement fournissant un avis juste-à-temps, avant que l'application accède ou utilise des données de contact, si le système d'exploitation de périphérique ne fait donc pas déjà. Cet avis doit fournir les mêmes renseignements susmentionnées, ainsi que d'obtenir l'autorisation de l'utilisateur (par exemple, en présentant des choix **OK** et **Non merci**). Notez que certains marchés app peuvent exiger l'application de fournir un avis juste-à-temps et obtenir la permission de l'utilisateur avant d'accéder à des données de contact. Une expérience utilisateur claire et facile à comprendre qui entourent l'utilisation de données permettent d'éviter la confusion des utilisateurs de contact et une utilisation jugée abusive des données de contact. Pour plus d'informations, consultez le Guide de la vie privée.
 
 ## Installation
 
-    cordova plugin add org.apache.cordova.contacts
+    Cordova plugin ajouter org.apache.cordova.contacts
     
 
 ### Firefox OS Quirks
@@ -36,13 +42,7 @@ Créez **www/manifest.webapp** comme décrit dans [Les Docs manifeste][1]. Ajout
  [2]: https://developer.mozilla.org/en-US/Apps/Developing/Manifest#type
  [3]: https://developer.mozilla.org/en-US/Apps/CSP
 
-    "type": "privileged",
-    "permissions": {
-        "contacts": {
-            "access": "readwrite",
-            "description": "Describe why there is a need for such permission"
-        }
-    }
+    « type »: "le privilège", "autorisations": {« contacts »: {« accès »: "readwrite", "description": "décrire pourquoi il est nécessaire pour obtenir cette permission"}}
     
 
 ### Bizarreries de Windows
@@ -88,32 +88,34 @@ Cette méthode ne conserve pas l'objet de Contact dans la base de données des c
 
 ### Exemple
 
-    var myContact = navigator.contacts.create({"displayName": "Test User"});
+    myContact var = navigator.contacts.create ({« displayName »: « Test User »}) ;
     
 
 ## navigator.contacts.find
 
 La `navigator.contacts.find` méthode s'exécute de façon asynchrone, l'interrogation de la base de données de contacts de dispositif et retourne un tableau de `Contact` objets. Les objets résultants sont passés à la `contactSuccess` la fonction de rappel spécifiée par le paramètre **contactSuccess** .
 
-Le paramètre **contactFields** spécifie les champs à utiliser comme un qualificateur de recherche. Un paramètre de longueur nulle **contactFields** n'est pas valide et se traduit par `ContactError.INVALID_ARGUMENT_ERROR` . Une valeur de **contactFields** de `"*"` retourne les champs de tout contact.
+Le paramètre **contactFields** spécifie les champs à utiliser comme un qualificateur de recherche. Un paramètre de longueur nulle **contactFields** n'est pas valide et se traduit par `ContactError.INVALID_ARGUMENT_ERROR` . Une valeur de **contactFields** de `"*"` recherche dans les champs de tout contact.
 
 La chaîne **contactFindOptions.filter** peut servir comme un filtre de recherche lors de l'interrogation de la base de données de contacts. Si fourni, un non-respect de la casse, correspondance de valeur partielle est appliquée à chaque champ spécifié dans le paramètre **contactFields** . S'il y a une correspondance pour *n'importe quel* des champs spécifiés, le contact est retourné. Utilisation **contactFindOptions.desiredFields** paramètre de contrôle qui contacter propriétés doit être retourné au retour.
 
 ### Paramètres
 
-*   **contactSuccess**: fonction de rappel de succès avec le tableau d'objets Contact appelée retournée par la base de données. [Obligatoire]
+*   **contactFields**: communiquer avec les champs à utiliser comme un qualificateur de recherche. *(DOMString[])* [Required]
 
-*   **contactError**: fonction de rappel d'erreur, appelée lorsqu'une erreur se produit. [Facultatif]
+*   **contactSuccess**: fonction de rappel de succès avec le tableau d'objets Contact appelée retournée par la base de données. [Required]
 
-*   **contactFields**: communiquer avec les champs à utiliser comme un qualificateur de recherche. *(DOMString[])* [Obligatoire]
+*   **contactError**: fonction de rappel d'erreur, appelée lorsqu'une erreur se produit. [Optional]
 
-*   **contactFindOptions**: recherche d'options pour filtrer navigator.contacts. [Facultatif] Clés incluent :
-
-*   **filtre**: la chaîne de recherche utilisée pour trouver navigator.contacts. *(DOMString)* (Par défaut :`""`)
-
-*   **multiples**: détermine si l'opération find retourne plusieurs navigator.contacts. *(Booléen)* (Par défaut :`false`)
+*   **contactFindOptions**: recherche d'options pour filtrer navigator.contacts. [Optional]
     
-    *   **desiredFields**: Contactez champs soit retourné en arrière. Si spécifié, l'entraînant `Contact` objet dispose seulement des valeurs de ces champs. *(DOMString[])* [Facultatif]
+    Clés incluent :
+    
+    *   **filtre**: la chaîne de recherche utilisée pour trouver navigator.contacts. *(DOMString)* (Par défaut :`""`)
+    
+    *   **multiples**: détermine si l'opération find retourne plusieurs navigator.contacts. *(Booléen)* (Par défaut :`false`)
+        
+        *   **desiredFields**: Contactez champs soit retourné en arrière. Si spécifié, l'entraînant `Contact` objet dispose seulement des valeurs de ces champs. *(DOMString[])* [Optional]
 
 ### Plates-formes prises en charge
 
@@ -126,21 +128,16 @@ La chaîne **contactFindOptions.filter** peut servir comme un filtre de recherch
 
 ### Exemple
 
-    function onSuccess(contacts) {
-        alert('Found ' + contacts.length + ' contacts.');
-    };
+    function onSuccess(contacts) {alert (« Found » + contacts.length + « contacts. »);} ;
     
-    function onError(contactError) {
-        alert('onError!');
-    };
+    function onError(contactError) {alert('onError!');} ;
     
-    // find all contacts with 'Bob' in any name field
-    var options      = new ContactFindOptions();
-    options.filter   = "Bob";
-    options.multiple = true;
-    options.desiredFields = [navigator.contacts.fieldType.id];
-    var fields       = [navigator.contacts.fieldType.displayName, navigator.contacts.fieldType.name];
-    navigator.contacts.find(fields, onSuccess, onError, options);
+    trouver tous les contacts avec « Bob » dans toute option de var de champ nom = new ContactFindOptions() ;
+    options.Filter = « Bob » ;
+    options.multiple = true ;
+    options.desiredFields = [navigator.contacts.fieldType.id] ;
+    champs var = [navigator.contacts.fieldType.displayName, navigator.contacts.fieldType.name] ;
+    Navigator.contacts.Find (champs, onSuccess, onError, options) ;
     
 
 ### Bizarreries de Windows
@@ -167,10 +164,8 @@ La `navigator.contacts.pickContact` méthode lance le sélecteur de Contact pour
 
 ### Exemple
 
-    navigator.contacts.pickContact(function(contact){
-            console.log('The following contact has been selected:' + JSON.stringify(contact));
-        },function(err){
-            console.log('Error: ' + err);
+    navigator.contacts.pickContact(function(contact) {console.log ("le contact suivant a été retenu:" + JSON.stringify(contact)) ;
+        }, function(err) {console.log ("Error:" + err) ;
         });
     
 
@@ -231,50 +226,35 @@ Le `Contact` objet représente le contact de l'utilisateur. Contacts peuvent êt
 
 ### Enregistrez l'exemple
 
-    function onSuccess(contact) {
-        alert("Save Success");
-    };
+    function onSuccess(contact) {alert ("sauver succès");} ;
     
-    function onError(contactError) {
-        alert("Error = " + contactError.code);
-    };
+    function onError(contactError) {alert ("erreur =" + contactError.code);} ;
     
-    // create a new contact object
-    var contact = navigator.contacts.create();
-    contact.displayName = "Plumber";
-    contact.nickname = "Plumber";            // specify both to support all devices
+    créer un objet contact contact var = navigator.contacts.create() ;
+    contact.displayName = « Plombier » ;
+    contact.Nickname = « Plombier » ;            spécifier à la fois pour prendre en charge tous les périphériques / / renseigner certains champs var nom = new ContactName() ;
+    name.givenName = « Jane » ;
+    name.familyName = « Doe » ;
+    contact.name = nom ;
     
-    // populate some fields
-    var name = new ContactName();
-    name.givenName = "Jane";
-    name.familyName = "Doe";
-    contact.name = name;
-    
-    // save to device
-    contact.save(onSuccess,onError);
+    enregistrer dans contact.save(onSuccess,onError) de l'appareil ;
     
 
 ### Exemple de clone
 
-        // clone the contact object
-        var clone = contact.clone();
-        clone.name.givenName = "John";
-        console.log("Original contact name = " + contact.name.givenName);
-        console.log("Cloned contact name = " + clone.name.givenName);
+        Clone clone objet contact var = contact.clone() ;
+        clone.name.givenName = « John » ;
+        Console.log ("contact Original nom =" + contact.name.givenName) ;
+        Console.log ("nom de contact clonés =" + clone.name.givenName) ;
     
 
 ### Supprimer l'exemple
 
-    function onSuccess() {
-        alert("Removal Success");
-    };
+    fonction onSuccess() {alert ("succès");} ;
     
-    function onError(contactError) {
-        alert("Error = " + contactError.code);
-    };
+    function onError(contactError) {alert ("erreur =" + contactError.code);} ;
     
-    // remove the contact from the device
-    contact.remove(onSuccess,onError);
+    supprimer le contact de l'appareil contact.remove(onSuccess,onError) ;
     
 
 ### Android 2.X Quirks
@@ -368,32 +348,17 @@ Le `ContactAddress` objet Stocke les propriétés d'une seule adresse d'un conta
 
 ### Exemple
 
-    // display the address information for all contacts
-    
-    function onSuccess(contacts) {
-        for (var i = 0; i < contacts.length; i++) {
-            for (var j = 0; j < contacts[i].addresses.length; j++) {
-                alert("Pref: "         + contacts[i].addresses[j].pref          + "\n" +
-                    "Type: "           + contacts[i].addresses[j].type          + "\n" +
-                    "Formatted: "      + contacts[i].addresses[j].formatted     + "\n" +
-                    "Street Address: " + contacts[i].addresses[j].streetAddress + "\n" +
-                    "Locality: "       + contacts[i].addresses[j].locality      + "\n" +
-                    "Region: "         + contacts[i].addresses[j].region        + "\n" +
-                    "Postal Code: "    + contacts[i].addresses[j].postalCode    + "\n" +
-                    "Country: "        + contacts[i].addresses[j].country);
+    Affichez les informations d'adresse pour tous les contacts fonctionnent onSuccess(contacts) {pour (var j'ai = 0; j'ai < contacts.length; i ++) {pour (var j = 0; j < contacts[i].addresses.length; j ++) {alert ("Pref:" + contacts[i].addresses[j].pref + « \n » + "Type:" + contacts[i].addresses[j].type + « \n » + "au format:" + contacts[i].addresses[j].formatted + « \n » + "adresse de rue: "+ contacts[i].addresses[j].streetAddress +"\n"+" localité: "+ contacts[i].addresses[j].locality +"\n"+" région: "+ contacts[i].addresses[j].region +"\n"+" Code Postal: "+ contacts[i].addresses[j].postalCode +"\n"+" pays: "+ contacts[i].addresses[j].country) ;
             }
         }
     };
     
-    function onError(contactError) {
-        alert('onError!');
-    };
+    function onError(contactError) {alert('onError!');} ;
     
-    // find all contacts
-    var options = new ContactFindOptions();
-    options.filter = "";
-    var filter = ["displayName", "addresses"];
-    navigator.contacts.find(filter, onSuccess, onError, options);
+    trouver tous les contacts options var = new ContactFindOptions() ;
+    options.Filter = "" ;
+    filtre var = ["name", « adresses »] ;
+    Navigator.contacts.Find (filtre, onSuccess, onError, options) ;
     
 
 ### Android 2.X Quirks
@@ -481,18 +446,14 @@ Dans la plupart des cas, il n'y a pas de valeurs prédéterminées pour une `Con
 
 ### Exemple
 
-        // create a new contact
-        var contact = navigator.contacts.create();
+        créer un nouveau contact contact var = navigator.contacts.create() ;
     
-        // store contact phone numbers in ContactField[]
-        var phoneNumbers = [];
-        phoneNumbers[0] = new ContactField('work', '212-555-1234', false);
-        phoneNumbers[1] = new ContactField('mobile', '917-555-5432', true); // preferred number
-        phoneNumbers[2] = new ContactField('home', '203-555-7890', false);
-        contact.phoneNumbers = phoneNumbers;
+        stocker des numéros de téléphone de contact en ContactField [] var phoneNumbers = [] ;
+        phoneNumbers[0] = new ContactField (« travail », ' 212-555-1234', false) ;
+        phoneNumbers[1] = new ContactField (« mobile », ' 917-555-5432', true) ; phoneNumbers[2] numéro préféré = new ContactField (« home », ' 203-555-7890', false) ;
+        contact.phoneNumbers = phoneNumbers ;
     
-        // save the contact
-        contact.save();
+        enregistrer le contact contact.save() ;
     
 
 ### Quirks Android
@@ -540,7 +501,7 @@ Contient différents types d'informations sur un `Contact` nom de l'objet.
 ### Plates-formes prises en charge
 
 *   Amazon Fire OS
-*   Android 2.X
+*   Android
 *   BlackBerry 10
 *   Firefox OS
 *   iOS
@@ -550,25 +511,16 @@ Contient différents types d'informations sur un `Contact` nom de l'objet.
 
 ### Exemple
 
-    function onSuccess(contacts) {
-        for (var i = 0; i < contacts.length; i++) {
-            alert("Formatted: "  + contacts[i].name.formatted       + "\n" +
-                "Family Name: "  + contacts[i].name.familyName      + "\n" +
-                "Given Name: "   + contacts[i].name.givenName       + "\n" +
-                "Middle Name: "  + contacts[i].name.middleName      + "\n" +
-                "Suffix: "       + contacts[i].name.honorificSuffix + "\n" +
-                "Prefix: "       + contacts[i].name.honorificSuffix);
+    function onSuccess(contacts) {pour (var j'ai = 0; j'ai < contacts.length; i ++) {alert ("Formatted:" + contacts[i].name.formatted + « \n » + "patronyme:" + contacts[i].name.familyName + « \n » + "Prénom:" + contacts[i].name.givenName + « \n » + "Prénom:" + contacts[i].name.middleName + « \n » + "suffixe:" + contacts[i].name.honorificSuffix + « \n » + "préfixe:" + contacts[i].name.honorificSuffix) ;
         }
     };
     
-    function onError(contactError) {
-        alert('onError!');
-    };
+    function onError(contactError) {alert('onError!');} ;
     
-    var options = new ContactFindOptions();
-    options.filter = "";
-    filter = ["displayName", "name"];
-    navigator.contacts.find(filter, onSuccess, onError, options);
+    options de var = new ContactFindOptions() ;
+    options.Filter = "" ;
+    filtre = ["name", « nom »] ;
+    Navigator.contacts.Find (filtre, onSuccess, onError, options) ;
     
 
 ### Quirks Android
@@ -642,26 +594,17 @@ Le `ContactOrganization` objet Stocke des propriétés un contact de l'organisat
 
 ### Exemple
 
-    function onSuccess(contacts) {
-        for (var i = 0; i < contacts.length; i++) {
-            for (var j = 0; j < contacts[i].organizations.length; j++) {
-                alert("Pref: "      + contacts[i].organizations[j].pref       + "\n" +
-                    "Type: "        + contacts[i].organizations[j].type       + "\n" +
-                    "Name: "        + contacts[i].organizations[j].name       + "\n" +
-                    "Department: "  + contacts[i].organizations[j].department + "\n" +
-                    "Title: "       + contacts[i].organizations[j].title);
+    function onSuccess(contacts) {pour (var j'ai = 0; j'ai < contacts.length; i ++) {pour (var j = 0; j < contacts[i].organizations.length; j ++) {alert ("Pref:" + contacts[i].organizations[j].pref + « \n » + "Type:" + contacts[i].organizations[j].type + « \n » + "nom:" + contacts[i].organizations[j].name + « \n » + "Département:" + contacts[i].organizations[j].department + « \n » + "Title: "+ contacts[i].organizations[j].title) ;
             }
         }
     };
     
-    function onError(contactError) {
-        alert('onError!');
-    };
+    function onError(contactError) {alert('onError!');} ;
     
-    var options = new ContactFindOptions();
-    options.filter = "";
-    filter = ["displayName", "organizations"];
-    navigator.contacts.find(filter, onSuccess, onError, options);
+    options de var = new ContactFindOptions() ;
+    options.Filter = "" ;
+    filtre = ["displayName", « organisations »] ;
+    Navigator.contacts.Find (filtre, onSuccess, onError, options) ;
     
 
 ### Android 2.X Quirks

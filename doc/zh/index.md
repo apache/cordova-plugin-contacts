@@ -19,9 +19,17 @@
 
 # org.apache.cordova.contacts
 
-提供對設備的連絡人資料庫的訪問。
+這個外掛程式定義了一個全域 `navigator.contacts` 物件，提供對設備連絡人資料庫的訪問。
 
-**警告**： 連絡人資料的收集和使用提出了重要的隱私問題。 您的應用程式的隱私權原則應該討論如何應用程式使用的連絡人資料和它是否被共用與任何其他方。 聯繫資訊被視為敏感，因為它揭示了人與人通信的人們。 因此，除了應用程式的隱私權原則，您應強烈考慮提供-時間通知之前應用程式訪問或使用的連絡人資料，如果設備作業系統不會這樣做已經。 該通知應提供相同的資訊上文指出的並獲取該使用者的許可權 （例如，通過為**確定**並**不感謝**提出的選擇）。 請注意一些應用程式市場可能需要應用程式來提供只是在時間的通知，並獲得相應許可權的使用者在訪問連絡人資料之前。 周圍的連絡人資料可説明避免使用者混淆使用感知的和濫用的連絡人資料的清晰和易於理解的使用者體驗。 有關詳細資訊，請參閱隱私指南。
+雖然該物件附加到全球範圍內 `導航器`，它不可用直到 `deviceready` 事件之後。
+
+    document.addEventListener("deviceready", onDeviceReady, false);
+    function onDeviceReady() {
+        console.log(navigator.contacts);
+    }
+    
+
+**警告**： 連絡人資料的收集和使用提出了重要的隱私問題。 您的應用程式的隱私權原則應該討論應用程式如何使用連絡人資料和它是否被共用與任何其他締約方。 聯繫資訊被認為是敏感，因為它揭示了的人與人溝通了。 因此，除了隱私權原則的應用程式，您應強烈考慮提供時間只是通知之前應用程式訪問或使用連絡人的資料，如果設備作業系統不已經這樣做了。 該通知應提供相同的資訊，如上所述，以及獲取該使用者的許可權 （例如，通過提出選擇 **確定** 並 **不感謝**）。 請注意一些應用程式市場可能需要應用程式提供只是時間的通知，並獲得使用者的許可才能訪問連絡人資料。 周圍的連絡人資料可以説明避免使用者混淆使用和連絡人資料感知的濫用的清楚和容易理解的使用者體驗。 有關詳細資訊，請參閱隱私指南。
 
 ## 安裝
 
@@ -30,7 +38,7 @@
 
 ### 火狐瀏覽器作業系統的怪癖
 
-在[清單檔][1]中所述創建**www/manifest.webapp** 。 添加相關許可權。 也是需要 web 應用程式的類型更改為"特權"-[清單文檔][2]。 **警告**： 所有特權應用程式強制執行禁止內聯腳本的[內容安全性原則][3]。 在另一種方式初始化應用程式。
+在 [清單檔][1] 中所述創建 **www/manifest.webapp**。 添加相關的許可權。 也是需要的 web 應用程式類型更改為"privileged"— — [顯化的文檔][2]。 **警告**： 所有的特權應用程式強制執行禁止內聯腳本的 [內容的安全性原則][3]。 在另一種方式初始化您的應用程式。
 
  [1]: https://developer.mozilla.org/en-US/Apps/Developing/Manifest
  [2]: https://developer.mozilla.org/en-US/Apps/Developing/Manifest#type
@@ -47,11 +55,11 @@
 
 ### Windows 的怪癖
 
-從返回的任何連絡人 `find` 和 `pickContact` 方法是唯讀，因此您的應用程式不能修改它們。 `find`僅在 Windows Phone 8.1 設備上可用的方法。
+從 `find` 和 `pickContact` 方法返回任何連絡人是唯讀，因此您的應用程式不能修改它們。 僅在 Windows Phone 8.1 設備上可用的 `find` 方法。
 
 ### Windows 8 的怪癖
 
-Windows 8 連絡人是唯讀的。 透過科爾多瓦 API 接觸的不是可查詢/搜索，你應通知使用者挑選連絡人作為對 contacts.pickContact 這將打開的 '人' 應用程式的調用，使用者必須選擇一個連絡人。 返回任何連絡人是唯讀，因此您的應用程式不能修改它們。
+Windows 8 連絡人是唯讀的。 透過科爾多瓦 API 接觸的不是可查詢/搜索，您應通知使用者挑選連絡人作為調用 contacts.pickContact，將會打開 '人' 的應用程式，使用者必須選擇一個連絡人。 返回任何連絡人是唯讀，因此您的應用程式不能修改它們。
 
 ## navigator.contacts
 
@@ -74,9 +82,9 @@ Windows 8 連絡人是唯讀的。 透過科爾多瓦 API 接觸的不是可查�
 
 ## navigator.contacts.create
 
-`navigator.contacts.create`方法是同步的並返回一個新的 `Contact` 物件。
+`navigator.contacts.create` 方法是同步的並返回一個新的 `Contact` 物件。
 
-這種方法不會保留在設備的連絡人資料庫中，您需要為其調用該連絡人物件 `Contact.save` 的方法。
+此方法將不會保留在設備連絡人資料庫中，需要調用 `Contact.save` 方法的聯繫物件。
 
 ### 支援的平臺
 
@@ -93,27 +101,29 @@ Windows 8 連絡人是唯讀的。 透過科爾多瓦 API 接觸的不是可查�
 
 ## navigator.contacts.find
 
-`navigator.contacts.find`方法以非同步方式，執行設備的連絡人資料庫查詢並返回一個陣列的 `Contact` 物件。 生成的物件被傳遞給 `contactSuccess` 的**contactSuccess**參數所指定的回呼函數。
+`navigator.contacts.find` 方法以非同步方式，執行設備連絡人資料庫查詢並返回 `Contact` 物件的陣列。 生成的物件被傳遞到由 **contactSuccess** 參數指定的 `contactSuccess` 回呼函數。
 
-**ContactFields**參數指定的欄位用作搜索的限定詞。 一個長度為零的**contactFields**參數是不正確結果在 `ContactError.INVALID_ARGUMENT_ERROR` 。 **ContactFields**值為 `"*"` 返回所有連絡人欄位。
+**contactFields** 參數指定的欄位用作搜索限定詞。 長度為零的 **contactFields** 參數是不正確並導致 `ContactError.INVALID_ARGUMENT_ERROR`。 **contactFields** 值為 `"*"` 搜索所有連絡人欄位。
 
-**ContactFindOptions.filter**字串查詢連絡人資料庫時，可以用作搜索篩選器。 如果提供，不區分大小寫，部分值匹配被應用於在**contactFields**參數中指定的每個欄位。 如果有*任何*指定的欄位的匹配，則返回該連絡人。 使用**contactFindOptions.desiredFields**參數來控制哪些連絡人屬性必須回來。
+在連絡人資料庫查詢時，**contactFindOptions.filter** 字串可以用作搜索篩選器。 如果提供，不區分大小寫，部分值匹配被適用于在 **contactFields** 參數中指定的每個欄位。 如果存在匹配的 *任何* 指定的欄位，則返回連絡人。 使用 **contactFindOptions.desiredFields** 參數來控制哪些連絡人屬性必須回來。
 
 ### 參數
 
-*   **contactSuccess**： 從資料庫返回成功回呼函數調用時使用的連絡人物件的陣列。[要求]
+*   **contactFields**： '連絡人' 欄位用作搜索限定詞。*(DOMString[])* [Required]
+
+*   **contactSuccess**： 從資料庫返回的成功回呼函數調用時使用的連絡人物件的陣列。[Required]
 
 *   **contactError**： 錯誤回呼函數，當發生錯誤時調用。[可選]
 
-*   **contactFields**： 連絡人欄位使用作為搜索的限定詞。*(DOMString[])*[要求]
-
-*   **contactFindOptions**: 搜索選項來篩選 navigator.contacts。[可選]鍵包括：
-
-*   **篩選器**： 用來查找 navigator.contacts 的搜索字串。*() DOMString*（預設值：`""`)
-
-*   **多個**： 確定是否查找操作返回多個 navigator.contacts。*（布林）*（預設值：`false`)
+*   **contactFindOptions**： 搜索選項來篩選 navigator.contacts。[Optional]
     
-    *   **desiredFields**: 聯繫要回返回的欄位。如果指定了，生成的 `Contact` 物件只能使用這些欄位的值。*(DOMString[])*[可選]
+    鍵包括：
+    
+    *   **filter**： 用來找到 navigator.contacts 的搜索字串。*() DOMString*（預設： `""`)
+    
+    *   **multiple**： 確定是否查找操作返回多個 navigator.contacts。*(布林值)*（預設值： `false`)
+        
+        *   **desiredFields**： '連絡人' 欄位，又折回來。如果指定，由此產生的 `Contact` 物件只有這些欄位的功能值。*(DOMString[])* [Optional]
 
 ### 支援的平臺
 
@@ -149,7 +159,7 @@ Windows 8 連絡人是唯讀的。 透過科爾多瓦 API 接觸的不是可查�
 
 ## navigator.contacts.pickContact
 
-`navigator.contacts.pickContact`方法啟動連絡人選擇器來選擇一個連絡人。 所產生的物件傳遞給 `contactSuccess` 的**contactSuccess**參數所指定的回呼函數。
+`navigator.contacts.pickContact` 方法啟動連絡人選取器來選擇一個連絡人。 將生成的物件傳遞給 **contactSuccess** 參數所指定的 `contactSuccess` 回呼函數。
 
 ### 參數
 
@@ -176,47 +186,47 @@ Windows 8 連絡人是唯讀的。 透過科爾多瓦 API 接觸的不是可查�
 
 ## 連絡人
 
-`Contact`物件表示使用者的連絡人。 連絡人可以創建、 存儲，或從設備的連絡人資料庫中刪除。 連絡人可以也被 (單獨或批量） 從資料庫中檢索通過調用 `navigator.contacts.find` 方法。
+`Contact` 物件表示使用者的連絡人。 可以創建、 存儲，或從設備的連絡人資料庫中刪除連絡人。 連絡人可以也被 （單獨或批量） 從資料庫中檢索通過調用 `navigator.contacts.find` 方法。
 
-**注意**： 並不是所有上面列出的連絡人欄位平臺支援的每個設備。請檢查每個平臺*的怪癖*節瞭解詳細資訊。
+**注**： 並不是所有上面列出的連絡人欄位支援的每個設備的平臺。請檢查每個平臺 *的怪癖* 節瞭解詳細資訊。
 
 ### 屬性
 
 *   **id**： 一個全域唯一識別碼。*() DOMString*
 
-*   **顯示名稱**： 此連絡人，適合於向最終使用者顯示的名稱。*() DOMString*
+*   **displayName**： 此連絡人，適合於向最終使用者顯示的名稱。*() DOMString*
 
-*   **名稱**： 一個物件，包含所有元件的一個人的名字。*（連絡人姓名）*
+*   **name**： 一個物件，包含所有元件的一個人的名字。*（連絡人姓名）*
 
-*   **昵稱**： 休閒的位址連絡人名稱。*() DOMString*
+*   **nickname**： 休閒的位址連絡人名稱。*() DOMString*
 
-*   **手機號碼**： 陣列的所有連絡人的電話號碼。*(ContactField[])*
+*   **phoneNumbers**： 陣列的所有連絡人的電話號碼。*(ContactField[])*
 
-*   **電子郵件**： 所有連絡人的電子郵件地址的陣列。*(ContactField[])*
+*   **emails**： 所有連絡人的電子郵件地址的陣列。*(ContactField[])*
 
-*   **位址**： 該連絡人的所有位址的陣列。*(ContactAddress[])*
+*   **addresses**： 該連絡人的所有位址的陣列。*(ContactAddress[])*
 
 *   **ims**： 所有連絡人的 IM 位址的陣列。*(ContactField[])*
 
-*   **組織**： 該連絡人的所有組織的陣列。*(ContactOrganization[])*
+*   **organizations**： 該連絡人的所有組織的陣列。*(ContactOrganization[])*
 
-*   **生日**： 連絡人的生日。*（日期）*
+*   **birthday**： 連絡人的生日。*(Date)*
 
-*   **注意**： 注意有關的聯繫。*() DOMString*
+*   **note**： 注意有關的聯繫。*() DOMString*
 
-*   **照片**： 陣列的連絡人的照片。*(ContactField[])*
+*   **photos**： 陣列的連絡人的照片。*(ContactField[])*
 
-*   **類別**： 陣列與連絡人關聯的所有使用者定義的類別。*(ContactField[])*
+*   **categories**： 陣列與連絡人關聯的所有使用者定義的類別。*(ContactField[])*
 
 *   **url**： 陣列與連絡人關聯的 web 頁。*(ContactField[])*
 
 ### 方法
 
-*   **克隆**： 返回一個新的 `Contact` 物件就是調用物件的深層副本 `id` 屬性設置為`null`.
+*   **clone**： 返回一個新的 `Contact` 物件就是調用物件的深層副本 `id` 屬性設置為`null`.
 
-*   **刪除**： 從設備的連絡人資料庫中刪除連絡人，否則執行錯誤回檔與 `ContactError` 物件。
+*   **remove**： 從設備的連絡人資料庫中刪除連絡人，否則執行錯誤回檔與 `ContactError` 物件。
 
-*   **保存**： 將一個新的連絡人保存到設備的連絡人資料庫中，或更新現有的連絡人，如果已存在具有相同**id**的連絡人。
+*   **save**： 將一個新的連絡人保存到設備的連絡人資料庫中，或更新現有的連絡人，如果已存在具有相同 **id** 的連絡人。
 
 ### 支援的平臺
 
@@ -279,7 +289,7 @@ Windows 8 連絡人是唯讀的。 透過科爾多瓦 API 接觸的不是可查�
 
 ### Android 2.X 的怪癖
 
-*   **類別**： 不支援 Android 2.X 在設備上，返回`null`.
+*   **categories**： 不支援 Android 2.X 在設備上，返回`null`.
 
 ### 黑莓 10 的怪癖
 
@@ -287,73 +297,73 @@ Windows 8 連絡人是唯讀的。 透過科爾多瓦 API 接觸的不是可查�
 
 ### FirefoxOS 的怪癖
 
-*   **類別**： 部分支援。返回欄位**設定**和**類型**`null`
+*   **categories**： 部分支援。返回欄位**pref**和**type**`null`
 
 *   **ims**： 不支援
 
-*   **照片**： 不支援
+*   **photos**： 不支援
 
 ### iOS 的怪癖
 
-*   **顯示名稱**： 上返回的 iOS 不支援 `null` 除非有沒有 `ContactName` 指定，在這種情況下它將返回複合名稱，**昵稱**或 `""` ，分別。
+*   **displayName**： 上返回的 iOS 不支援 `null` 除非有沒有 `ContactName` 指定，在這種情況下它將返回複合名稱，**nickname**或 `""` ，分別。
 
-*   **生日**： 必須輸入 JavaScript 作為 `Date` 物件，它將返回相同的方式。
+*   **birthday**： 必須輸入 JavaScript 作為 `Date` 物件，它將返回相同的方式。
 
-*   **照片**： 返回到圖像中，存儲在應用程式的臨時目錄中檔的 URL。當應用程式退出時刪除臨時目錄的內容。
+*   **photos**： 返回到圖像中，存儲在應用程式的臨時目錄中檔的 URL。當應用程式退出時刪除臨時目錄的內容。
 
-*   **類別**： 目前不支援此屬性，返回`null`.
+*   **categories**： 目前不支援此屬性，返回`null`.
 
 ### Windows Phone 7 和 8 的怪癖
 
-*   **顯示名稱**： 當創建一個連絡人，提供的顯示名稱參數不同于顯示名稱的值檢索查找連絡人時。
+*   **displayName**： 當創建一個連絡人，提供的顯示名稱參數不同于顯示名稱的值檢索查找連絡人時。
 
 *   **url**： 當創建一個連絡人，使用者可以輸入和保存多個 web 位址，但只有一個是可用的搜索連絡人時。
 
-*   **聯繫電話嘛**：*究竟*選項不受支援。 在*查找*操作中不是支援的*類型*。 只有一個 `phoneNumber` 允許的每個*類型*.
+*   **phoneNumbers**：*pref*選項不受支援。 在*type*操作中不是支援的*find*。 只有一個 `phoneNumber` 允許的每個*type*.
 
-*   **電子郵件**：*究竟*選項不受支援。家庭和個人使用引用同一電子郵件項。只有一項是允許的每個*類型*.
+*   **emails**：*pref*選項不受支援。家庭和個人使用引用同一電子郵件項。只有一項是允許的每個*type*.
 
-*   **位址**： 僅支援的工作和家庭/個人*類型*。家庭和個人*類型*引用相同的位址條目。只有一項是允許的每個*類型*.
+*   **addresses**： 僅支援的工作和家庭/個人*type*。家庭和個人*type*引用相同的位址條目。只有一項是允許的每個*type*.
 
-*   **組織**： 唯一一個允許的和不支援的*那個 + 號*、*類型*和*部門*的屬性。
+*   **organizations**： 唯一一個允許的和不支援的*pref*、*type*和*department*的屬性。
 
-*   **注意**： 不支援，返回`null`.
+*   **note**： 不支援，返回`null`.
 
 *   **ims**： 不受支援，返回`null`.
 
-*   **生日**: 不受支援，返回`null`.
+*   **birthdays**: 不受支援，返回`null`.
 
-*   **類別**： 不受支援，返回`null`.
+*   **categories**： 不受支援，返回`null`.
 
 ### Windows 的怪癖
 
-*   **照片**： 返回到圖像中，存儲在應用程式的臨時目錄中檔的 URL。
+*   **photos**： 返回到圖像中，存儲在應用程式的臨時目錄中檔的 URL。
 
-*   **生日**: 不受支援，返回`null`.
+*   **birthdays**: 不受支援，返回`null`.
 
-*   **類別**： 不受支援，返回`null`.
+*   **categories**： 不受支援，返回`null`.
 
 ## ContactAddress
 
-`ContactAddress`物件存儲的單一位址的連絡人的屬性。 A `Contact` 物件可能包括多個位址在 `ContactAddress[]` 陣列。
+`ContactAddress` 物件存儲單個位址的連絡人的屬性。 `Contact` 物件可能包括多個位址 `ContactAddress []` 陣列中。
 
 ### 屬性
 
-*   **那個 + 號**： 設置為 `true` 如果這個 `ContactAddress` 包含使用者的首選的價值。*（布林）*
+*   **pref**： 設置為 `true` 如果這個 `ContactAddress` 包含使用者的首選的價值。*（Boolean）*
 
-*   **類型**： 一個字串，例如指示哪種類型的欄位，這是*回家*。*() DOMString*
+*   **type**： 一個字串，例如指示哪種類型的欄位，這是*home*。*() DOMString*
 
-*   **格式**： 顯示格式的完整位址。*() DOMString*
+*   **formatted**： 顯示格式的完整位址。*() DOMString*
 
 *   **streetAddress**： 完整的街道位址。*() DOMString*
 
-*   **地點**： 城市或地點。*() DOMString*
+*   **locality**： 城市或地點。*() DOMString*
 
-*   **區域**： 國家或地區。*() DOMString*
+*   **region**： 國家或地區。*() DOMString*
 
-*   **郵遞區號**： 郵遞區號。*() DOMString*
+*   **postalCode**： 郵遞區號。*() DOMString*
 
-*   **國家**： 國家名稱。*() DOMString*
+*   **country**： 國家名稱。*() DOMString*
 
 ### 支援的平臺
 
@@ -398,51 +408,51 @@ Windows 8 連絡人是唯讀的。 透過科爾多瓦 API 接觸的不是可查�
 
 ### Android 2.X 的怪癖
 
-*   **究竟**: 不受支援，返回 `false` Android 2.X 的設備上。
+*   **pref**: 不受支援，返回 `false` Android 2.X 的設備上。
 
 ### 黑莓 10 的怪癖
 
-*   **設定**： 在返回的黑莓設備上不支援`false`.
+*   **pref**： 在返回的黑莓設備上不支援`false`.
 
-*   **類型**： 部分支援。只有一個*工作*和*家裡*類型位址可以存儲每個連絡人。
+*   **type**： 部分支援。只有一個*Word*和*Home*類型位址可以存儲每個連絡人。
 
-*   **格式化**： 部分支援。返回的串聯的所有黑莓手機位址欄位。
+*   **formatted**： 部分支援。返回的串聯的所有黑莓手機位址欄位。
 
-*   **streetAddress**： 支援。返回和串聯組成的黑莓**位址 1** **位址 2**位址欄位。
+*   **streetAddress**： 支援。返回和串聯組成的黑莓**address1** **address2**位址欄位。
 
-*   **所在地**： 支援。黑莓手機**城**位址欄位中存儲。
+*   **locality**： 支援。黑莓手機**city**位址欄位中存儲。
 
-*   **區域**： 支援。黑莓**stateProvince**位址欄位中存儲。
+*   **region**： 支援。黑莓**stateProvince**位址欄位中存儲。
 
-*   **郵遞區號**： 支援。黑莓**zipPostal**位址欄位中存儲。
+*   **postalCode**： 支援。黑莓**zipPostal**位址欄位中存儲。
 
-*   **國家**： 支援。
+*   **country**： 支援。
 
 ### FirefoxOS 的怪癖
 
-*   **格式化**： 目前不支援
+*   **formatted**： 目前不支援
 
 ### iOS 的怪癖
 
-*   **那個 + 號**： 不支援在 iOS 設備上，返回`false`.
+*   **pref**： 不支援在 iOS 設備上，返回`false`.
 
-*   **格式化**： 目前不支援。
+*   **formatted**： 目前不支援。
 
 ### Windows 8 的怪癖
 
-*   **那個 + 號**： 不支援
+*   **pref**： 不支援
 
 ### Windows 的怪癖
 
-*   **那個 + 號**： 不支援
+*   **pref**： 不支援
 
 ## ContactError
 
-`ContactError`物件返回到使用者通過 `contactError` 發生錯誤時的回呼函數。
+當發生錯誤時，通過 `contactError` 回呼函數為使用者情況下會返回的 `ContactError` 物件。
 
 ### 屬性
 
-*   **代碼**： 下面列出的預定義的錯誤代碼之一。
+*   **code**： 下面列出的預定義的錯誤代碼之一。
 
 ### 常量
 
@@ -456,17 +466,17 @@ Windows 8 連絡人是唯讀的。 透過科爾多瓦 API 接觸的不是可查�
 
 ## ContactField
 
-`ContactField`物件是可重用的元件代表一般連絡人欄位。 每個 `ContactField` 物件包含 `value` ， `type` ，和 `pref` 屬性。 A `Contact` 物件存儲中的幾個屬性 `ContactField[]` 陣列，例如電話號碼和電子郵件地址。
+`ContactField` 物件是可重用的元件代表一般連絡人欄位。 每個 `ContactField` 物件包含一個 `value`、 `type` 和 `pref` 的屬性。 `Contacat` 物件將幾個屬性存儲在 `ContactField []` 陣列，例如電話號碼和電子郵件地址。
 
-在大多數情況下，有沒有預先確定的值 `ContactField` 物件的**type**屬性。 例如，電話號碼可以指定**類型**的*家庭*、*工作*、*手機*、 *iPhone*或由一個特定的設備平臺接觸資料庫系統支援的任何其他值的值。 然而，對於 `Contact` **的照片**欄位，**類型**欄位指示返回圖像的格式： **url**的**值**屬性包含的照片圖像或*base64*的 URL 時的**值**包含一個 base64 編碼圖像字串時。
+在大多數情況下，沒有預先確定的 `ContactField` 物件的 **type** 屬性值。 例如，一個電話號碼可以指定 **type** 值的 *home*、 *work*、 *mobile*、 *iPhone* 或由一個特定的設備平臺接觸資料庫系統支援的任何其他值。 然而，為 `photos` **照片** 欄位中，**type** 欄位指示返回圖像的格式： 當 **value** 屬性包含一個指向的照片圖像或 *base64* URL 時的 **value** 包含 string base64 編碼的圖像的 **url**。
 
 ### 屬性
 
-*   **類型**： 一個字串，例如指示哪種類型的欄位，這是*回家*。*() DOMString*
+*   **type**： 一個字串，例如指示哪種類型的欄位，這是*home*。*() DOMString*
 
-*   **價值**： 欄位的值，如電話號碼或電子郵件地址。*() DOMString*
+*   **value**： 欄位的值，如電話號碼或電子郵件地址。*() DOMString*
 
-*   **那個 + 號**： 設置為 `true` 如果這個 `ContactField` 包含使用者的首選的價值。*（布林）*
+*   **pref**： 設置為 `true` 如果這個 `ContactField` 包含使用者的首選的價值。*（布林）*
 
 ### 支援的平臺
 
@@ -497,41 +507,41 @@ Windows 8 連絡人是唯讀的。 透過科爾多瓦 API 接觸的不是可查�
 
 ### Android 的怪癖
 
-*   **上一頁**: 不受支援，返回`false`.
+*   **pref**: 不受支援，返回`false`.
 
 ### 黑莓 10 的怪癖
 
-*   **類型**： 部分支援。使用的電話號碼。
+*   **type**： 部分支援。使用的電話號碼。
 
-*   **價值**： 支援。
+*   **value**： 支援。
 
-*   **究竟**: 不受支援，返回`false`.
+*   **pref**: 不受支援，返回`false`.
 
 ### iOS 的怪癖
 
-*   **究竟**: 不受支援，返回`false`.
+*   **pref**: 不受支援，返回`false`.
 
 ### Windows8 的怪癖
 
-*   **究竟**: 不受支援，返回`false`.
+*   **pref**: 不受支援，返回`false`.
 
 ### Windows 的怪癖
 
-*   **究竟**: 不受支援，返回`false`.
+*   **pref**: 不受支援，返回`false`.
 
-## 連絡人姓名
+## ContactName
 
-關於包含不同種類的資訊 `Contact` 物件的名稱。
+包含不同種類的 `Contact` 物件名稱有關的資訊。
 
 ### 屬性
 
-*   **格式化**： 該連絡人的完整名稱。*() DOMString*
+*   **formatted**： 該連絡人的完整名稱。*() DOMString*
 
-*   **字體集**： 連絡人的姓氏。*() DOMString*
+*   **familyName**： 連絡人的姓氏。*() DOMString*
 
 *   **givenName**： 連絡人的名字。*() DOMString*
 
-*   **連絡人**： 連絡人的中間名。*() DOMString*
+*   **middleName**： 連絡人的中間名。*() DOMString*
 
 *   **honorificPrefix**： 連絡人的首碼 （例如*先生*或*博士*） *(DOMString)*
 
@@ -540,7 +550,7 @@ Windows 8 連絡人是唯讀的。 透過科爾多瓦 API 接觸的不是可查�
 ### 支援的平臺
 
 *   亞馬遜火 OS
-*   Android 2.X
+*   Android 系統
 *   黑莓 10
 *   火狐瀏覽器的作業系統
 *   iOS
@@ -573,17 +583,17 @@ Windows 8 連絡人是唯讀的。 透過科爾多瓦 API 接觸的不是可查�
 
 ### Android 的怪癖
 
-*   **格式化**： 部分受支援，並為唯讀。 返回的串聯的 `honorificPrefix` ， `givenName` ， `middleName` ， `familyName` ，和`honorificSuffix`.
+*   **formatted**： 部分受支援，並為唯讀。 返回的串聯的 `honorificPrefix` ， `givenName` ， `middleName` ， `familyName` ，和`honorificSuffix`.
 
 ### 黑莓 10 的怪癖
 
-*   **格式化**： 部分支援。返回的串聯的黑莓手機**名字**和**姓氏**欄位。
+*   **formatted**： 部分支援。返回的串聯的黑莓手機**firstName**和**lastName**欄位。
 
-*   **字體集**： 支援。黑莓**姓氏**欄位中存儲。
+*   **familyName**： 支援。黑莓**lastName**欄位中存儲。
 
-*   **givenName**： 支援。黑莓**名字**欄位中存儲。
+*   **givenName**： 支援。黑莓**firstName**欄位中存儲。
 
-*   **連絡人**: 不受支援，返回`null`.
+*   **middleName**: 不受支援，返回`null`.
 
 *   **honorificPrefix**: 不受支援，返回`null`.
 
@@ -591,21 +601,21 @@ Windows 8 連絡人是唯讀的。 透過科爾多瓦 API 接觸的不是可查�
 
 ### FirefoxOS 的怪癖
 
-*   **格式化**： 部分受支援，並為唯讀。 返回的串聯的 `honorificPrefix` ， `givenName` ， `middleName` ， `familyName` ，和`honorificSuffix`.
+*   **formatted**： 部分受支援，並為唯讀。 返回的串聯的 `honorificPrefix` ， `givenName` ， `middleName` ， `familyName` ，和`honorificSuffix`.
 
 ### iOS 的怪癖
 
-*   **格式化**： 部分支援。返回 iOS 複合名稱，但為唯讀。
+*   **formatted**： 部分支援。返回 iOS 複合名稱，但為唯讀。
 
 ### Windows 8 的怪癖
 
-*   **格式**： 這是唯一名稱屬性，並且是相同的 `displayName` ，和`nickname`
+*   **formatted**： 這是唯一名稱屬性，並且是相同的 `displayName` ，和`nickname`
 
-*   **字體集**： 不支援
+*   **familyName**： 不支援
 
 *   **givenName**： 不支援
 
-*   **連絡人**： 不支援
+*   **middleName**： 不支援
 
 *   **honorificPrefix**: 不支援
 
@@ -613,23 +623,23 @@ Windows 8 連絡人是唯讀的。 透過科爾多瓦 API 接觸的不是可查�
 
 ### Windows 的怪癖
 
-*   **格式**： 它是完全相同`displayName`
+*   **formatted**： 它是完全相同`displayName`
 
 ## ContactOrganization
 
-`ContactOrganization`物件存儲連絡人的組織屬性。A `Contact` 物件存儲一個或多個 `ContactOrganization` 陣列中的物件。
+`ContactOrganization` 物件存儲連絡人的組織屬性。`Contact` 物件將一個或多個 `ContactOrganization` 物件存儲在一個陣列中。
 
 ### 屬性
 
-*   **那個 + 號**： 設置為 `true` 如果這個 `ContactOrganization` 包含使用者的首選的價值。*（布林）*
+*   **pref**： 設置為 `true` 如果這個 `ContactOrganization` 包含使用者的首選的價值。*（布林）*
 
-*   **類型**： 一個字串，例如指示哪種類型的欄位，這是*回家*。_(DOMString)
+*   **type**： 一個字串，例如指示哪種類型的欄位，這是*回家*。_(DOMString)
 
-*   **名稱**： 組織的名稱。*() DOMString*
+*   **name**： 組織的名稱。*() DOMString*
 
-*   **部門**： 合同工作為的部門。*() DOMString*
+*   **department**： 合同工作為的部門。*() DOMString*
 
-*   **標題**： 在組織連絡人的標題。*() DOMString*
+*   **title**： 在組織連絡人的標題。*() DOMString*
 
 ### 支援的平臺
 
@@ -666,44 +676,44 @@ Windows 8 連絡人是唯讀的。 透過科爾多瓦 API 接觸的不是可查�
 
 ### Android 2.X 的怪癖
 
-*   **那個 + 號**： 不支援的 Android 2.X 的設備，返回`false`.
+*   **pref**： 不支援的 Android 2.X 的設備，返回`false`.
 
 ### 黑莓 10 的怪癖
 
-*   **那個 + 號**： 不支援的黑莓手機，返回`false`.
+*   **pref**： 不支援的黑莓手機，返回`false`.
 
-*   **類型**： 不支援的黑莓手機，返回`null`.
+*   **type**： 不支援的黑莓手機，返回`null`.
 
-*   **名稱**： 部分支援。第一次組織名稱存儲在黑莓**公司**欄位中。
+*   **name**： 部分支援。第一次組織名稱存儲在黑莓**company**欄位中。
 
-*   **部**: 不受支援，返回`null`.
+*   **department**: 不受支援，返回`null`.
 
-*   **標題**： 部分支援。第一次組織標題存儲在欄位中黑莓**渺小**。
+*   **title**： 部分支援。第一次組織標題存儲在欄位中黑莓**jobTitle**。
 
 ### 火狐瀏覽器作業系統的怪癖
 
-*   **那個 + 號**： 不支援
+*   **pref**： 不支援
 
-*   **類型**： 不支援
+*   **type**： 不支援
 
-*   **部門**： 不支援
+*   **department**： 不支援
 
-*   欄位**名稱**和**標題**存儲在**組織結構圖**和**渺小**.
+*   欄位**name**和**title**存儲在**org**和**jobTitle**.
 
 ### iOS 的怪癖
 
-*   **那個 + 號**： 不支援在 iOS 設備上，返回`false`.
+*   **pref**： 不支援在 iOS 設備上，返回`false`.
 
-*   **類型**： 不支援在 iOS 設備上，返回`null`.
+*   **type**： 不支援在 iOS 設備上，返回`null`.
 
-*   **名稱**： 部分支援。第一次組織名稱存儲在 iOS **kABPersonOrganizationProperty**欄位中。
+*   **name**： 部分支援。第一次組織名稱存儲在 iOS **kABPersonOrganizationProperty**欄位中。
 
-*   **部門**： 部分支援。第一部門名稱存儲在 iOS **kABPersonDepartmentProperty**欄位中。
+*   **department**： 部分支援。第一部門名稱存儲在 iOS **kABPersonDepartmentProperty**欄位中。
 
-*   **標題**： 部分支援。第一個標題存儲在 iOS **kABPersonJobTitleProperty**欄位中。
+*   **title**： 部分支援。第一個標題存儲在 iOS **kABPersonJobTitleProperty**欄位中。
 
 ### Windows 的怪癖
 
-*   **究竟**: 不受支援，返回`false`.
+*   **pref**: 不受支援，返回`false`.
 
-*   **類型**： 不受支援，返回`null`.
+*   **type**： 不受支援，返回`null`.

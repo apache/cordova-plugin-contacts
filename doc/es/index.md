@@ -19,13 +19,19 @@
 
 # org.apache.cordova.contacts
 
-Proporciona acceso a la base de datos de contactos de dispositivo.
+Este plugin define un global `navigator.contacts` objeto que proporciona acceso a la base de datos de contactos de dispositivo.
 
-**ADVERTENCIA**: recopilación y uso de datos plantea cuestiones de privacidad importante. Política de privacidad de su aplicación debe discutir cómo la aplicación utiliza datos de contacto y si es compartida con terceros. Información de contacto se considera sensible porque revela la gente con quien se comunica una persona. Por lo tanto, además de política de privacidad de la app, fuertemente considere dar un aviso de just-in-time antes de la aplicación accede a ellos o utiliza los datos de contacto, si el sistema operativo del dispositivo no hacerlo ya. Que el aviso debe proporcionar la misma información mencionada, además de obtener un permiso del usuario (por ejemplo, presentando opciones para **Aceptar** y **No gracias**). Tenga en cuenta que algunos mercados de aplicación podrán exigir la aplicación para proporcionar un aviso de just-in-time y obtener el permiso del usuario antes de acceder a datos de contacto. Una experiencia de usuario clara y fácil de entender que rodean el uso de contacto datos ayuda a evitar la confusión del usuario y percibe uso indebido de los datos de contacto. Para obtener más información, consulte a la guía de privacidad.
+Aunque el objeto está unido al ámbito global `navigator` , no estará disponible hasta después de la `deviceready` evento.
+
+    document.addEventListener ("deviceready", onDeviceReady, false);
+    function onDeviceReady() {console.log(navigator.contacts)};
+    
+
+**ADVERTENCIA**: recopilación y uso de datos plantea cuestiones de privacidad importante. Política de privacidad de su aplicación debe discutir cómo la aplicación utiliza datos de contacto y si es compartida con terceros. Información de contacto se considera sensible porque revela la gente con quien se comunica una persona. Por lo tanto, además de política de privacidad de la app, fuertemente considere dar un aviso de just-in-time antes de la aplicación accede a ellos o utiliza los datos de contacto, si el sistema operativo del dispositivo no hacerlo ya. Que el aviso debe proporcionar la misma información mencionada, además de obtener un permiso del usuario (por ejemplo, presentando opciones para **Aceptar** y **No gracias**). Tenga en cuenta que algunos mercados de aplicación podrán exigir la aplicación para proporcionar un aviso de just-in-time y obtener el permiso del usuario antes de acceder a datos de contacto. Una experiencia de usuario clara y fácil de entender que rodean el uso de contacto datos ayuda a evitar la confusión del usuario y percibe uso indebido de los datos de contacto. Para obtener más información, por favor consulte a la guía de privacidad.
 
 ## Instalación
 
-    cordova plugin add org.apache.cordova.contacts
+    Cordova plugin agregar org.apache.cordova.contacts
     
 
 ### Firefox OS rarezas
@@ -36,18 +42,12 @@ Crear **www/manifest.webapp** como se describe en [Manifestar Docs][1]. Agregar 
  [2]: https://developer.mozilla.org/en-US/Apps/Developing/Manifest#type
  [3]: https://developer.mozilla.org/en-US/Apps/CSP
 
-    "type": "privileged",
-    "permissions": {
-        "contacts": {
-            "access": "readwrite",
-            "description": "Describe why there is a need for such permission"
-        }
-    }
+    "tipo": "el privilegio", "permisos": {"contactos": {"acceso": "readwrite", "Descripción": "describir por qué hay una necesidad de tal autorización"}}
     
 
 ### Windows rarezas
 
-Cualquier contacto regresado de `find` y `pickContact` los métodos son readonly, así que su aplicación no puede modificarlos. `find`método disponible sólo en dispositivos Windows Phone 8.1.
+Cualquier contacto regresado de `find` y `pickContact` métodos son readonly, por lo que su aplicación no puede modificarlos. `find`método disponible sólo en dispositivos Windows Phone 8.1.
 
 ### Rarezas de Windows 8
 
@@ -76,7 +76,7 @@ Windows 8 contactos son de sólo lectura. Través de los contactos de la API de 
 
 El `navigator.contacts.create` método es sincrónico y devuelve una nueva `Contact` objeto.
 
-Este método no retener el objeto de contacto en la base de contactos de dispositivo, para lo cual necesitas invocar el método `Contact.save`.
+Este método no retiene el objeto de contacto en la base de contactos de dispositivo, para lo cual necesita invocar el `Contact.save` método.
 
 ### Plataformas soportadas
 
@@ -88,32 +88,34 @@ Este método no retener el objeto de contacto en la base de contactos de disposi
 
 ### Ejemplo
 
-    var myContact = navigator.contacts.create({"displayName": "Test User"});
+    var myContact = navigator.contacts.create ({"displayName": "Test User"});
     
 
 ## navigator.contacts.find
 
-El `navigator.contacts.find` método se ejecuta asincrónicamente, consultando la base de datos de contactos de dispositivo y devolver una matriz de `Contact` objetos. Los objetos resultantes son pasados a la función de callback `contactSuccess` especificada por el parámetro **contactSuccess**.
+El `navigator.contacts.find` método se ejecuta asincrónicamente, consultando la base de datos de contactos de dispositivo y devolver una matriz de `Contact` objetos. Los objetos resultantes son pasados a la `contactSuccess` función de devolución de llamada especificada por el parámetro **contactSuccess** .
 
-El parámetro **contactFields** especifica los campos para ser utilizado como un calificador de búsqueda. Un parámetro de longitud cero **contactFields** no es válido y resultados en `ContactError.INVALID_ARGUMENT_ERROR` . Un valor de **contactFields** de `"*"` devuelve todo contacto con campos.
+El parámetro **contactFields** especifica los campos para ser utilizado como un calificador de búsqueda. Un parámetro de longitud cero **contactFields** no es válido y resultados en `ContactError.INVALID_ARGUMENT_ERROR` . Un valor de **contactFields** de `"*"` busca campos todo contactos.
 
-La cadena de **contactFindOptions.filter** puede ser usada como un filtro de búsqueda al consultar la base de datos de contactos. Si proporciona, mayúsculas y minúsculas, coincidencia parcial valor se aplica a cada campo especificado en el parámetro **contactFields**. Si hay un partido para *cualquier* de los campos especificados, se devuelve el contacto. Uso **contactFindOptions.desiredFields** parámetro al control que Contacta con propiedades debe devolverse atrás.
+La cadena de **contactFindOptions.filter** puede ser usada como un filtro de búsqueda al consultar la base de datos de contactos. Si proporciona, una entre mayúsculas y minúsculas, coincidencia parcial valor se aplica a cada campo especificado en el parámetro **contactFields** . Si hay un partido para *cualquier* de los campos especificados, se devuelve el contacto. Uso **contactFindOptions.desiredFields** parámetro al control que Contacta con propiedades debe devolverse atrás.
 
 ### Parámetros
 
-*   **contactSuccess**: función de callback de éxito se invoca con la matriz de objetos contacto devueltos desde la base de datos. [Obligatorio]
+*   **contactFields**: póngase en contacto con campos para usar como un calificador de búsqueda. *(DOMString[])* [Required]
 
-*   **contactError**: función de callback de Error, se invoca cuando se produce un error. [Opcional]
+*   **contactSuccess**: función de callback de éxito se invoca con la matriz de objetos contacto devueltos desde la base de datos. [Required]
 
-*   **contactFields**: póngase en contacto con campos para usar como un calificador de búsqueda. *(DOMString[])* [Obligatorio]
+*   **contactError**: función de callback de Error, se invoca cuando se produce un error. [Optional]
 
-*   **contactFindOptions**: buscar opciones para filtrar navigator.contacts. [Opcional] Claves incluyen:
-
-*   **filtro**: la cadena de búsqueda utilizada para encontrar navigator.contacts. *(DOMString)* (Por defecto:`""`)
-
-*   **múltiples**: determina si la operación de búsqueda devuelve múltiples navigator.contacts. *(Booleano)* (Por defecto:`false`)
+*   **contactFindOptions**: buscar opciones para filtrar navigator.contacts. [Optional]
     
-    *   **desiredFields**: póngase en contacto con campos para volver atrás. Si se especifica, la resultante `Contact` objeto sólo cuenta con los valores de estos campos. *(DOMString[])* [Opcional]
+    Claves incluyen:
+    
+    *   **filtro**: la cadena de búsqueda utilizada para encontrar navigator.contacts. *(DOMString)* (Por defecto:`""`)
+    
+    *   **múltiples**: determina si la operación de búsqueda devuelve múltiples navigator.contacts. *(Booleano)* (Por defecto:`false`)
+        
+        *   **desiredFields**: póngase en contacto con campos para volver atrás. Si se especifica, la resultante `Contact` objeto sólo cuenta con los valores de estos campos. *(DOMString[])* [Optional]
 
 ### Plataformas soportadas
 
@@ -126,21 +128,16 @@ La cadena de **contactFindOptions.filter** puede ser usada como un filtro de bú
 
 ### Ejemplo
 
-    function onSuccess(contacts) {
-        alert('Found ' + contacts.length + ' contacts.');
-    };
+    function onSuccess(contacts) {alert ('Encontrados' + contacts.length + 'contactos de.');};
     
-    function onError(contactError) {
-        alert('onError!');
-    };
+    function onError(contactError) {alert('onError!');};
     
-    // find all contacts with 'Bob' in any name field
-    var options      = new ContactFindOptions();
-    options.filter   = "Bob";
-    options.multiple = true;
+    encuentra todos los contactos con 'Bob' en cualquier nombre campo var opciones = new ContactFindOptions();
+    options.Filter = "Bob";
+    options.Multiple = true;
     options.desiredFields = [navigator.contacts.fieldType.id];
-    var fields       = [navigator.contacts.fieldType.displayName, navigator.contacts.fieldType.name];
-    navigator.contacts.find(fields, onSuccess, onError, options);
+    campos var = [navigator.contacts.fieldType.displayName, navigator.contacts.fieldType.name];
+    Navigator.contacts.Find (campos, onSuccess, onError, opciones);
     
 
 ### Windows rarezas
@@ -167,10 +164,8 @@ El `navigator.contacts.pickContact` método lanza el selector para seleccionar u
 
 ### Ejemplo
 
-    navigator.contacts.pickContact(function(contact){
-            console.log('The following contact has been selected:' + JSON.stringify(contact));
-        },function(err){
-            console.log('Error: ' + err);
+    navigator.contacts.pickContact(function(contact) {console.log (' se ha seleccionado el siguiente contacto: "+ JSON.stringify(contact));
+        }, function(err) {console.log ('Error: ' + err);
         });
     
 
@@ -231,50 +226,35 @@ El `Contact` objeto representa el contacto de un usuario. Contactos pueden ser c
 
 ### Salvar ejemplo
 
-    function onSuccess(contact) {
-        alert("Save Success");
-    };
+    function onSuccess(contact) {alert ("salvar con éxito");};
     
-    function onError(contactError) {
-        alert("Error = " + contactError.code);
-    };
+    function onError(contactError) {alert ("Error =" + contactError.code);};
     
-    // create a new contact object
-    var contact = navigator.contacts.create();
-    contact.displayName = "Plumber";
-    contact.nickname = "Plumber";            // specify both to support all devices
-    
-    // populate some fields
-    var name = new ContactName();
+    crear un nuevo objeto contacto var contacto = navigator.contacts.create();
+    contact.displayName = "Plomero";
+    Contact.nickname = "Plomero";            especificar tanto para todos los dispositivos de apoyo / / rellenar algún nombre var campos = new ContactName();
     name.givenName = "Jane";
     name.familyName = "Doe";
-    contact.name = name;
+    Contact.name = nombre;
     
-    // save to device
-    contact.save(onSuccess,onError);
+    guardar en el dispositivo contact.save(onSuccess,onError);
     
 
 ### Ejemplo de clon
 
-        // clone the contact object
-        var clone = contact.clone();
+        clon del clon de contacto objeto var = contact.clone();
         clone.name.givenName = "John";
-        console.log("Original contact name = " + contact.name.givenName);
-        console.log("Cloned contact name = " + clone.name.givenName);
+        Console.log ("contacto Original nombre =" + contact.name.givenName);
+        Console.log ("Cloned contacto nombre =" + clone.name.givenName);
     
 
 ### Quitar ejemplo
 
-    function onSuccess() {
-        alert("Removal Success");
-    };
+    function onSuccess() {alert ("retiro el éxito");};
     
-    function onError(contactError) {
-        alert("Error = " + contactError.code);
-    };
+    function onError(contactError) {alert ("Error =" + contactError.code);};
     
-    // remove the contact from the device
-    contact.remove(onSuccess,onError);
+    quitar el contacto de la contact.remove(onSuccess,onError) del dispositivo;
     
 
 ### Rarezas Android 2.X
@@ -335,7 +315,7 @@ El `Contact` objeto representa el contacto de un usuario. Contactos pueden ser c
 
 ## ContactAddress
 
-El objeto `ContactAddress` almacena las propiedades de una única dirección de un contacto. Un objeto de `Contact` puede incluir más de una dirección en un array `ContactAddress[]`.
+El `ContactAddress` objeto almacena las propiedades de una única dirección de un contacto. A `Contact` objeto puede incluir más de una dirección en un `ContactAddress[]` matriz.
 
 ### Propiedades
 
@@ -368,32 +348,17 @@ El objeto `ContactAddress` almacena las propiedades de una única dirección de 
 
 ### Ejemplo
 
-    // display the address information for all contacts
-    
-    function onSuccess(contacts) {
-        for (var i = 0; i < contacts.length; i++) {
-            for (var j = 0; j < contacts[i].addresses.length; j++) {
-                alert("Pref: "         + contacts[i].addresses[j].pref          + "\n" +
-                    "Type: "           + contacts[i].addresses[j].type          + "\n" +
-                    "Formatted: "      + contacts[i].addresses[j].formatted     + "\n" +
-                    "Street Address: " + contacts[i].addresses[j].streetAddress + "\n" +
-                    "Locality: "       + contacts[i].addresses[j].locality      + "\n" +
-                    "Region: "         + contacts[i].addresses[j].region        + "\n" +
-                    "Postal Code: "    + contacts[i].addresses[j].postalCode    + "\n" +
-                    "Country: "        + contacts[i].addresses[j].country);
+    Mostrar la información de dirección para el funcionan de todos los contactos onSuccess(contacts) {para (var = 0; < contacts.length; i ++) {para (var j = 0; j < contacts[i].addresses.length; j ++) {alert ("Pref:" + contacts[i].addresses[j].pref + "\n" + "tipo:" + contacts[i].addresses[j].type + "\n" + "formato:" + contacts[i].addresses[j].formatted + "\n" + "dirección: "+ contacts[i].addresses[j].streetAddress +"\n"+" localidad: "+ contacts[i].addresses[j].locality +"\n"+" región: "+ contacts[i].addresses[j].region +"\n"+" Código Postal: "+ contacts[i].addresses[j].postalCode +"\n"+" país: "+ contacts[i].addresses[j].country);
             }
         }
     };
     
-    function onError(contactError) {
-        alert('onError!');
-    };
+    function onError(contactError) {alert('onError!');};
     
-    // find all contacts
-    var options = new ContactFindOptions();
-    options.filter = "";
-    var filter = ["displayName", "addresses"];
-    navigator.contacts.find(filter, onSuccess, onError, options);
+    encontrar todos los contactos var opciones = new ContactFindOptions();
+    options.Filter = "";
+    filtro var = ["displayName", "direcciones"];
+    Navigator.contacts.Find (filtro, onSuccess, onError, opciones);
     
 
 ### Rarezas Android 2.X
@@ -481,18 +446,14 @@ En la mayoría de los casos, no existen previamente determinados valores para un
 
 ### Ejemplo
 
-        // create a new contact
-        var contact = navigator.contacts.create();
+        crear un nuevo contacto contacto var = navigator.contacts.create();
     
-        // store contact phone numbers in ContactField[]
-        var phoneNumbers = [];
-        phoneNumbers[0] = new ContactField('work', '212-555-1234', false);
-        phoneNumbers[1] = new ContactField('mobile', '917-555-5432', true); // preferred number
-        phoneNumbers[2] = new ContactField('home', '203-555-7890', false);
-        contact.phoneNumbers = phoneNumbers;
+        almacenar números de teléfono de contacto en números de var ContactField [] = [];
+        phoneNumbers[0] = new ContactField ('trabajo', ' 212-555-1234', false);
+        phoneNumbers[1] = new ContactField ('móviles', ' 917-555-5432', true); recomendado: número phoneNumbers[2] = new ContactField ('home', ' 203-555-7890', false);
+        contact.phoneNumbers = números;
     
-        // save the contact
-        contact.save();
+        guardar el contacto contact.save();
     
 
 ### Rarezas Android
@@ -540,7 +501,7 @@ Contiene diferentes tipos de información sobre un `Contact` nombre del objeto.
 ### Plataformas soportadas
 
 *   Amazon fire OS
-*   Android 2.X
+*   Android
 *   BlackBerry 10
 *   Firefox OS
 *   iOS
@@ -550,25 +511,16 @@ Contiene diferentes tipos de información sobre un `Contact` nombre del objeto.
 
 ### Ejemplo
 
-    function onSuccess(contacts) {
-        for (var i = 0; i < contacts.length; i++) {
-            alert("Formatted: "  + contacts[i].name.formatted       + "\n" +
-                "Family Name: "  + contacts[i].name.familyName      + "\n" +
-                "Given Name: "   + contacts[i].name.givenName       + "\n" +
-                "Middle Name: "  + contacts[i].name.middleName      + "\n" +
-                "Suffix: "       + contacts[i].name.honorificSuffix + "\n" +
-                "Prefix: "       + contacts[i].name.honorificSuffix);
+    función onSuccess(contacts) {para (var = 0; < contacts.length; i ++) {alert ("formateada:" + contacts[i].name.formatted + "\n" + "Apellido:" + contacts[i].name.familyName + "\n" + "nombre:" + contacts[i].name.givenName + "\n" + "segundo nombre:" + contacts[i].name.middleName + "\n" + "sufijo:" + contacts[i].name.honorificSuffix + "\n" + "prefijo:" + contacts[i].name.honorificSuffix);
         }
     };
     
-    function onError(contactError) {
-        alert('onError!');
-    };
+    function onError(contactError) {alert('onError!');};
     
-    var options = new ContactFindOptions();
-    options.filter = "";
-    filter = ["displayName", "name"];
-    navigator.contacts.find(filter, onSuccess, onError, options);
+    var opciones = new ContactFindOptions();
+    options.Filter = "";
+    filtro = ["displayName", "nombre"];
+    Navigator.contacts.Find (filtro, onSuccess, onError, opciones);
     
 
 ### Rarezas Android
@@ -642,26 +594,17 @@ El `ContactOrganization` objeto almacena las propiedades de organización de un 
 
 ### Ejemplo
 
-    function onSuccess(contacts) {
-        for (var i = 0; i < contacts.length; i++) {
-            for (var j = 0; j < contacts[i].organizations.length; j++) {
-                alert("Pref: "      + contacts[i].organizations[j].pref       + "\n" +
-                    "Type: "        + contacts[i].organizations[j].type       + "\n" +
-                    "Name: "        + contacts[i].organizations[j].name       + "\n" +
-                    "Department: "  + contacts[i].organizations[j].department + "\n" +
-                    "Title: "       + contacts[i].organizations[j].title);
+    function onSuccess(contacts) {para (var = 0; < contacts.length; i ++) {para (var j = 0; j < contacts[i].organizations.length; j ++) {alert ("Pref:" + contacts[i].organizations[j].pref + "\n" + "tipo:" + contacts[i].organizations[j].type + "\n" + "nombre:" + contacts[i].organizations[j].name + "\n" + "Departamento:" + contacts[i].organizations[j].department + "\n" + "título: "+ contacts[i].organizations[j].title);
             }
         }
     };
     
-    function onError(contactError) {
-        alert('onError!');
-    };
+    function onError(contactError) {alert('onError!');};
     
-    var options = new ContactFindOptions();
-    options.filter = "";
-    filter = ["displayName", "organizations"];
-    navigator.contacts.find(filter, onSuccess, onError, options);
+    var opciones = new ContactFindOptions();
+    options.Filter = "";
+    filtro = ["displayName", "organizaciones"];
+    Navigator.contacts.Find (filtro, onSuccess, onError, opciones);
     
 
 ### Rarezas Android 2.X

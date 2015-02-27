@@ -19,7 +19,15 @@
 
 # org.apache.cordova.contacts
 
-Zapewnia dostęp do bazy danych kontaktów urządzenia.
+Ten plugin definiuje obiekt globalny `navigator.contacts`, która zapewnia dostęp do bazy danych kontaktów urządzenia.
+
+Mimo, że obiekt jest dołączony do globalnego zakresu `navigator`, to nie dostępne dopiero po zdarzeniu `deviceready`.
+
+    document.addEventListener("deviceready", onDeviceReady, false);
+    function onDeviceReady() {
+        console.log(navigator.contacts);
+    }
+    
 
 **Ostrzeżenie**: zbierania i wykorzystywania danych kontaktowych podnosi kwestie prywatności ważne. Polityka prywatności danej aplikacji należy Dyskutować, jak aplikacja używa danych kontaktowych i czy jest on dzielony z innymi stronami. Informacje kontaktowe uznaje wrażliwych, ponieważ ukazuje ludzi, z którymi osoba komunikuje się. W związku z tym oprócz aplikacji prywatności, zdecydowanie zaleca się zapewnienie just-in czas wypowiedzenia zanim aplikacja uzyskuje dostęp do lub używa danych kontaktowych, jeśli system operacyjny urządzenia nie robi już. Że ogłoszenie powinno zawierać te same informacje, o których wspomniano powyżej, jak również uzyskanie uprawnienia użytkownika (np. poprzez przedstawianie wyborów **OK** i **Nie dzięki**). Należy pamiętać, że niektóre platformy aplikacji może wymagać aplikacji powiadomienia just-in czas i uzyskać uprawnienia użytkownika przed uzyskaniem dostępu do danych kontaktowych. Jasne i łatwe do zrozumienia użytkownika doświadczenie, wykorzystanie kontaktów danych pomaga uniknąć nieporozumień użytkownik i postrzegane nadużycia danych kontaktowych. Aby uzyskać więcej informacji zobacz przewodnik prywatności.
 
@@ -30,7 +38,7 @@ Zapewnia dostęp do bazy danych kontaktów urządzenia.
 
 ### Firefox OS dziwactwa
 
-Tworzenie **www/manifest.webapp** , jak opisano w [Dokumentach Manifest][1]. Dodaj odpowiednie permisions. Istnieje również potrzeba zmienić typ webapp do "uprzywilejowanych" - [Manifest dokumenty][2]. **Ostrzeżenie**: wszystkie uprzywilejowany apps egzekwowania [Treści polityki bezpieczeństwa][3] , który zabrania skrypt. Zainicjować aplikacji w inny sposób.
+Tworzenie **www/manifest.webapp**, jak opisano w [Dokumentach Manifest][1]. Dodaj odpowiednie permisions. Istnieje również potrzeba zmienić typ webapp do "privileged" - [Manifest dokumenty][2]. **Ostrzeżenie**: wszystkie uprzywilejowany apps egzekwowania [Treści polityki bezpieczeństwa][3], który zabrania skrypt. Zainicjować aplikacji w inny sposób.
 
  [1]: https://developer.mozilla.org/en-US/Apps/Developing/Manifest
  [2]: https://developer.mozilla.org/en-US/Apps/Developing/Manifest#type
@@ -47,7 +55,7 @@ Tworzenie **www/manifest.webapp** , jak opisano w [Dokumentach Manifest][1]. Dod
 
 ### Windows dziwactwa
 
-Wszelkie kontakty wrócił z `find` i `pickContact` metody są tylko do odczytu, więc aplikacja nie mogą ich modyfikować. `find`Metoda jest dostępna tylko na urządzenia Windows Phone 8.1.
+Wszelkie kontakty wrócił z `pickContact` i `find` metody są tylko do odczytu, więc aplikacja nie mogą ich modyfikować. `find` metody dostępne tylko na urządzenia Windows Phone 8.1.
 
 ### Windows 8 dziwactwa
 
@@ -74,9 +82,9 @@ Windows 8 kontaktów są tylko do odczytu. Poprzez kontakty Cordova API są nie 
 
 ## Navigator.Contacts.Create
 
-`navigator.contacts.create`Metoda jest synchroniczna i zwraca nową `Contact` obiektu.
+Metoda `navigator.contacts.create` jest synchroniczna i zwraca nowy obiekt `Contact`.
 
-Ta metoda nie zachowuje kontakt obiektu bazy danych kontaktów urządzenie, dla którego musisz wywołać `Contact.save` Metoda.
+Ta metoda nie zachowuje kontakt obiektu bazy danych kontaktów urządzenie, dla którego należy wywołać metodę `Contact.save`.
 
 ### Obsługiwane platformy
 
@@ -93,27 +101,29 @@ Ta metoda nie zachowuje kontakt obiektu bazy danych kontaktów urządzenie, dla 
 
 ## navigator.contacts.find
 
-`navigator.contacts.find`Metoda asynchronicznie, wykonuje kwerendy bazy danych kontaktów urządzenia i tablicę z `Contact` obiektów. Wynikowe obiekty są przekazywane do `contactSuccess` funkcji wywołania zwrotnego, określony przez parametr **contactSuccess** .
+Metoda `navigator.contacts.find` asynchronicznie, wykonuje kwerendy bazy danych kontaktów urządzenia i tablicę obiektów `kontaktów`. Wynikowe obiekty są przekazywane do funkcji wywołania zwrotnego `contactSuccess`, określony przez parametr **contactSuccess**.
 
-Parametr **contactFields** określa pola, które mają być używane jako kwalifikator Szukaj. Zerowej długości **contactFields** parametr jest nieprawidłowy i wyniki w `ContactError.INVALID_ARGUMENT_ERROR` . **ContactFields** wartość `"*"` zwraca wszystkich pól.
+Parametr **contactFields** Określa pola, które mają być używane jako kwalifikator Szukaj. Zerowej długości **contactFields** parametr jest nieprawidłowy i wyniki w `ContactError.INVALID_ARGUMENT_ERROR`. **ContactFields** wartość `"*"` przeszukuje wszystkie kontakt z pola.
 
-Ciąg **contactFindOptions.filter** może służyć jako filtr wyszukiwania, gdy kwerenda bazy danych kontaktów. Jeśli dostarczone, przypadek-niewrażliwe, częściowej wartości mecz jest stosowane do każdego pola określony w parametrze **contactFields** . Jeśli ma odpowiednika dla *każdego* pola określony, zwracany jest kontakt. Użycie **contactFindOptions.desiredFields** parametr do kontroli, które kontakt właściwości muszą zostać zwrócone ponownie.
+Ciąg **contactFindOptions.filter** może służyć jako filtr wyszukiwania, gdy kwerenda bazy danych kontaktów. Jeśli dostarczone, przypadek-niewrażliwe, częściowej wartości mecz jest stosowane do każdego pola określony w parametrze **contactFields**. Jeśli ma odpowiednika dla *każdego* pola określony, zwracany jest kontakt. Użycie **contactFindOptions.desiredFields** parametr do kontroli, które kontakt właściwości muszą zostać zwrócone ponownie.
 
 ### Parametry
 
-*   **contactSuccess**: sukcesu funkcji wywołania zwrotnego, wywoływane z tablicy obiektów kontaktów zwracane z bazy danych. [Wymagane]
+*   **contactFields**: kontakt z pól do wykorzystania jako kwalifikator Szukaj. *(DOMString[])* [Required]
+
+*   **contactSuccess**: sukcesu funkcji wywołania zwrotnego, wywoływane z tablicy obiektów kontaktów zwracane z bazy danych. [Required]
 
 *   **contactError**: Błąd funkcji wywołania zwrotnego, wywoływana, gdy wystąpi błąd. [Opcjonalnie]
 
-*   **contactFields**: kontakt z pól do wykorzystania jako kwalifikator Szukaj. *(DOMString[])* [Wymagane]
-
-*   **contactFindOptions**: Szukaj opcji filtrowania navigator.contacts. [Opcjonalnie] Klucze obejmuje:
-
-*   **Filtr**: ciąg wyszukiwania umożliwia znalezienie navigator.contacts. *(DOMString)* (Domyślnie:`""`)
-
-*   **wiele**: określa, czy operacja Znajdź zwraca wiele navigator.contacts. *(Wartość logiczna)* (Domyślnie:`false`)
+*   **contactFindOptions**: Szukaj opcji filtrowania navigator.contacts. [Optional]
     
-    *   **desiredFields**: kontakt z pola, aby być zwrócona. Jeśli określony, wynikającego z `Contact` Obiekt dysponuje tylko wartości tych pól. *(DOMString[])* [Opcjonalnie]
+    Klucze obejmuje:
+    
+    *   **filter**: ciąg wyszukiwania umożliwia znalezienie navigator.contacts. *(DOMString)* (Domyślnie: `""`)
+    
+    *   **multiple**: określa, czy operacja Znajdź zwraca wiele navigator.contacts. *(Wartość logiczna)* (Domyślnie: `false`)
+        
+        *   **desiredFields**: kontakt z pola, aby być zwrócona. Jeśli określony, wynikowy `kontakt` obiekt tylko funkcje wartości tych pól. *(DOMString[])* [Optional]
 
 ### Obsługiwane platformy
 
@@ -149,7 +159,7 @@ Ciąg **contactFindOptions.filter** może służyć jako filtr wyszukiwania, gdy
 
 ## navigator.contacts.pickContact
 
-`navigator.contacts.pickContact`Metoda uruchamia próbnika kontakt, wybierz jeden kontaktem. Wynikowy obiekt jest przekazywany do `contactSuccess` funkcji wywołania zwrotnego, określony przez parametr **contactSuccess** .
+Metoda `navigator.contacts.pickContact` uruchamia próbnika kontakt, wybierz jeden kontaktem. Wynikowy obiekt jest przekazywany do funkcji wywołania zwrotnego `contactSuccess`, określony przez parametr **contactSuccess**.
 
 ### Parametry
 
@@ -176,7 +186,7 @@ Ciąg **contactFindOptions.filter** może służyć jako filtr wyszukiwania, gdy
 
 ## Kontakt
 
-`Contact`Obiekt reprezentuje informacje kontaktowe. Kontakty mogą być tworzone, przechowywane lub usunięte z bazy danych kontaktów urządzenia. Kontakty można również pobrać (pojedynczo lub zbiorczo) bazy danych przez `navigator.contacts.find` Metoda.
+`Contact` obiekt reprezentuje informacje kontaktowe. Kontakty mogą być tworzone, przechowywane lub usunięte z bazy danych kontaktów urządzenia. Kontakty można również pobrać (pojedynczo lub zbiorczo) bazy danych przez wywołanie metody `navigator.contacts.find`.
 
 **Uwaga**: nie wszystkie pola kontaktowe wymienione powyżej są obsługiwane na każdej platformie urządzenia. Proszę sprawdzić każdej platformy *dziwactw* sekcji szczegółów.
 
@@ -335,7 +345,7 @@ Ciąg **contactFindOptions.filter** może służyć jako filtr wyszukiwania, gdy
 
 ## ContactAddress
 
-`ContactAddress`Obiektu przechowuje właściwości pojedynczego adresu kontaktu. A `Contact` obiektu może zawierać więcej niż jeden adres w `ContactAddress[]` tablicy.
+Obiekt `ContactAddress` przechowuje właściwości pojedynczego adresu kontaktu. Obiekt `Contact` może zawierać więcej niż jeden adres w tablicy `[ContactAddress]`.
 
 ### Właściwości
 
@@ -438,7 +448,7 @@ Ciąg **contactFindOptions.filter** może służyć jako filtr wyszukiwania, gdy
 
 ## ContactError
 
-`ContactError`Zwracany jest obiekt użytkownika za pomocą `contactError` funkcji wywołania zwrotnego, gdy wystąpi błąd.
+`ContactError` obiekt jest zwracany użytkownikowi za pośrednictwem funkcji wywołania zwrotnego `contactError`, gdy wystąpi błąd.
 
 ### Właściwości
 
@@ -456,9 +466,9 @@ Ciąg **contactFindOptions.filter** może służyć jako filtr wyszukiwania, gdy
 
 ## ContactField
 
-`ContactField`Obiekt jest składnikiem wielokrotnego użytku, że reprezentuje kontakt pola ogólnie. Każdy `ContactField` zawiera obiekt `value` , `type` , a `pref` Właściwość. A `Contact` obiektu przechowuje wiele właściwości w `ContactField[]` tablice, takie jak numery telefonu, adres e-mail.
+Obiekt `ContactField` jest składnikiem wielokrotnego użytku, że reprezentuje kontakt pola ogólnie. Każdy obiekt `ContactField` zawiera `wartość`, `Typ` i `pref` Właściwość. Obiekt `Contact` sklepy kilku właściwości w tablicach `[ContactField]`, takich jak numery telefonów i adresy e-mail.
 
-W większości przypadków, są nie wcześniej ustalonych wartości dla `ContactField` atrybut **typu** obiektu. Na przykład numer telefonu można określić **Typ** wartości *domu*, *pracy*, *mobile*, *iPhone*, lub jakąkolwiek inną wartość, który jest obsługiwany przez platformę danego urządzenia bazy danych kontaktów. Jednak dla `Contact` **zdjęcia** pola, pole **Typ** wskazuje format zwrócone obrazu: **url** **wartość** atrybut zawiera adres URL do zdjęć lub *base64* , gdy **wartość** zawiera ciąg base64 zakodowany obraz.
+W większości przypadków są nie wcześniej ustalonych wartości atrybutu **type** obiektu `ContactField`. Na przykład numer telefonu można określić **type** wartości *home*, *work*, *mobile*, *iPhone*, lub jakąkolwiek inną wartość, który jest obsługiwany przez platformę danego urządzenia bazy danych kontaktów. Jednak `Contact` **photos** pola, pole **type** wskazuje format zwrócone obrazu: **url**, gdy **value** atrybut zawiera adres URL, do zdjęć, lub *base64*, gdy **value** zawiera ciąg zakodowany base64 obrazu.
 
 ### Właściwości
 
@@ -521,7 +531,7 @@ W większości przypadków, są nie wcześniej ustalonych wartości dla `Contact
 
 ## Przedstawiciel
 
-Zawiera różne rodzaje informacji o `Contact` Nazwa obiektu.
+Zawiera różne rodzaje informacji o nazwę obiektu `Contact`.
 
 ### Właściwości
 
@@ -540,7 +550,7 @@ Zawiera różne rodzaje informacji o `Contact` Nazwa obiektu.
 ### Obsługiwane platformy
 
 *   Amazon Fire OS
-*   Android 2.X
+*   Android
 *   BlackBerry 10
 *   Firefox OS
 *   iOS
@@ -617,7 +627,7 @@ Zawiera różne rodzaje informacji o `Contact` Nazwa obiektu.
 
 ## ContactOrganization
 
-`ContactOrganization`Obiektu przechowuje właściwości organizacji kontaktu. A `Contact` obiektu przechowuje jeden lub więcej `ContactOrganization` obiekty w tablicy.
+Obiekt `ContactOrganization` przechowuje właściwości organizacji kontaktu. Obiekt `Contact` sklepy jeden lub więcej obiektów `ContactOrganization` w tablicy.
 
 ### Właściwości
 

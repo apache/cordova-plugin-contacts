@@ -19,4 +19,7 @@
 
 # org.apache.cordova.contacts
 
+[![Build Status](https://travis-ci.org/apache/cordova-plugin-contacts.svg)](https://travis-ci.org/apache/cordova-plugin-contacts)
+
+
 Plugin documentation: [doc/index.md](doc/index.md)

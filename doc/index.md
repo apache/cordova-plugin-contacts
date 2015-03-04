@@ -365,6 +365,8 @@ for details.
 
 - __categories__: Not supported, returning `null`.
 
+- __remove__: Method is not supported
+
 ### Windows Quirks
 
 - __photos__: Returns a File URL to the image, which is stored in the application's temporary directory.
@@ -373,6 +375,7 @@ for details.
 
 - __categories__: Not supported, returning `null`.
 
+- __remove__: Method is not supported
 
 ## ContactAddress
 

@@ -361,9 +361,8 @@ exports.defineAutoTests = function () {
           });
           it("contacts.spec.23 calling remove on a contact that does not exist should return ContactError.UNKNOWN_ERROR", function(done) {
                // remove method is not supported on Windows platform
-              if (isWindows) {
+              if (isWindows || isWindowsPhone8) {
                   pending();
-                  return;
               }
               var rmWin = fail;
               var rmFail = function(result) {

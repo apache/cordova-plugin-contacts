@@ -36,30 +36,6 @@
 
 @implementation CDVContacts
 
-// no longer used since code gets AddressBook for each operation.
-// If address book changes during save or remove operation, may get error but not much we can do about it
-// If address book changes during UI creation, display or edit, we don't control any saves so no need for callback
-
-/*void addressBookChanged(ABAddressBookRef addressBook, CFDictionaryRef info, void* context)
-{
-    // note that this function is only called when another AddressBook instance modifies
-    // the address book, not the current one. For example, through an OTA MobileMe sync
-    Contacts* contacts = (Contacts*)context;
-    [contacts addressBookDirty];
-    }*/
-
-- (CDVPlugin*)initWithWebView:(UIWebView*)theWebView
-{
-    self = (CDVContacts*)[super initWithWebView:(UIWebView*)theWebView];
-
-    /*if (self) {
-        addressBook = ABAddressBookCreate();
-        ABAddressBookRegisterExternalChangeCallback(addressBook, addressBookChanged, self);
-    }*/
-
-    return self;
-}
-
 // overridden to clean up Contact statics
 - (void)onAppTerminate
 {

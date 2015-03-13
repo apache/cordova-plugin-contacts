@@ -19,9 +19,6 @@
 
 #import "CDVContacts.h"
 #import <UIKit/UIKit.h>
-#import <Cordova/NSArray+Comparisons.h>
-#import <Cordova/NSDictionary+Extensions.h>
-//#import "CDVNotification.h"
 
 @implementation CDVContactsPicker
 

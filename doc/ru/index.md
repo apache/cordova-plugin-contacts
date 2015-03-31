@@ -17,7 +17,7 @@
     under the License.
 -->
 
-# org.apache.cordova.contacts
+# cordova-plugin-contacts
 
 Обеспечивает доступ к базе данных контактов устройства.
 
@@ -25,7 +25,7 @@
 
 ## Установка
 
-    cordova plugin add org.apache.cordova.contacts
+    cordova plugin add cordova-plugin-contacts
     
 
 ### Особенности Firefox OS

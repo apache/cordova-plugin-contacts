@@ -17,7 +17,7 @@
     under the License.
 -->
 
-# org.apache.cordova.contacts
+# cordova-plugin-contacts
 
 Este plugin define un global `navigator.contacts` objeto que proporciona acceso a la base de datos de contactos de dispositivo.
 
@@ -31,7 +31,7 @@ Aunque el objeto está unido al ámbito global `navigator` , no estará disponib
 
 ## Instalación
 
-    Cordova plugin agregar org.apache.cordova.contacts
+    Cordova plugin agregar cordova-plugin-contacts
     
 
 ### Firefox OS rarezas

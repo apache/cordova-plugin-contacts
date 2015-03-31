@@ -17,7 +17,7 @@
     under the License.
 -->
 
-# org.apache.cordova.contacts
+# cordova-plugin-contacts
 
 이 플러그인 장치 연락처 데이터베이스에 대 한 액세스를 제공 하는 글로벌 `navigator.contacts` 개체를 정의 합니다.
 
@@ -33,7 +33,7 @@
 
 ## 설치
 
-    cordova plugin add org.apache.cordova.contacts
+    cordova plugin add cordova-plugin-contacts
     
 
 ### 파이어 폭스 OS 단점

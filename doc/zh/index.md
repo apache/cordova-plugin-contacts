@@ -17,7 +17,7 @@
     under the License.
 -->
 
-# org.apache.cordova.contacts
+# cordova-plugin-contacts
 
 這個外掛程式定義了一個全域 `navigator.contacts` 物件，提供對設備連絡人資料庫的訪問。
 
@@ -33,7 +33,7 @@
 
 ## 安裝
 
-    cordova plugin add org.apache.cordova.contacts
+    cordova plugin add cordova-plugin-contacts
     
 
 ### 火狐瀏覽器作業系統的怪癖

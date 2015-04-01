@@ -54,7 +54,7 @@ namespace WPCordovaClassLib.Cordova.Commands
                     // dummy parameter is used to always open a fresh version
                     root.Navigate(
                         new Uri(
-                            baseUrl + "Plugins/org.apache.cordova.contacts/ContactPicker.xaml?dummy="
+                            baseUrl + "Plugins/cordova-plugin-contacts/ContactPicker.xaml?dummy="
                             + Guid.NewGuid(),
                             UriKind.Relative));
                 }

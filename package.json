@@ -3,7 +3,7 @@
   "version": "0.2.17-dev",
   "description": "Cordova Contacts Plugin",
   "cordova": {
-    "id": "cordova-plugin-contacts",
+    "id": "org.apache.cordova.contacts",
     "platforms": [
       "android",
       "amazon-fireos",

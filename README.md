@@ -49,7 +49,7 @@ contact data.  For more information, please see the Privacy Guide.
 
 ## Installation
 
-    cordova plugin add cordova-plugin-contacts
+    cordova plugin add org.apache.cordova.contacts
 
 ### Firefox OS Quirks
 

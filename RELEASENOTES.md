@@ -144,3 +144,20 @@
 * CB-8351 ios: Use argumentForIndex rather than NSArray extension
 * android: Update ContactName support
 * Updated the comments for ContactOrganization constructor.
+
+### 1.0.0 (Apr 15, 2015)
+* CB-8746 gave plugin major version bump
+* CB-8683 updated wp specific references of old id to new id
+* CB-8683 changed plugin-id to pacakge-name
+* CB-8653 properly updated translated docs to use new id
+* CB-8653 updated translated docs to use new id
+* Use TRAVIS_BUILD_DIR, install paramedic by npm
+* CB-8653 Updated Readme
+* CB-8659: ios: 4.0.x Compatibility: Remove use of initWebView method
+* CB-8659: ios: 4.0.x Compatibility: Remove use of deprecated headers
+* CB-8604 Pended unsupported test for wp8, updated documentation
+* CB-8561 Integrate TravisCI
+* CB-8438 cordova-plugin-contacts documentation translation: cordova-plugin-contacts
+* CB-8538 Added package.json file
+* windows: pended .remove test as it is not supported on windows
+* CB-8395 marked unsupported tests pending on wp8

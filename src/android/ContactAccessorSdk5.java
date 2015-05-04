@@ -908,14 +908,12 @@ public class ContactAccessorSdk5 extends ContactAccessor {
 
             // Query photo existance
             Cursor photoCursor = mApp.getActivity().getContentResolver().query(photoUri, new String[] {ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
-            if (photoCursor == null) {
+            if (photoCursor == null) return null;
+            if (!photoCursor.moveToFirst()) {
+                photoCursor.close();
                 return null;
-            } else {
-                if (!photoCursor.moveToFirst()) {
-                    photoCursor.close();
-                    return null;
-                }
             }
+            photoCursor.close();
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
         }

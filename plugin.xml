@@ -228,6 +228,9 @@
         <config-file target="package.phone.appxmanifest" parent="/Package/Capabilities">
             <m3:Capability Name="contacts" />
         </config-file>
+        <config-file target="package.appxmanifest" parent="/Package/Capabilities" versions=">=10.0.0">
+            <uap:Capability Name="contacts" />
+        </config-file>
     </platform>
 
 </plugin>

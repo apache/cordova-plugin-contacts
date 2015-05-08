@@ -515,6 +515,50 @@ exports.defineManualTests = function (contentEl, createActionButton) {
             alert(e);
         }
     }
+    
+    function removeDooneyEvans() {
+        var results = document.getElementById('contact_results');
+        
+        navigator.contacts.find(["displayName", "name", "phoneNumbers", "emails", "urls", "note"], function(contacts) {
+            var removes = [];
+            contacts.forEach(function(contact) {
+                if (contact.name.formatted.indexOf('Dooney Evans') > -1) {
+                    removes.push(contact);
+                }
+            });
+            
+            var nextToRemove = undefined;
+            if (removes.length > 0) {
+              nextToRemove = removes.shift();
+            }
+            function removeNext(item) {
+                if (typeof item === 'undefined')
+                    return;
+                
+                if (removes.length > 0) {
+                    nextToRemove = removes.shift();
+                } else {
+                  nextToRemove = undefined;
+                }
+                
+                item.remove(function removeSucceeded() {
+                    results.innerHTML += '<br>Removed contact with ID ' + item.id;
+                    removeNext(nextToRemove);
+                }, function removeFailed(e) {
+                    results.innerHTML += '<br>Remove failed contact with ID ' + item.id;
+                    removeNext(nextToRemove);
+                });
+            }
+            removeNext(nextToRemove);
+        }, function (e) {
+            if (e.code === ContactError.NOT_SUPPORTED_ERROR) {
+                results.innerHTML = 'Searching for contacts is not supported.';
+            }
+            else {
+                results.innerHTML = 'Search failed: error ' + e.code;
+            }
+        })
+    }
 
     /******************************************************************************/
 
@@ -525,7 +569,9 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         '<div id="get_contacts"></div>' +
         'Expected result: Status box will show number of contacts and list them. May be empty on a fresh device until you click Add.' +
         '</p> <div id="add_contact"></div>' +
-        'Expected result: Will add a new contact. Log will say "Contact saved." or "Saving contacts not supported." if not supported on current platform. Verify by running Get phone contacts again';
+        'Expected result: Will add a new contact. Log will say "Contact saved." or "Saving contacts not supported." if not supported on current platform. Verify by running Get phone contacts again' +
+        '<div id="remove_dooney_evans"></div>' + 
+        '<p>Expected result: Will remove any contacts named "Dooney Evans".  Log will output success or failure, plus ID, or fail like getting contacts will fail.</p>';
 
     createActionButton("Get phone's contacts", function () {
         getContacts();
@@ -534,4 +580,8 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     createActionButton("Add a new contact 'Dooney Evans'", function () {
         addContact();
     }, 'add_contact');
+    
+    createActionButton("Delete all 'Dooney Evans'", function() {
+        removeDooneyEvans();
+    }, 'remove_dooney_evans');
 };

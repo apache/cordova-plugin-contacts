@@ -69,8 +69,10 @@ __WARNING__: All privileged apps enforce [Content Security Policy](https://devel
 
 ### Windows Quirks
 
-Any contacts returned from `find` and `pickContact` methods are readonly, so your application cannot modify them.
+**Prior to Windows 10:** Any contacts returned from `find` and `pickContact` methods are readonly, so your application cannot modify them.
 `find` method available only on Windows Phone 8.1 devices.
+
+**Windows 10 and above:** Contacts may be saved and will be saved to app-local contacts storage.  Contacts may also be deleted.
 
 ### Windows 8 Quirks
 
@@ -159,7 +161,7 @@ parameter to control which contact properties must be returned back.
 - Firefox OS
 - iOS
 - Windows Phone 7 and 8
-- Windows (Windows Phone 8.1 devices only)
+- Windows (Windows Phone 8.1 and Windows 10)
 
 ### Example
 
@@ -377,7 +379,7 @@ for details.
 
 - __categories__: Not supported, returning `null`.
 
-- __remove__: Method is not supported
+- __remove__: Method is only supported in Windows 10 or above.
 
 ## ContactAddress
 

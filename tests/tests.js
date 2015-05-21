@@ -31,7 +31,8 @@ exports.defineAutoTests = function () {
     expect(true).toBe(false);
     done();
   };
-  
+
+  var MEDIUM_TIMEOUT = 30000;
 
   var removeContact = function(){
       if (gContactObj) {
@@ -344,7 +345,7 @@ exports.defineAutoTests = function () {
               // update note
               gContactObj.note = noteText;
               gContactObj.save(win, fail);
-          });
+          }, MEDIUM_TIMEOUT);
       });
       describe('Contact.remove method', function (done) {
           afterEach(removeContact);
@@ -374,7 +375,7 @@ exports.defineAutoTests = function () {
               // this is a bit risky as some devices may have contact ids that large
               var contact = new Contact("this string is supposed to be a unique identifier that will never show up on a device");
               contact.remove(rmWin, rmFail);
-          });
+          }, MEDIUM_TIMEOUT);
       });
       describe("Round trip Contact tests (creating + save + delete + find).", function () {
           afterEach(removeContact);
@@ -420,7 +421,7 @@ exports.defineAutoTests = function () {
                   obj.multiple=true;
                   navigator.contacts.find(["displayName", "name", "phoneNumbers", "emails"], findWin, findFail, obj);
               }, fail);
-          });
+          }, MEDIUM_TIMEOUT);
       });
       describe('ContactError interface', function () {
           it("contacts.spec.25 ContactError constants should be defined", function() {

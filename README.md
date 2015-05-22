@@ -49,7 +49,16 @@ contact data.  For more information, please see the Privacy Guide.
 
 ## Installation
 
+This requires cordova 5.0+ ( current stable v1.0.0 )
+
     cordova plugin add cordova-plugin-contacts
+Older versions of cordova can still install via the __deprecated__ id ( stale v0.2.16 )
+
+    cordova plugin add org.apache.cordova.contacts
+It is also possible to install via repo url directly ( unstable )
+
+    cordova plugin add https://github.com/apache/cordova-plugin-contacts.git
+
 
 ### Firefox OS Quirks
 

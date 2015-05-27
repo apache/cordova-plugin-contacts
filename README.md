@@ -161,7 +161,9 @@ parameter to control which contact properties must be returned back.
 
 	- __multiple__: Determines if the find operation returns multiple navigator.contacts. _(Boolean)_ (Default: `false`)
 
-    	- __desiredFields__: Contact fields to be returned back. If specified, the resulting `Contact` object only features values for these fields. _(DOMString[])_ [Optional]
+    - __desiredFields__: Contact fields to be returned back. If specified, the resulting `Contact` object only features values for these fields. _(DOMString[])_ [Optional]
+
+    - __hasPhoneNumber__(Android only): Filters the search to only return contacts with a phone number informed. _(boolean)_ [Optional]
 
 ### Supported Platforms
 
@@ -187,6 +189,7 @@ parameter to control which contact properties must be returned back.
     options.filter   = "Bob";
     options.multiple = true;
     options.desiredFields = [navigator.contacts.fieldType.id];
+    options.hasPhoneNumber = true;
     var fields       = [navigator.contacts.fieldType.displayName, navigator.contacts.fieldType.name];
     navigator.contacts.find(fields, onSuccess, onError, options);
 

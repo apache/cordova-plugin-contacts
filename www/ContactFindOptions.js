@@ -26,10 +26,11 @@
  * @param multiple boolean used to determine if more than one contact should be returned
  */
 
-var ContactFindOptions = function(filter, multiple, desiredFields) {
+var ContactFindOptions = function(filter, multiple, desiredFields, phoneNumberInformedOnly) {
     this.filter = filter || '';
     this.multiple = (typeof multiple != 'undefined' ? multiple : false);
     this.desiredFields = typeof desiredFields != 'undefined' ? desiredFields : [];
+    this.phoneNumberInformedOnly = typeof phoneNumberInformedOnly != 'undefined' ? phoneNumberInformedOnly : false;
 };
 
 module.exports = ContactFindOptions;

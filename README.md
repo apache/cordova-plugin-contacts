@@ -163,7 +163,7 @@ parameter to control which contact properties must be returned back.
 
     - __desiredFields__: Contact fields to be returned back. If specified, the resulting `Contact` object only features values for these fields. _(DOMString[])_ [Optional]
 
-    - __hasPhoneNumber__(Android only): Filters the search to only return contacts with a phone number informed. _(Boolean)_ [Optional] (Default: `false`)
+    - __hasPhoneNumber__(Android only): Filters the search to only return contacts with a phone number informed. _(Boolean)_ (Default: `false`)
 
 ### Supported Platforms
 

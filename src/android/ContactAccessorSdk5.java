@@ -139,7 +139,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         String searchTerm = "";
         int limit = Integer.MAX_VALUE;
         boolean multiple = true;
-        boolean phoneNumberInformedOnly = false;
+        boolean hasPhoneNumber = false;
 
         if (options != null) {
             searchTerm = options.optString("filter");
@@ -160,9 +160,9 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             }
 
             try {
-                phoneNumberInformedOnly = options.getBoolean("phoneNumberInformedOnly");
+                hasPhoneNumber = options.getBoolean("hasPhoneNumber");
             } catch (JSONException e) {
-                // phoneNumberInformedOnly was not specified so we assume the default is false.
+                // hasPhoneNumber was not specified so we assume the default is false.
             }
         }
         else {
@@ -177,7 +177,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         HashMap<String, Boolean> populate = buildPopulationSet(options);
 
         // Build the ugly where clause and where arguments for one big query.
-        WhereOptions whereOptions = buildWhereClause(fields, searchTerm, phoneNumberInformedOnly);
+        WhereOptions whereOptions = buildWhereClause(fields, searchTerm, hasPhoneNumber);
 
         // Get all the id's where the search term matches the fields passed in.
         Cursor idCursor = mApp.getActivity().getContentResolver().query(ContactsContract.Data.CONTENT_URI,
@@ -198,7 +198,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         idCursor.close();
 
         // Build a query that only looks at ids
-        WhereOptions idOptions = buildIdClause(contactIds, searchTerm, phoneNumberInformedOnly);
+        WhereOptions idOptions = buildIdClause(contactIds, searchTerm, hasPhoneNumber);
 
         // Determine which columns we should be fetching.
         HashSet<String> columnsToFetch = new HashSet<String>();
@@ -472,12 +472,12 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      * @param searchTerm what to search for
      * @return an object containing the selection and selection args
      */
-    private WhereOptions buildIdClause(Set<String> contactIds, String searchTerm, boolean phoneNumberInformedOnly) {
+    private WhereOptions buildIdClause(Set<String> contactIds, String searchTerm, boolean hasPhoneNumber) {
         WhereOptions options = new WhereOptions();
 
         // If the user is searching for every contact then short circuit the method
         // and return a shorter where clause to be searched.
-        if (searchTerm.equals("%") && !phoneNumberInformedOnly) {
+        if (searchTerm.equals("%") && !hasPhoneNumber) {
             options.setWhere("(" + ContactsContract.Data.CONTACT_ID + " LIKE ? )");
             options.setWhereArgs(new String[] { searchTerm });
             return options;
@@ -551,7 +551,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
    * @param searchTerm the string to search for
    * @return an object containing the selection and selection args
    */
-  private WhereOptions buildWhereClause(JSONArray fields, String searchTerm, boolean phoneNumberInformedOnly) {
+  private WhereOptions buildWhereClause(JSONArray fields, String searchTerm, boolean hasPhoneNumber) {
 
     ArrayList<String> where = new ArrayList<String>();
     ArrayList<String> whereArgs = new ArrayList<String>();
@@ -563,7 +563,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
          */
         if (isWildCardSearch(fields)) {
             // Get all contacts with all properties
-            if ("%".equals(searchTerm) && !phoneNumberInformedOnly) {
+            if ("%".equals(searchTerm) && !hasPhoneNumber) {
                 options.setWhere("(" + ContactsContract.Contacts.DISPLAY_NAME + " LIKE ? )");
                 options.setWhereArgs(new String[] { searchTerm });
                 return options;
@@ -613,7 +613,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         /*
          * Special case for when the user wants all the contacts but
          */
-        if ("%".equals(searchTerm) && !phoneNumberInformedOnly) {
+        if ("%".equals(searchTerm) && !hasPhoneNumber) {
             options.setWhere("(" + ContactsContract.Contacts.DISPLAY_NAME + " LIKE ? )");
             options.setWhereArgs(new String[] { searchTerm });
             return options;
@@ -706,7 +706,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         }
 
         //Only contacts with phone number informed
-        if(phoneNumberInformedOnly){
+        if(hasPhoneNumber){
             if(where.size()>0){
                 selection.insert(0,"(");
                 selection.append(") AND (" + ContactsContract.Contacts.HAS_PHONE_NUMBER + " = ?)"); 

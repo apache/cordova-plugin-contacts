@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-contacts",
-  "version": "1.0.1-dev",
+  "version": "1.1.0",
   "description": "Cordova Contacts Plugin",
   "cordova": {
     "id": "cordova-plugin-contacts",

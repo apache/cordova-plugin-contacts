@@ -161,3 +161,11 @@
 * CB-8538 Added package.json file
 * windows: pended .remove test as it is not supported on windows
 * CB-8395 marked unsupported tests pending on wp8
+
+### 1.1.0 (Jun 17, 2015)
+* CB-9128 cordova-plugin-contacts documentation translation: cordova-plugin-contacts
+* fix npm md issue
+* Add more install text for legacy versions of cordova tools. This closes #60
+* CB-9056 Increased timeout of failing tests
+* CB-8987: Support for save and remove for Windows 10
+* CB-5278: We must close the cursor or we take down the whole app, and the debugger doesn't catch it.

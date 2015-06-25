@@ -120,7 +120,7 @@ database, for which you need to invoke the `Contact.save` method.
 - BlackBerry 10
 - Firefox OS
 - iOS
-- Windows Phone 7 and 8
+- Windows Phone 8
 
 ### Example
 
@@ -171,7 +171,7 @@ parameter to control which contact properties must be returned back.
 - BlackBerry 10
 - Firefox OS
 - iOS
-- Windows Phone 7 and 8
+- Windows Phone 8
 - Windows (Windows Phone 8.1 and Windows 10)
 
 ### Example
@@ -282,7 +282,7 @@ for details.
 - BlackBerry 10
 - Firefox OS
 - iOS
-- Windows Phone 7 and 8
+- Windows Phone 8
 - Windows 8
 - Windows
 
@@ -359,7 +359,7 @@ for details.
 
 - __categories__:  This property is currently not supported, returning `null`.
 
-### Windows Phone 7 and 8 Quirks
+### Windows Phone 8 Quirks
 
 - __displayName__: When creating a contact, the value provided for the display name parameter differs from the display name retrieved when finding the contact.
 
@@ -425,7 +425,7 @@ a `ContactAddress[]` array.
 - BlackBerry 10
 - Firefox OS
 - iOS
-- Windows Phone 7 and 8
+- Windows Phone 8
 - Windows 8
 - Windows
 
@@ -552,7 +552,7 @@ string.
 - BlackBerry 10
 - Firefox OS
 - iOS
-- Windows Phone 7 and 8
+- Windows Phone 8
 - Windows 8
 - Windows
 
@@ -621,7 +621,7 @@ Contains different kinds of information about a `Contact` object's name.
 - BlackBerry 10
 - Firefox OS
 - iOS
-- Windows Phone 7 and 8
+- Windows Phone 8
 - Windows 8
 - Windows
 
@@ -718,7 +718,7 @@ properties.  A `Contact` object stores one or more
 - BlackBerry 10
 - Firefox OS
 - iOS
-- Windows Phone 7 and 8
+- Windows Phone 8
 - Windows (Windows 8.1 and Windows Phone 8.1 devices only)
 
 ### Example

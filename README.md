@@ -16,7 +16,7 @@
 #         specific language governing permissions and limitations
 #         under the License.
 -->
-
+ 
 # cordova-plugin-contacts
 
 [![Build Status](https://travis-ci.org/apache/cordova-plugin-contacts.svg)](https://travis-ci.org/apache/cordova-plugin-contacts)

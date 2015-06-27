@@ -109,7 +109,7 @@ function convertToContact(windowsContact) {
     // returned is a file, a blob url can be made 
     var contactPhoto = windowsContact.thumbnail;
     if (contactPhoto && contactPhoto.path) {
-        contact.photos = [new ContactField(null, URL.createObjectURL(contactPhoto) , false)];
+        contact.photos = [new ContactField('url', URL.createObjectURL(contactPhoto) , false)];
     }
 
     return contact;

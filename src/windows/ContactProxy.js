@@ -106,10 +106,10 @@ function convertToContact(windowsContact) {
         contact.note = contactNotes;
     }
 
-    // thumbnail field available on Windows 8.1/WP8.1 only
+    // returned is a file, a blob url can be made 
     var contactPhoto = windowsContact.thumbnail;
     if (contactPhoto && contactPhoto.path) {
-        contact.photos = [new ContactField(null, contactPhoto.path , false)];
+        contact.photos = [new ContactField(null, URL.createObjectURL(contactPhoto) , false)];
     }
 
     return contact;

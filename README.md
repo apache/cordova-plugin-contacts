@@ -19,8 +19,6 @@
  
 # cordova-plugin-contacts
 
-[![Build Status](https://travis-ci.org/apache/cordova-plugin-contacts.svg)](https://travis-ci.org/apache/cordova-plugin-contacts)
-
 This plugin defines a global `navigator.contacts` object, which provides access to the device contacts database.
 
 Although the object is attached to the global scoped `navigator`, it is not available until after the `deviceready` event.

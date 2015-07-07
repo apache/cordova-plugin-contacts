@@ -45,6 +45,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
@@ -936,6 +937,9 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 }
             }
         } catch (JSONException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+        } catch (SQLiteException e)
+        {
             Log.e(LOG_TAG, e.getMessage(), e);
         }
         return photo;

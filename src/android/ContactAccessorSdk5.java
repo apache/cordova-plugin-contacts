@@ -45,7 +45,6 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
@@ -96,6 +95,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         dbMap.put("name.honorificSuffix", ContactsContract.CommonDataKinds.StructuredName.SUFFIX);
         dbMap.put("nickname", ContactsContract.CommonDataKinds.Nickname.NAME);
         dbMap.put("phoneNumbers", ContactsContract.CommonDataKinds.Phone.NUMBER);
+        dbMap.put("phoneNumbers.label", ContactsContract.CommonDataKinds.Phone.LABEL);
         dbMap.put("phoneNumbers.value", ContactsContract.CommonDataKinds.Phone.NUMBER);
         dbMap.put("emails", ContactsContract.CommonDataKinds.Email.DATA);
         dbMap.put("emails.value", ContactsContract.CommonDataKinds.Email.DATA);
@@ -140,7 +140,6 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         String searchTerm = "";
         int limit = Integer.MAX_VALUE;
         boolean multiple = true;
-        boolean hasPhoneNumber = false;
 
         if (options != null) {
             searchTerm = options.optString("filter");
@@ -159,16 +158,11 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             } catch (JSONException e) {
                 // Multiple was not specified so we assume the default is true.
             }
-
-            try {
-                hasPhoneNumber = options.getBoolean("hasPhoneNumber");
-            } catch (JSONException e) {
-                // hasPhoneNumber was not specified so we assume the default is false.
-            }
         }
         else {
             searchTerm = "%";
         }
+        
 
         //Log.d(LOG_TAG, "Search Term = " + searchTerm);
         //Log.d(LOG_TAG, "Field Length = " + fields.length());
@@ -178,7 +172,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         HashMap<String, Boolean> populate = buildPopulationSet(options);
 
         // Build the ugly where clause and where arguments for one big query.
-        WhereOptions whereOptions = buildWhereClause(fields, searchTerm, hasPhoneNumber);
+        WhereOptions whereOptions = buildWhereClause(fields, searchTerm);
 
         // Get all the id's where the search term matches the fields passed in.
         Cursor idCursor = mApp.getActivity().getContentResolver().query(ContactsContract.Data.CONTENT_URI,
@@ -199,7 +193,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         idCursor.close();
 
         // Build a query that only looks at ids
-        WhereOptions idOptions = buildIdClause(contactIds, searchTerm, hasPhoneNumber);
+        WhereOptions idOptions = buildIdClause(contactIds, searchTerm);
 
         // Determine which columns we should be fetching.
         HashSet<String> columnsToFetch = new HashSet<String>();
@@ -221,6 +215,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             columnsToFetch.add(ContactsContract.CommonDataKinds.Phone._ID);
             columnsToFetch.add(ContactsContract.CommonDataKinds.Phone.NUMBER);
             columnsToFetch.add(ContactsContract.CommonDataKinds.Phone.TYPE);
+            columnsToFetch.add(ContactsContract.CommonDataKinds.Phone.LABEL);
         }
         if (isRequired("emails", populate)) {
             columnsToFetch.add(ContactsContract.CommonDataKinds.Email._ID);
@@ -473,12 +468,12 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      * @param searchTerm what to search for
      * @return an object containing the selection and selection args
      */
-    private WhereOptions buildIdClause(Set<String> contactIds, String searchTerm, boolean hasPhoneNumber) {
+    private WhereOptions buildIdClause(Set<String> contactIds, String searchTerm) {
         WhereOptions options = new WhereOptions();
 
         // If the user is searching for every contact then short circuit the method
         // and return a shorter where clause to be searched.
-        if (searchTerm.equals("%") && !hasPhoneNumber) {
+        if (searchTerm.equals("%")) {
             options.setWhere("(" + ContactsContract.Data.CONTACT_ID + " LIKE ? )");
             options.setWhereArgs(new String[] { searchTerm });
             return options;
@@ -552,7 +547,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
    * @param searchTerm the string to search for
    * @return an object containing the selection and selection args
    */
-  private WhereOptions buildWhereClause(JSONArray fields, String searchTerm, boolean hasPhoneNumber) {
+  private WhereOptions buildWhereClause(JSONArray fields, String searchTerm) {
 
     ArrayList<String> where = new ArrayList<String>();
     ArrayList<String> whereArgs = new ArrayList<String>();
@@ -564,7 +559,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
          */
         if (isWildCardSearch(fields)) {
             // Get all contacts with all properties
-            if ("%".equals(searchTerm) && !hasPhoneNumber) {
+            if ("%".equals(searchTerm)) {
                 options.setWhere("(" + ContactsContract.Contacts.DISPLAY_NAME + " LIKE ? )");
                 options.setWhereArgs(new String[] { searchTerm });
                 return options;
@@ -614,87 +609,87 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         /*
          * Special case for when the user wants all the contacts but
          */
-        if ("%".equals(searchTerm) && !hasPhoneNumber) {
+        if ("%".equals(searchTerm)) {
             options.setWhere("(" + ContactsContract.Contacts.DISPLAY_NAME + " LIKE ? )");
             options.setWhereArgs(new String[] { searchTerm });
             return options;
-        }else if(!("%".equals(searchTerm))){
-            String key;
-            try {
-                //Log.d(LOG_TAG, "How many fields do we have = " + fields.length());
-                for (int i = 0; i < fields.length(); i++) {
-                    key = fields.getString(i);
+        }
 
-                    if (key.equals("id")) {
-                        where.add("(" + dbMap.get(key) + " = ? )");
-                        whereArgs.add(searchTerm.substring(1, searchTerm.length() - 1));
-                    }
-                    else if (key.startsWith("displayName")) {
-                        where.add("(" + dbMap.get(key) + " LIKE ? )");
-                        whereArgs.add(searchTerm);
-                    }
-                    else if (key.startsWith("name")) {
-                        where.add("(" + dbMap.get(key) + " LIKE ? AND "
-                                + ContactsContract.Data.MIMETYPE + " = ? )");
-                        whereArgs.add(searchTerm);
-                        whereArgs.add(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
-                    }
-                    else if (key.startsWith("nickname")) {
-                        where.add("(" + dbMap.get(key) + " LIKE ? AND "
-                                + ContactsContract.Data.MIMETYPE + " = ? )");
-                        whereArgs.add(searchTerm);
-                        whereArgs.add(ContactsContract.CommonDataKinds.Nickname.CONTENT_ITEM_TYPE);
-                    }
-                    else if (key.startsWith("phoneNumbers")) {
-                        where.add("(" + dbMap.get(key) + " LIKE ? AND "
-                                + ContactsContract.Data.MIMETYPE + " = ? )");
-                        whereArgs.add(searchTerm);
-                        whereArgs.add(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
-                    }
-                    else if (key.startsWith("emails")) {
-                        where.add("(" + dbMap.get(key) + " LIKE ? AND "
-                                + ContactsContract.Data.MIMETYPE + " = ? )");
-                        whereArgs.add(searchTerm);
-                        whereArgs.add(ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE);
-                    }
-                    else if (key.startsWith("addresses")) {
-                        where.add("(" + dbMap.get(key) + " LIKE ? AND "
-                                + ContactsContract.Data.MIMETYPE + " = ? )");
-                        whereArgs.add(searchTerm);
-                        whereArgs.add(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE);
-                    }
-                    else if (key.startsWith("ims")) {
-                        where.add("(" + dbMap.get(key) + " LIKE ? AND "
-                                + ContactsContract.Data.MIMETYPE + " = ? )");
-                        whereArgs.add(searchTerm);
-                        whereArgs.add(ContactsContract.CommonDataKinds.Im.CONTENT_ITEM_TYPE);
-                    }
-                    else if (key.startsWith("organizations")) {
-                        where.add("(" + dbMap.get(key) + " LIKE ? AND "
-                                + ContactsContract.Data.MIMETYPE + " = ? )");
-                        whereArgs.add(searchTerm);
-                        whereArgs.add(ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE);
-                    }
-                    //        else if (key.startsWith("birthday")) {
-    //          where.add("(" + dbMap.get(key) + " LIKE ? AND "
-    //              + ContactsContract.Data.MIMETYPE + " = ? )");
-    //        }
-                    else if (key.startsWith("note")) {
-                        where.add("(" + dbMap.get(key) + " LIKE ? AND "
-                                + ContactsContract.Data.MIMETYPE + " = ? )");
-                        whereArgs.add(searchTerm);
-                        whereArgs.add(ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE);
-                    }
-                    else if (key.startsWith("urls")) {
-                        where.add("(" + dbMap.get(key) + " LIKE ? AND "
-                                + ContactsContract.Data.MIMETYPE + " = ? )");
-                        whereArgs.add(searchTerm);
-                        whereArgs.add(ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE);
-                    }
+        String key;
+        try {
+            //Log.d(LOG_TAG, "How many fields do we have = " + fields.length());
+            for (int i = 0; i < fields.length(); i++) {
+                key = fields.getString(i);
+
+                if (key.equals("id")) {
+                    where.add("(" + dbMap.get(key) + " = ? )");
+                    whereArgs.add(searchTerm.substring(1, searchTerm.length() - 1));
                 }
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, e.getMessage(), e);
+                else if (key.startsWith("displayName")) {
+                    where.add("(" + dbMap.get(key) + " LIKE ? )");
+                    whereArgs.add(searchTerm);
+                }
+                else if (key.startsWith("name")) {
+                    where.add("(" + dbMap.get(key) + " LIKE ? AND "
+                            + ContactsContract.Data.MIMETYPE + " = ? )");
+                    whereArgs.add(searchTerm);
+                    whereArgs.add(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
+                }
+                else if (key.startsWith("nickname")) {
+                    where.add("(" + dbMap.get(key) + " LIKE ? AND "
+                            + ContactsContract.Data.MIMETYPE + " = ? )");
+                    whereArgs.add(searchTerm);
+                    whereArgs.add(ContactsContract.CommonDataKinds.Nickname.CONTENT_ITEM_TYPE);
+                }
+                else if (key.startsWith("phoneNumbers")) {
+                    where.add("(" + dbMap.get(key) + " LIKE ? AND "
+                            + ContactsContract.Data.MIMETYPE + " = ? )");
+                    whereArgs.add(searchTerm);
+                    whereArgs.add(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
+                }
+                else if (key.startsWith("emails")) {
+                    where.add("(" + dbMap.get(key) + " LIKE ? AND "
+                            + ContactsContract.Data.MIMETYPE + " = ? )");
+                    whereArgs.add(searchTerm);
+                    whereArgs.add(ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE);
+                }
+                else if (key.startsWith("addresses")) {
+                    where.add("(" + dbMap.get(key) + " LIKE ? AND "
+                            + ContactsContract.Data.MIMETYPE + " = ? )");
+                    whereArgs.add(searchTerm);
+                    whereArgs.add(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE);
+                }
+                else if (key.startsWith("ims")) {
+                    where.add("(" + dbMap.get(key) + " LIKE ? AND "
+                            + ContactsContract.Data.MIMETYPE + " = ? )");
+                    whereArgs.add(searchTerm);
+                    whereArgs.add(ContactsContract.CommonDataKinds.Im.CONTENT_ITEM_TYPE);
+                }
+                else if (key.startsWith("organizations")) {
+                    where.add("(" + dbMap.get(key) + " LIKE ? AND "
+                            + ContactsContract.Data.MIMETYPE + " = ? )");
+                    whereArgs.add(searchTerm);
+                    whereArgs.add(ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE);
+                }
+                //        else if (key.startsWith("birthday")) {
+//          where.add("(" + dbMap.get(key) + " LIKE ? AND "
+//              + ContactsContract.Data.MIMETYPE + " = ? )");
+//        }
+                else if (key.startsWith("note")) {
+                    where.add("(" + dbMap.get(key) + " LIKE ? AND "
+                            + ContactsContract.Data.MIMETYPE + " = ? )");
+                    whereArgs.add(searchTerm);
+                    whereArgs.add(ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE);
+                }
+                else if (key.startsWith("urls")) {
+                    where.add("(" + dbMap.get(key) + " LIKE ? AND "
+                            + ContactsContract.Data.MIMETYPE + " = ? )");
+                    whereArgs.add(searchTerm);
+                    whereArgs.add(ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE);
+                }
             }
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
         }
 
         // Creating the where string
@@ -705,19 +700,6 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 selection.append(" OR ");
             }
         }
-
-        //Only contacts with phone number informed
-        if(hasPhoneNumber){
-            if(where.size()>0){
-                selection.insert(0,"(");
-                selection.append(") AND (" + ContactsContract.Contacts.HAS_PHONE_NUMBER + " = ?)"); 
-                whereArgs.add("1");
-            }else{
-                selection.append("(" + ContactsContract.Contacts.HAS_PHONE_NUMBER + " = ?)");
-                whereArgs.add("1");
-            }
-        }
-
         options.setWhere(selection.toString());
 
         // Creating the where args array
@@ -847,6 +829,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         try {
             phoneNumber.put("id", cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone._ID)));
             phoneNumber.put("pref", false); // Android does not store pref attribute
+            phoneNumber.put("label", cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.LABEL)));
             phoneNumber.put("value", cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
             phoneNumber.put("type", getPhoneType(cursor.getInt(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE))));
         } catch (JSONException e) {
@@ -937,9 +920,6 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 }
             }
         } catch (JSONException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-        } catch (SQLiteException e)
-        {
             Log.e(LOG_TAG, e.getMessage(), e);
         }
         return photo;
@@ -1099,6 +1079,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                                             ContactsContract.Data.MIMETYPE + "=?",
                                             new String[] { phoneId, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE })
                                     .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, getJsonString(phone, "value"))
+                                    .withValue(ContactsContract.CommonDataKinds.Phone.LABEL, getJsonString(phone, "label"))
                                     .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, getPhoneType(getJsonString(phone, "type")))
                                     .build());
                         }
@@ -1563,6 +1544,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
                 .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.Phone.LABEL, getJsonString(phone, "label"))
                 .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, getJsonString(phone, "value"))
                 .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, getPhoneType(getJsonString(phone, "type")))
                 .build());

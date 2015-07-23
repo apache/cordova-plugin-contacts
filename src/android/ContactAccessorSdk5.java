@@ -1015,11 +1015,13 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         // Create a list of attributes to add to the contact database
         ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
 
+        // This ops is adding thousands of rows to ContactsContract.Data
+        // There is no need for this ops, the contact can be successfully updated without it
         //Add contact type
-        ops.add(ContentProviderOperation.newUpdate(ContactsContract.RawContacts.CONTENT_URI)
+        /*ops.add(ContentProviderOperation.newUpdate(ContactsContract.RawContacts.CONTENT_URI)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, accountType)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, accountName)
-                .build());
+                .build());*/
 
         // Modify name
         JSONObject name;

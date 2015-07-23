@@ -935,6 +935,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                     photoCursor.close();
                     return null;
                 }
+                photoCursor.close();
             }
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);

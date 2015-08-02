@@ -187,16 +187,23 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 whereOptions.getWhereArgs(),
                 ContactsContract.Data.CONTACT_ID + " ASC");
 
-        // Create a set of unique ids
-        Set<String> contactIds = new HashSet<String>();
-        int idColumn = -1;
-        while (idCursor.moveToNext()) {
-            if (idColumn < 0) {
-                idColumn = idCursor.getColumnIndex(ContactsContract.Data.CONTACT_ID);
+        Set<String> contactIds = new HashSet<String>();        
+
+        try {
+            // Create a set of unique ids
+            int idColumn = -1;
+            while (idCursor.moveToNext()) {
+                if (idColumn < 0) {
+                    idColumn = idCursor.getColumnIndex(ContactsContract.Data.CONTACT_ID);
+                }
+                contactIds.add(idCursor.getString(idColumn));
             }
-            contactIds.add(idCursor.getString(idColumn));
+        } catch(Exception e) {
+            Log.e("idCursor", e.getMessage());
+        } finally {
+            if (idCursor != null)
+                idCursor.close();
         }
-        idCursor.close();
 
         // Build a query that only looks at ids
         WhereOptions idOptions = buildIdClause(contactIds, searchTerm, hasPhoneNumber);
@@ -270,12 +277,24 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         
         // Do the id query
         Cursor c = mApp.getActivity().getContentResolver().query(ContactsContract.Data.CONTENT_URI,
-                columnsToFetch.toArray(new String[] {}),
+                columnsToFetch.toArray(new String[]{}),
                 idOptions.getWhere(),
                 idOptions.getWhereArgs(),
                 ContactsContract.Data.CONTACT_ID + " ASC");
-         
-        JSONArray contacts = populateContactArray(limit, populate, c);
+
+        Log.e("CURSOR COUNT", c.getCount()+"");
+
+        JSONArray contacts = new JSONArray();
+
+        try {
+            contacts = populateContactArray(limit, populate, c);
+        } catch(Exception e) {
+            Log.e("populateContactArray", e.getMessage());
+        } finally {
+            if (c != null)
+                c.close();
+        }
+
         return contacts;
     }
 
@@ -341,129 +360,128 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         JSONArray websites = new JSONArray();
         JSONArray photos = new JSONArray();
 
-        // Column indices
-        int colContactId = c.getColumnIndex(ContactsContract.Data.CONTACT_ID);
-        int colRawContactId = c.getColumnIndex(ContactsContract.Data.RAW_CONTACT_ID);
-        int colMimetype = c.getColumnIndex(ContactsContract.Data.MIMETYPE);
-        int colDisplayName = c.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME);
-        int colNote = c.getColumnIndex(ContactsContract.CommonDataKinds.Note.NOTE);
-        int colNickname = c.getColumnIndex(ContactsContract.CommonDataKinds.Nickname.NAME);
-        int colBirthday = c.getColumnIndex(ContactsContract.CommonDataKinds.Event.START_DATE);
-        int colEventType = c.getColumnIndex(ContactsContract.CommonDataKinds.Event.TYPE);
+        if (c != null) {
+            // Column indices
+            int colContactId = c.getColumnIndex(ContactsContract.Data.CONTACT_ID);
+            int colRawContactId = c.getColumnIndex(ContactsContract.Data.RAW_CONTACT_ID);
+            int colMimetype = c.getColumnIndex(ContactsContract.Data.MIMETYPE);
+            int colDisplayName = c.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME);
+            int colNote = c.getColumnIndex(ContactsContract.CommonDataKinds.Note.NOTE);
+            int colNickname = c.getColumnIndex(ContactsContract.CommonDataKinds.Nickname.NAME);
+            int colBirthday = c.getColumnIndex(ContactsContract.CommonDataKinds.Event.START_DATE);
+            int colEventType = c.getColumnIndex(ContactsContract.CommonDataKinds.Event.TYPE);
 
-        if (c.getCount() > 0) {
-            while (c.moveToNext() && (contacts.length() <= (limit - 1))) {
-                try {
-                    contactId = c.getString(colContactId);
-                    rawId = c.getString(colRawContactId);
+            if (c.getCount() > 0) {
+                while (c.moveToNext() && (contacts.length() <= (limit - 1))) {
+                    try {
+                        contactId = c.getString(colContactId);
+                        rawId = c.getString(colRawContactId);
 
-                    // If we are in the first row set the oldContactId
-                    if (c.getPosition() == 0) {
-                        oldContactId = contactId;
-                    }
-
-                    // When the contact ID changes we need to push the Contact object
-                    // to the array of contacts and create new objects.
-                    if (!oldContactId.equals(contactId)) {
-                        // Populate the Contact object with it's arrays
-                        // and push the contact into the contacts array
-                        contacts.put(populateContact(contact, organizations, addresses, phones,
-                                emails, ims, websites, photos));
-
-                        // Clean up the objects
-                        contact = new JSONObject();
-                        organizations = new JSONArray();
-                        addresses = new JSONArray();
-                        phones = new JSONArray();
-                        emails = new JSONArray();
-                        ims = new JSONArray();
-                        websites = new JSONArray();
-                        photos = new JSONArray();
-
-                        // Set newContact to true as we are starting to populate a new contact
-                        newContact = true;
-                    }
-
-                    // When we detect a new contact set the ID and display name.
-                    // These fields are available in every row in the result set returned.
-                    if (newContact) {
-                        newContact = false;
-                        contact.put("id", contactId);
-                        contact.put("rawId", rawId);
-                    }
-
-                    // Grab the mimetype of the current row as it will be used in a lot of comparisons
-                    mimetype = c.getString(colMimetype);
-                    
-                    if (mimetype.equals(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE) && isRequired("name", populate)) {
-                        contact.put("displayName", c.getString(colDisplayName));
-                    }
-
-                    if (mimetype.equals(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                            && isRequired("name", populate)) {
-                        contact.put("name", nameQuery(c));
-                    }
-                    else if (mimetype.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                            && isRequired("phoneNumbers", populate)) {
-                        phones.put(phoneQuery(c));
-                    }
-                    else if (mimetype.equals(ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
-                            && isRequired("emails", populate)) {
-                        emails.put(emailQuery(c));
-                    }
-                    else if (mimetype.equals(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
-                            && isRequired("addresses", populate)) {
-                        addresses.put(addressQuery(c));
-                    }
-                    else if (mimetype.equals(ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
-                            && isRequired("organizations", populate)) {
-                        organizations.put(organizationQuery(c));
-                    }
-                    else if (mimetype.equals(ContactsContract.CommonDataKinds.Im.CONTENT_ITEM_TYPE)
-                            && isRequired("ims", populate)) {
-                        ims.put(imQuery(c));
-                    }
-                    else if (mimetype.equals(ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE)
-                            && isRequired("note", populate)) {
-                        contact.put("note", c.getString(colNote));
-                    }
-                    else if (mimetype.equals(ContactsContract.CommonDataKinds.Nickname.CONTENT_ITEM_TYPE)
-                            && isRequired("nickname", populate)) {
-                        contact.put("nickname", c.getString(colNickname));
-                    }
-                    else if (mimetype.equals(ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE)
-                            && isRequired("urls", populate)) {
-                        websites.put(websiteQuery(c));
-                    }
-                    else if (mimetype.equals(ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE)) {
-                        if (isRequired("birthday", populate) &&
-                                ContactsContract.CommonDataKinds.Event.TYPE_BIRTHDAY == c.getInt(colEventType)) {
-                            contact.put("birthday", c.getString(colBirthday));
+                        // If we are in the first row set the oldContactId
+                        if (c.getPosition() == 0) {
+                            oldContactId = contactId;
                         }
-                    }
-                    else if (mimetype.equals(ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
-                            && isRequired("photos", populate)) {
-                        JSONObject photo = photoQuery(c, contactId);
-                        if (photo != null) {
-                            photos.put(photo);
+
+                        // When the contact ID changes we need to push the Contact object
+                        // to the array of contacts and create new objects.
+                        if (!oldContactId.equals(contactId)) {
+                            // Populate the Contact object with it's arrays
+                            // and push the contact into the contacts array
+                            contacts.put(populateContact(contact, organizations, addresses, phones,
+                                    emails, ims, websites, photos));
+
+                            // Clean up the objects
+                            contact = new JSONObject();
+                            organizations = new JSONArray();
+                            addresses = new JSONArray();
+                            phones = new JSONArray();
+                            emails = new JSONArray();
+                            ims = new JSONArray();
+                            websites = new JSONArray();
+                            photos = new JSONArray();
+
+                            // Set newContact to true as we are starting to populate a new contact
+                            newContact = true;
                         }
+
+                        // When we detect a new contact set the ID and display name.
+                        // These fields are available in every row in the result set returned.
+                        if (newContact) {
+                            newContact = false;
+                            contact.put("id", contactId);
+                            contact.put("rawId", rawId);
+                        }
+
+                        // Grab the mimetype of the current row as it will be used in a lot of comparisons
+                        mimetype = c.getString(colMimetype);
+                        
+                        if (mimetype.equals(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE) && isRequired("name", populate)) {
+                            contact.put("displayName", c.getString(colDisplayName));
+                        }
+
+                        if (mimetype.equals(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                                && isRequired("name", populate)) {
+                            contact.put("name", nameQuery(c));
+                        }
+                        else if (mimetype.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                                && isRequired("phoneNumbers", populate)) {
+                            phones.put(phoneQuery(c));
+                        }
+                        else if (mimetype.equals(ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
+                                && isRequired("emails", populate)) {
+                            emails.put(emailQuery(c));
+                        }
+                        else if (mimetype.equals(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
+                                && isRequired("addresses", populate)) {
+                            addresses.put(addressQuery(c));
+                        }
+                        else if (mimetype.equals(ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
+                                && isRequired("organizations", populate)) {
+                            organizations.put(organizationQuery(c));
+                        }
+                        else if (mimetype.equals(ContactsContract.CommonDataKinds.Im.CONTENT_ITEM_TYPE)
+                                && isRequired("ims", populate)) {
+                            ims.put(imQuery(c));
+                        }
+                        else if (mimetype.equals(ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE)
+                                && isRequired("note", populate)) {
+                            contact.put("note", c.getString(colNote));
+                        }
+                        else if (mimetype.equals(ContactsContract.CommonDataKinds.Nickname.CONTENT_ITEM_TYPE)
+                                && isRequired("nickname", populate)) {
+                            contact.put("nickname", c.getString(colNickname));
+                        }
+                        else if (mimetype.equals(ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE)
+                                && isRequired("urls", populate)) {
+                            websites.put(websiteQuery(c));
+                        }
+                        else if (mimetype.equals(ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE)) {
+                            if (isRequired("birthday", populate) &&
+                                    ContactsContract.CommonDataKinds.Event.TYPE_BIRTHDAY == c.getInt(colEventType)) {
+                                contact.put("birthday", c.getString(colBirthday));
+                            }
+                        }
+                        else if (mimetype.equals(ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
+                                && isRequired("photos", populate)) {
+                            JSONObject photo = photoQuery(c, contactId);
+                            if (photo != null) {
+                                photos.put(photo);
+                            }
+                        }
+                    } catch (JSONException e) {
+                        Log.e(LOG_TAG, e.getMessage(), e);
                     }
-                } catch (JSONException e) {
-                    Log.e(LOG_TAG, e.getMessage(), e);
+                    // Set the old contact ID
+                    oldContactId = contactId;
                 }
-
-                // Set the old contact ID
-                oldContactId = contactId;
-
+                // Push the last contact into the contacts array
+                if (contacts.length() < limit) {
+                    contacts.put(populateContact(contact, organizations, addresses, phones,
+                            emails, ims, websites, photos));
+                }
             }
-            
-            // Push the last contact into the contacts array
-            if (contacts.length() < limit) {
-                contacts.put(populateContact(contact, organizations, addresses, phones,
-                        emails, ims, websites, photos));
-            }
+            c.close();
         }
-        c.close();
         return contacts;
     }
 
@@ -1827,13 +1845,20 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 null,
                 ContactsContract.Contacts._ID + " = ?",
                 new String[] { id }, null);
-        if (cursor.getCount() == 1) {
-            cursor.moveToFirst();
-            String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-            Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
-            result = mApp.getActivity().getContentResolver().delete(uri, null, null);
-        } else {
-            Log.d(LOG_TAG, "Could not find contact with ID");
+        try {
+            if (cursor.getCount() == 1) {
+                cursor.moveToFirst();
+                String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+                Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
+                result = mApp.getActivity().getContentResolver().delete(uri, null, null);
+            } else {
+                Log.d(LOG_TAG, "Could not find contact with ID");
+            }
+        } catch(Exception e) {
+            Log.e("remove contact", e.getMessage());
+        } finally {
+            if (cursor != null)
+                cursor.close();
         }
 
         return (result > 0) ? true : false;

@@ -20,58 +20,92 @@
 */
 
 var Contact = require('./Contact');
-var ContactField = require('./ContactField');
 var ContactAddress = require('./ContactAddress');
+var ContactError = require('./ContactError');
+var ContactField = require('./ContactField');
 var ContactName = require('./ContactName');
 
-function remove(successCB, errorCB, ids) {
-    var saved = JSON.parse(sessionStorage['cordova-browser.cordova-plugin-contacts']);
+function remove(successCB, errorCB, id) {
+    var saved = _getContacts();
 
-    for (i = 0; i < saved.length; i++) {
-        if (saved[i].id == ids[0]) {
+    for (var i = 0; i < saved.length; i++) {
+        if (saved[i].id == id[0]) {
             saved.splice(i, 1);
+            _saveContacts(saved);
+
+            if (successCB) return successCB(id[0]);
         }
     }
 
-    sessionStorage['cordova-browser.cordova-plugin-contacts'] = JSON.stringify(saved);
-    if (successCB) successCB();
+    if (errorCB) return errorCB(ContactError.UNKNOWN_ERROR);
 }
 
-function saveContacts(successCB, errorCB, contacts) {
-    var saved = JSON.parse(sessionStorage['cordova-browser.cordova-plugin-contacts']);
+function save(successCB, errorCB, contact) {
+    var saved = _getContacts();
 
-    for (i = 0; i < contacts.length; i++) {
-        contacts[i].id = 'cid' + sessionStorage.contactId;
-        saved.push(contacts[i]);
-        sessionStorage.contactId = Number(sessionStorage.contactId) + 1;
+    for (var i = 0; i < contact.length; i++) {
+        var doesExist = false;
+
+        // check if contact already exits, if it does update it
+        for (var j = 0; j < saved.length; j++) {
+            if (saved[j].id == contact[i].id) {
+                saved[j] = contact[i];
+                doesExist = true;
+                break;
+            }
+        }
+
+        // contact does not exist
+        if (!doesExist) {
+            contact[i].id = 'cid' + sessionStorage.contactId;
+            saved.push(contact[i]);
+            sessionStorage.contactId = Number(sessionStorage.contactId) + 1;
+        }
+
     }
 
-    sessionStorage['cordova-browser.cordova-plugin-contacts'] = JSON.stringify(saved);
-    if (successCB) successCB(contacts);
+    _saveContacts(saved);
+    if (successCB) successCB(contact[0]);
 }
 
 function search(successCB, errorCB, params) {
-    var saved = JSON.parse(sessionStorage['cordova-browser.cordova-plugin-contacts']);
+    var saved = _getContacts();
 
+    // if no filter is given, return all contacts
     if (saved.length !== 0 && !params[1].filter) {
-        return getAllContacts(successCB);
+        return successCB(_getContacts());
+    }
+
+    // return error callback for zero-length contactFields parameter
+    if (params[0].length === 0) {
+        return errorCB(ContactError.INVALID_ARGUMENT_ERROR);
+    }
+
+    // if contactFields value is '*', add all fieldType's to check against filter
+    if (params[0][0] == '*') {
+        params[0] = [];
+        for (var prop in navigator.contacts.fieldType) {
+            params[0].push(prop);
+        }
     }
 
     var contacts = [];
 
-    for (i = 0; i < saved.length; i++) {
+    for (var i = 0; i < saved.length; i++) {
         var contact = saved[i];
 
-        for (j = 0; j < params[0].length; j++) {
+        for (var j = 0; j < params[0].length; j++) {
             if (params[0][j] == 'name') {
-                var fullName = contact[params[0][j]].givenName + ' ' + contact[params[0][j]].familyName;
+                var fullName = contact[params[0][j]].givenName +
+                               contact[params[0][j]].middleName +
+                               contact[params[0][j]].familyName;
 
-                if (fullName.indexOf(params[1].filter) != -1) {
+                if (fullName.toLowerCase().indexOf(params[1].filter.toLowerCase()) != -1) {
                     contacts.push(contact);
                     break;
                 }
             } else {
-                if (contact[params[0][j]].indexOf(params[1].filter) != -1) {
+                if (contact[params[0][j]] && contact[params[0][j]].toLowerCase().indexOf(params[1].filter.toLowerCase()) != -1) {
                     contacts.push(contact);
                     break;
                 }
@@ -82,23 +116,22 @@ function search(successCB, errorCB, params) {
     successCB(contacts);
 }
 
-function getAllContacts(successCB) {
-    var contacts = [];
-    var saved = JSON.parse(sessionStorage['cordova-browser.cordova-plugin-contacts']);
+function _getContacts() {
+    return JSON.parse(sessionStorage['cordova-browser.cordova-plugin-contacts'] || '[]');
+}
 
-    for (i = 0; i < saved.length; i++) {
-        contacts.push(saved[i]);
-    }
-
-    successCB(contacts);
+function _saveContacts(contactsObject) {
+    sessionStorage['cordova-browser.cordova-plugin-contacts'] = JSON.stringify(contactsObject);
 }
 
 sessionStorage.contactId = 0;
-sessionStorage['cordova-browser.cordova-plugin-contacts'] = JSON.stringify([]);
+
+// initialize contacts
+_saveContacts(_getContacts());
 
 module.exports = {
     remove: remove,
-    save: saveContacts,
+    save: save,
     search: search
 };
 

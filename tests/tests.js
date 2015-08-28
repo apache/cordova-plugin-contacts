@@ -340,6 +340,9 @@ exports.defineAutoTests = function () {
 
               // remove an email
               gContactObj.emails[1].value = "";
+              // the above will not completely remove an email value for the browser
+              if (cordova.platformId == 'browser')
+                gContactObj.emails.pop();
               // change birthday
               gContactObj.birthday = bDay;
               // update note

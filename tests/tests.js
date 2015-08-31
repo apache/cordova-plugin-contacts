@@ -138,7 +138,6 @@ exports.defineAutoTests = function () {
                           // Find asserts
                           // ---
                           var findWin = function(object) {
-                                  console.log('in findwin');
                                   expect(object instanceof Array).toBe(true);
                                   expect(object.length >= 1).toBe(true);
                                   expect(foundName(object)).toBe(true);
@@ -385,42 +384,49 @@ exports.defineAutoTests = function () {
               if (isWindows || isWindowsPhone8) {
                   pending();
               }
-
-              gContactObj = new Contact();
-              gContactObj.name = new ContactName();
-              gContactObj.name.familyName = "DeleteMe";
-              gContactObj.save(function(c_obj) {
-                  var findWin = function(cs) {
-                      expect(cs.length).toBe(1);
-                      // update to have proper saved id
-                      gContactObj = cs[0];
-                      gContactObj.remove(function() {
-                          var findWinAgain = function(seas) {
-                              expect(seas.length).toBe(0);
-                              gContactObj.remove(function() {
-                                  throw("success callback called after non-existent Contact object called remove(). Test failed.");
-                              }, function(e) {
-                                  expect(e.code).toBe(ContactError.UNKNOWN_ERROR);
-                                  done();
-                              });
-                          };
-                          var findFailAgain = function(e) {
-                              throw("find error callback invoked after delete, test failed.");
-                          };
-                          var obj = new ContactFindOptions();
-                          obj.filter="DeleteMe";
-                          obj.multiple=true;
-                          navigator.contacts.find(["displayName", "name", "phoneNumbers", "emails"], findWinAgain, findFailAgain, obj);
-                      }, function(e) {
-                          throw("Newly created contact's remove function invoked error callback. Test failed.");
-                      });
-                  };
-                  var findFail = fail;
-                  var obj = new ContactFindOptions();
-                  obj.filter="DeleteMe";
-                  obj.multiple=true;
-                  navigator.contacts.find(["displayName", "name", "phoneNumbers", "emails"], findWin, findFail, obj);
-              }, fail);
+              // First, count already existing 'DeleteMe' contacts, if any
+              var initialCount = 0;
+              var initialSearchOptions = new ContactFindOptions();
+              initialSearchOptions.filter = "DeleteMe";
+              initialSearchOptions.multiple = true;
+              navigator.contacts.find(["displayName", "name", "phoneNumbers", "emails"], function (initialContacts) {
+                  initialCount = initialContacts.length;
+                  gContactObj = new Contact();
+                  gContactObj.name = new ContactName();
+                  gContactObj.name.familyName = "DeleteMe";
+                  gContactObj.save(function(c_obj) {
+                      var findWin = function(cs) {
+                          expect(cs.length).toBe(initialCount + 1);
+                          // update to have proper saved id
+                          gContactObj = cs[0];
+                          gContactObj.remove(function() {
+                              var findWinAgain = function(seas) {
+                                  expect(seas.length).toBe(initialCount);
+                                  gContactObj.remove(function() {
+                                      throw("success callback called after non-existent Contact object called remove(). Test failed.");
+                                  }, function(e) {
+                                      expect(e.code).toBe(ContactError.UNKNOWN_ERROR);
+                                      done();
+                                  });
+                              };
+                              var findFailAgain = function(e) {
+                                  throw("find error callback invoked after delete, test failed.");
+                              };
+                              var obj = new ContactFindOptions();
+                              obj.filter="DeleteMe";
+                              obj.multiple=true;
+                              navigator.contacts.find(["displayName", "name", "phoneNumbers", "emails"], findWinAgain, findFailAgain, obj);
+                          }, function(e) {
+                              throw("Newly created contact's remove function invoked error callback. Test failed.");
+                          });
+                      };
+                      var findFail = fail;
+                      var obj = new ContactFindOptions();
+                      obj.filter="DeleteMe";
+                      obj.multiple=true;
+                      navigator.contacts.find(["displayName", "name", "phoneNumbers", "emails"], findWin, findFail, obj);
+                  }, fail);
+              }, function () {}, initialSearchOptions);
           }, MEDIUM_TIMEOUT);
       });
       describe('ContactError interface', function () {

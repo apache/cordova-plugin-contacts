@@ -19,18 +19,24 @@
 package org.apache.cordova.contacts;
 
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaActivity;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.Build;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.RawContacts;
 import android.util.Log;
+
+import java.lang.reflect.Method;
 
 public class ContactManager extends CordovaPlugin {
 
@@ -48,12 +54,65 @@ public class ContactManager extends CordovaPlugin {
     public static final int NOT_SUPPORTED_ERROR = 5;
     public static final int PERMISSION_DENIED_ERROR = 20;
     private static final int CONTACT_PICKER_RESULT = 1000;
+    public static String [] permissions;
+
+
+    //Request code for the permissions picker (Pick is async and uses intents)
+    public static final int SEARCH_REQ_CODE = 0;
+    public static final int SAVE_REQ_CODE = 1;
+    public static final int REMOVE_REQ_CODE = 2;
+
 
     /**
      * Constructor.
      */
     public ContactManager() {
+        permissions = new String[2];
+        permissions[0] = Manifest.permission.READ_CONTACTS;
+        permissions[1] = Manifest.permission.WRITE_CONTACTS;
     }
+
+    public String [] requestPermissions()
+    {
+        return permissions;
+    }
+
+
+    protected int checkReadPermission()
+    {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            return cordova.getActivity().checkSelfPermission(Manifest.permission.READ_CONTACTS);
+        }
+        else
+        {
+            return PackageManager.PERMISSION_GRANTED;
+        }
+    }
+
+    protected void getReadPermission(int requestCode)
+    {
+        cordova.requestPermission(this, requestCode, Manifest.permission.READ_CONTACTS);
+    }
+
+
+    protected int checkWritePermission()
+    {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            return cordova.getActivity().checkSelfPermission(Manifest.permission.WRITE_CONTACTS);
+        }
+        else
+        {
+            return PackageManager.PERMISSION_GRANTED;
+        }
+    }
+
+    protected void getWritePermission(int requestCode)
+    {
+        cordova.requestPermission(this, requestCode, Manifest.permission.WRITE_CONTACTS);
+    }
+
 
     /**
      * Executes the request and returns PluginResult.
@@ -86,47 +145,33 @@ public class ContactManager extends CordovaPlugin {
         }
 
         if (action.equals("search")) {
-            final JSONArray filter = args.getJSONArray(0);
-            final JSONObject options = args.get(1) == null ? null : args.getJSONObject(1);
-            this.cordova.getThreadPool().execute(new Runnable() {
-                public void run() {
-                    JSONArray res = contactAccessor.search(filter, options);
-                    callbackContext.success(res);
-                }
-            });
+            if(checkReadPermission() != PackageManager.PERMISSION_DENIED) {
+                search(executeArgs);
+            }
+            else
+            {
+                getReadPermission(SEARCH_REQ_CODE);
+            }
         }
         else if (action.equals("save")) {
-            final JSONObject contact = args.getJSONObject(0);
-            this.cordova.getThreadPool().execute(new Runnable(){
-                public void run() {
-                    JSONObject res = null;
-                    String id = contactAccessor.save(contact);
-                    if (id != null) {
-                        try {
-                            res = contactAccessor.getContactById(id);
-                        } catch (JSONException e) {
-                            Log.e(LOG_TAG, "JSON fail.", e);
-                        }
-                    }
-                    if (res != null) {
-                        callbackContext.success(res);
-                    } else {
-                        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, UNKNOWN_ERROR));
-                    }
-                }
-            });
+            if(checkWritePermission() != PackageManager.PERMISSION_DENIED)
+            {
+                save(executeArgs);
+            }
+            else
+            {
+                getWritePermission(SAVE_REQ_CODE);
+            }
         }
         else if (action.equals("remove")) {
-            final String contactId = args.getString(0);
-            this.cordova.getThreadPool().execute(new Runnable() {
-                public void run() {
-                    if (contactAccessor.remove(contactId)) {
-                        callbackContext.success();
-                    } else {
-                        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, UNKNOWN_ERROR));
-                    }
-                }
-            });
+            if(checkWritePermission() != PackageManager.PERMISSION_DENIED)
+            {
+                remove(executeArgs);
+            }
+            else
+            {
+                getWritePermission(REMOVE_REQ_CODE);
+            }
         }
         else if (action.equals("pickContact")) {
             pickContactAsync();
@@ -136,7 +181,55 @@ public class ContactManager extends CordovaPlugin {
         }
         return true;
     }
-    
+
+    private void remove(JSONArray args) throws JSONException {
+        final String contactId = args.getString(0);
+        this.cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                if (contactAccessor.remove(contactId)) {
+                    callbackContext.success();
+                } else {
+                    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, UNKNOWN_ERROR));
+                }
+            }
+        });
+    }
+
+    private void save(JSONArray args) throws JSONException {
+        final JSONObject contact = args.getJSONObject(0);
+        this.cordova.getThreadPool().execute(new Runnable(){
+            public void run() {
+                JSONObject res = null;
+                String id = contactAccessor.save(contact);
+                if (id != null) {
+                    try {
+                        res = contactAccessor.getContactById(id);
+                    } catch (JSONException e) {
+                        Log.e(LOG_TAG, "JSON fail.", e);
+                    }
+                }
+                if (res != null) {
+                    callbackContext.success(res);
+                } else {
+                    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, UNKNOWN_ERROR));
+                }
+            }
+        });
+    }
+
+    private void search(JSONArray args) throws JSONException
+    {
+        final JSONArray filter = args.getJSONArray(0);
+        final JSONObject options = args.get(1) == null ? null : args.getJSONObject(1);
+        this.cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                JSONArray res = contactAccessor.search(filter, options);
+                callbackContext.success(res);
+            }
+        });
+    }
+
+
     /**
      * Launches the Contact Picker to select a single contact.
      */
@@ -188,4 +281,27 @@ public class ContactManager extends CordovaPlugin {
             this.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, UNKNOWN_ERROR));
         }
     }
+
+    public void onRequestPermissionResult(int requestCode, String[] permissions,
+                                             int[] grantResults) throws JSONException
+    {
+        for(int r:grantResults)
+        {
+            if(r == PackageManager.PERMISSION_DENIED)
+            {
+                this.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, PERMISSION_DENIED_ERROR));
+            }
+        }
+        switch(requestCode)
+        {
+            case SEARCH_REQ_CODE:
+                search(executeArgs);
+                break;
+            case SAVE_REQ_CODE:
+                break;
+            case REMOVE_REQ_CODE:
+                break;
+        }
+    }
+
 }

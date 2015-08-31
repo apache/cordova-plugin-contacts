@@ -18,6 +18,8 @@ package org.apache.cordova.contacts;
 
 import java.util.HashMap;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.util.Log;
 import org.apache.cordova.CordovaInterface;
 import org.json.JSONArray;

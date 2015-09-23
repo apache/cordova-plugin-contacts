@@ -1632,7 +1632,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             return url.openStream();
         }
         else {
-            return new FileInputStream(path);
+            return mApp.getActivity().getApplicationContext().getAssets().open(path);
         }
     }
 

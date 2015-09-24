@@ -1627,11 +1627,15 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             Uri uri = Uri.parse(path);
             return mApp.getActivity().getContentResolver().openInputStream(uri);
         }
-        if (path.startsWith("http:") || path.startsWith("https:") || path.startsWith("file:")) {
+        if (path.startsWith("http:") || path.startsWith("https:"))) {
             URL url = new URL(path);
             return url.openStream();
         }
         else {
+            if (path.startsWith("file:"))
+        	{
+        		path = path.replace("file:///android_asset/","");
+        	}
             return mApp.getActivity().getApplicationContext().getAssets().open(path);
         }
     }

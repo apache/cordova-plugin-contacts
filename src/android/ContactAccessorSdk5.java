@@ -1632,10 +1632,9 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             return url.openStream();
         }
         else {
-            if (path.startsWith("file:"))
-        	{
-        		path = path.replace("file:///android_asset/","");
-        	}
+            if (path.startsWith("file:")) {
+        	       path = path.replace("file:///android_asset/","");
+              }
             return mApp.getActivity().getApplicationContext().getAssets().open(path);
         }
     }

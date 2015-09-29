@@ -50,7 +50,11 @@ import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds.*;
 import android.util.Log;
+
+
+
 
 /**
  * An implementation of {@link ContactAccessor} that uses current Contacts API.
@@ -1854,73 +1858,77 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      * @return Android int value
      */
     private int getPhoneType(String string) {
-        int type = ContactsContract.CommonDataKinds.Phone.TYPE_OTHER;
+        
+        int type = Phone.TYPE_OTHER;
+        
         if (string != null) {
-            if ("home".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_HOME;
+            String lowerType = string.toLowerCase(Locale.getDefault());
+
+            if ("home".equals(lowerType)) {
+                return Phone.TYPE_HOME;
             }
-            else if ("mobile".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE;
+            else if ("mobile".equals(lowerType)) {
+                return Phone.TYPE_MOBILE;
             }
-            else if ("work".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_WORK;
+            else if ("work".equals(lowerType)) {
+                return Phone.TYPE_WORK;
             }
-            else if ("work fax".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_FAX_WORK;
+            else if ("work fax".equals(lowerType)) {
+                return Phone.TYPE_FAX_WORK;
             }
-            else if ("home fax".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_FAX_HOME;
+            else if ("home fax".equals(lowerType)) {
+                return Phone.TYPE_FAX_HOME;
             }
-            else if ("fax".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_FAX_WORK;
+            else if ("fax".equals(lowerType)) {
+                return Phone.TYPE_FAX_WORK;
             }
-            else if ("pager".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_PAGER;
+            else if ("pager".equals(lowerType)) {
+                return Phone.TYPE_PAGER;
             }
-            else if ("other".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_OTHER;
+            else if ("other".equals(lowerType)) {
+                return Phone.TYPE_OTHER;
             }
-            else if ("car".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_CAR;
+            else if ("car".equals(lowerType)) {
+                return Phone.TYPE_CAR;
             }
-            else if ("company main".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_COMPANY_MAIN;
+            else if ("company main".equals(lowerType)) {
+                return Phone.TYPE_COMPANY_MAIN;
             }
-            else if ("isdn".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_ISDN;
+            else if ("isdn".equals(lowerType)) {
+                return Phone.TYPE_ISDN;
             }
-            else if ("main".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_MAIN;
+            else if ("main".equals(lowerType)) {
+                return Phone.TYPE_MAIN;
             }
-            else if ("other fax".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_OTHER_FAX;
+            else if ("other fax".equals(lowerType)) {
+                return Phone.TYPE_OTHER_FAX;
             }
-            else if ("radio".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_RADIO;
+            else if ("radio".equals(lowerType)) {
+                return Phone.TYPE_RADIO;
             }
-            else if ("telex".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_TELEX;
+            else if ("telex".equals(lowerType)) {
+                return Phone.TYPE_TELEX;
             }
-            else if ("work mobile".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_WORK_MOBILE;
+            else if ("work mobile".equals(lowerType)) {
+                return Phone.TYPE_WORK_MOBILE;
             }
-            else if ("work pager".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_WORK_PAGER;
+            else if ("work pager".equals(lowerType)) {
+                return Phone.TYPE_WORK_PAGER;
             }
-            else if ("assistant".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_ASSISTANT;
+            else if ("assistant".equals(lowerType)) {
+                return Phone.TYPE_ASSISTANT;
             }
-            else if ("mms".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_MMS;
+            else if ("mms".equals(lowerType)) {
+                return Phone.TYPE_MMS;
             }
-            else if ("callback".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_CALLBACK;
+            else if ("callback".equals(lowerType)) {
+                return Phone.TYPE_CALLBACK;
             }
-            else if ("tty ttd".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_TTY_TDD;
+            else if ("tty ttd".equals(lowerType)) {
+                return Phone.TYPE_TTY_TDD;
             }
-            else if ("custom".equals(string.toLowerCase(Locale.getDefault()))) {
-                return ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM;
+            else if ("custom".equals(lowerType)) {
+                return Phone.TYPE_CUSTOM;
             }
         }
         return type;
@@ -1933,65 +1941,66 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      */
     private String getPhoneType(int type) {
         String stringType;
+
         switch (type) {
-        case ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM:
+        case Phone.TYPE_CUSTOM:
             stringType = "custom";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_FAX_HOME:
+        case Phone.TYPE_FAX_HOME:
             stringType = "home fax";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_FAX_WORK:
+        case Phone.TYPE_FAX_WORK:
             stringType = "work fax";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
+        case Phone.TYPE_HOME:
             stringType = "home";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
+        case Phone.TYPE_MOBILE:
             stringType = "mobile";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_PAGER:
+        case Phone.TYPE_PAGER:
             stringType = "pager";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
+        case Phone.TYPE_WORK:
             stringType = "work";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_CALLBACK:
+        case Phone.TYPE_CALLBACK:
             stringType = "callback";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_CAR:
+        case Phone.TYPE_CAR:
             stringType = "car";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_COMPANY_MAIN:
+        case Phone.TYPE_COMPANY_MAIN:
             stringType = "company main";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_OTHER_FAX:
+        case Phone.TYPE_OTHER_FAX:
             stringType = "other fax";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_RADIO:
+        case Phone.TYPE_RADIO:
             stringType = "radio";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_TELEX:
+        case Phone.TYPE_TELEX:
             stringType = "telex";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_TTY_TDD:
+        case Phone.TYPE_TTY_TDD:
             stringType = "tty tdd";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_WORK_MOBILE:
+        case Phone.TYPE_WORK_MOBILE:
             stringType = "work mobile";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_WORK_PAGER:
+        case Phone.TYPE_WORK_PAGER:
             stringType = "work pager";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_ASSISTANT:
+        case Phone.TYPE_ASSISTANT:
             stringType = "assistant";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_MMS:
+        case Phone.TYPE_MMS:
             stringType = "mms";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_ISDN:
+        case Phone.TYPE_ISDN:
             stringType = "isdn";
             break;
-        case ContactsContract.CommonDataKinds.Phone.TYPE_OTHER:
+        case Phone.TYPE_OTHER:
         default:
             stringType = "other";
             break;
@@ -2007,19 +2016,22 @@ public class ContactAccessorSdk5 extends ContactAccessor {
     private int getContactType(String string) {
         int type = ContactsContract.CommonDataKinds.Email.TYPE_OTHER;
         if (string != null) {
-            if ("home".equals(string.toLowerCase(Locale.getDefault()))) {
+
+            String lowerType = string.toLowerCase(Locale.getDefault());
+
+            if ("home".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.Email.TYPE_HOME;
             }
-            else if ("work".equals(string.toLowerCase(Locale.getDefault()))) {
+            else if ("work".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.Email.TYPE_WORK;
             }
-            else if ("other".equals(string.toLowerCase(Locale.getDefault()))) {
+            else if ("other".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.Email.TYPE_OTHER;
             }
-            else if ("mobile".equals(string.toLowerCase(Locale.getDefault()))) {
+            else if ("mobile".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.Email.TYPE_MOBILE;
             }
-            else if ("custom".equals(string.toLowerCase(Locale.getDefault()))) {
+            else if ("custom".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.Email.TYPE_CUSTOM;
             }
         }
@@ -2062,13 +2074,14 @@ public class ContactAccessorSdk5 extends ContactAccessor {
     private int getOrgType(String string) {
         int type = ContactsContract.CommonDataKinds.Organization.TYPE_OTHER;
         if (string != null) {
-            if ("work".equals(string.toLowerCase(Locale.getDefault()))) {
+            String lowerType = string.toLowerCase(Locale.getDefault());
+            if ("work".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.Organization.TYPE_WORK;
             }
-            else if ("other".equals(string.toLowerCase(Locale.getDefault()))) {
+            else if ("other".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.Organization.TYPE_OTHER;
             }
-            else if ("custom".equals(string.toLowerCase(Locale.getDefault()))) {
+            else if ("custom".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.Organization.TYPE_CUSTOM;
             }
         }
@@ -2105,13 +2118,15 @@ public class ContactAccessorSdk5 extends ContactAccessor {
     private int getAddressType(String string) {
         int type = ContactsContract.CommonDataKinds.StructuredPostal.TYPE_OTHER;
         if (string != null) {
-            if ("work".equals(string.toLowerCase(Locale.getDefault()))) {
+            String lowerType = string.toLowerCase(Locale.getDefault());
+
+            if ("work".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.StructuredPostal.TYPE_WORK;
             }
-            else if ("other".equals(string.toLowerCase(Locale.getDefault()))) {
+            else if ("other".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.StructuredPostal.TYPE_OTHER;
             }
-            else if ("home".equals(string.toLowerCase(Locale.getDefault()))) {
+            else if ("home".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.StructuredPostal.TYPE_HOME;
             }
         }
@@ -2148,31 +2163,33 @@ public class ContactAccessorSdk5 extends ContactAccessor {
     private int getImType(String string) {
         int type = ContactsContract.CommonDataKinds.Im.PROTOCOL_CUSTOM;
         if (string != null) {
-            if ("aim".equals(string.toLowerCase(Locale.getDefault()))) {
+            String lowerType = string.toLowerCase(Locale.getDefault());
+
+            if ("aim".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.Im.PROTOCOL_AIM;
             }
-            else if ("google talk".equals(string.toLowerCase(Locale.getDefault()))) {
+            else if ("google talk".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.Im.PROTOCOL_GOOGLE_TALK;
             }
-            else if ("icq".equals(string.toLowerCase(Locale.getDefault()))) {
+            else if ("icq".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.Im.PROTOCOL_ICQ;
             }
-            else if ("jabber".equals(string.toLowerCase(Locale.getDefault()))) {
+            else if ("jabber".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.Im.PROTOCOL_JABBER;
             }
-            else if ("msn".equals(string.toLowerCase(Locale.getDefault()))) {
+            else if ("msn".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.Im.PROTOCOL_MSN;
             }
-            else if ("netmeeting".equals(string.toLowerCase(Locale.getDefault()))) {
+            else if ("netmeeting".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.Im.PROTOCOL_NETMEETING;
             }
-            else if ("qq".equals(string.toLowerCase(Locale.getDefault()))) {
+            else if ("qq".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.Im.PROTOCOL_QQ;
             }
-            else if ("skype".equals(string.toLowerCase(Locale.getDefault()))) {
+            else if ("skype".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.Im.PROTOCOL_SKYPE;
             }
-            else if ("yahoo".equals(string.toLowerCase(Locale.getDefault()))) {
+            else if ("yahoo".equals(lowerType)) {
                 return ContactsContract.CommonDataKinds.Im.PROTOCOL_YAHOO;
             }
         }

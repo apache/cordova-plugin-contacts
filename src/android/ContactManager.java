@@ -62,55 +62,27 @@ public class ContactManager extends CordovaPlugin {
     public static final int SAVE_REQ_CODE = 1;
     public static final int REMOVE_REQ_CODE = 2;
 
+    public static final String READ = Manifest.permission.READ_CONTACTS;
+    public static final String WRITE = Manifest.permission.WRITE_CONTACTS;
+
 
     /**
      * Constructor.
      */
     public ContactManager() {
-        permissions = new String[2];
-        permissions[0] = Manifest.permission.READ_CONTACTS;
-        permissions[1] = Manifest.permission.WRITE_CONTACTS;
+
     }
 
-    public String [] requestPermissions()
-    {
-        return permissions;
-    }
-
-
-    protected int checkReadPermission()
-    {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        {
-            return cordova.getActivity().checkSelfPermission(Manifest.permission.READ_CONTACTS);
-        }
-        else
-        {
-            return PackageManager.PERMISSION_GRANTED;
-        }
-    }
 
     protected void getReadPermission(int requestCode)
     {
-        cordova.requestPermission(this, requestCode, Manifest.permission.READ_CONTACTS);
+        cordova.requestPermission(this, requestCode, READ);
     }
 
-
-    protected int checkWritePermission()
-    {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        {
-            return cordova.getActivity().checkSelfPermission(Manifest.permission.WRITE_CONTACTS);
-        }
-        else
-        {
-            return PackageManager.PERMISSION_GRANTED;
-        }
-    }
 
     protected void getWritePermission(int requestCode)
     {
-        cordova.requestPermission(this, requestCode, Manifest.permission.WRITE_CONTACTS);
+        cordova.requestPermission(this, requestCode, WRITE);
     }
 
 
@@ -145,7 +117,7 @@ public class ContactManager extends CordovaPlugin {
         }
 
         if (action.equals("search")) {
-            if(checkReadPermission() != PackageManager.PERMISSION_DENIED) {
+            if(cordova.hasPermission(READ)) {
                 search(executeArgs);
             }
             else
@@ -154,7 +126,7 @@ public class ContactManager extends CordovaPlugin {
             }
         }
         else if (action.equals("save")) {
-            if(checkWritePermission() != PackageManager.PERMISSION_DENIED)
+            if(cordova.hasPermission(WRITE))
             {
                 save(executeArgs);
             }
@@ -164,7 +136,7 @@ public class ContactManager extends CordovaPlugin {
             }
         }
         else if (action.equals("remove")) {
-            if(checkWritePermission() != PackageManager.PERMISSION_DENIED)
+            if(cordova.hasPermission(WRITE))
             {
                 remove(executeArgs);
             }

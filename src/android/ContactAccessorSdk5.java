@@ -283,6 +283,10 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 ContactsContract.Data.CONTACT_ID + " ASC");
          
         JSONArray contacts = populateContactArray(limit, populate, c);
+        
+        if (!c.isClosed()) {
+          c.close();
+        }
         return contacts;
     }
 
@@ -313,7 +317,11 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 );
 
         JSONArray contacts = populateContactArray(1, populate, c);
-
+        
+        if (!c.isClosed()) {
+          c.close();
+        }
+        
         if (contacts.length() == 1) {
             return contacts.getJSONObject(0);
         } else {
@@ -925,6 +933,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      */
     private JSONObject photoQuery(Cursor cursor, String contactId) {
         JSONObject photo = new JSONObject();
+        Cursor photoCursor = null;
         try {
             photo.put("id", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Photo._ID)));
             photo.put("pref", false);
@@ -934,7 +943,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             photo.put("value", photoUri.toString());
 
             // Query photo existance
-            Cursor photoCursor = mApp.getActivity().getContentResolver().query(photoUri, new String[] {ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
+            photoCursor = mApp.getActivity().getContentResolver().query(photoUri, new String[] {ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
             if (photoCursor == null) {
                 return null;
             } else {
@@ -945,9 +954,12 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             }
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
-        } catch (SQLiteException e)
-        {
+        } catch (SQLiteException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
+        } finally {
+          if(photoCursor != null && !photoCursor.isClosed()) {
+            photoCursor.close();
+          }
         }
         return photo;
     }

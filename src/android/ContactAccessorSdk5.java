@@ -16,7 +16,7 @@
        specific language governing permissions and limitations
        under the License.
 */
- 
+
 package org.apache.cordova.contacts;
 
 import java.io.ByteArrayOutputStream;
@@ -132,7 +132,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
     public ContactAccessorSdk5(CordovaInterface context) {
         mApp = context;
     }
-    
+
     /**
      * This method takes the fields required and search options in order to produce an
      * array of contacts that matches the criteria provided.
@@ -156,7 +156,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             else {
                 searchTerm = "%" + searchTerm + "%";
             }
-            
+
             try {
                 multiple = options.getBoolean("multiple");
                 if (!multiple) {
@@ -213,9 +213,9 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         columnsToFetch.add(ContactsContract.Data.CONTACT_ID);
         columnsToFetch.add(ContactsContract.Data.RAW_CONTACT_ID);
         columnsToFetch.add(ContactsContract.Data.MIMETYPE);
-        
+
         if (isRequired("displayName", populate)) {
-            columnsToFetch.add(CommonDataKinds.StructuredName.DISPLAY_NAME);            
+            columnsToFetch.add(CommonDataKinds.StructuredName.DISPLAY_NAME);
         }
         if (isRequired("name", populate)) {
             columnsToFetch.add(CommonDataKinds.StructuredName.FAMILY_NAME);
@@ -274,15 +274,19 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         if (isRequired("photos", populate)) {
             columnsToFetch.add(CommonDataKinds.Photo._ID);
         }
-        
+
         // Do the id query
         Cursor c = mApp.getActivity().getContentResolver().query(ContactsContract.Data.CONTENT_URI,
                 columnsToFetch.toArray(new String[] {}),
                 idOptions.getWhere(),
                 idOptions.getWhereArgs(),
                 ContactsContract.Data.CONTACT_ID + " ASC");
-         
+
         JSONArray contacts = populateContactArray(limit, populate, c);
+
+        if (!c.isClosed()) {
+            c.close();
+        }
         return contacts;
     }
 
@@ -294,10 +298,10 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      * @throws JSONException
      */
     public JSONObject getContactById(String id) throws JSONException {
-        // Call overloaded version with no desiredFields 
-        return getContactById(id, null); 
+        // Call overloaded version with no desiredFields
+        return getContactById(id, null);
     }
-    
+
     @Override
     public JSONObject getContactById(String id, JSONArray desiredFields) throws JSONException {
         // Do the id query
@@ -313,6 +317,10 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 );
 
         JSONArray contacts = populateContactArray(1, populate, c);
+
+        if (!c.isClosed()) {
+            c.close();
+        }
 
         if (contacts.length() == 1) {
             return contacts.getJSONObject(0);
@@ -401,7 +409,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
 
                     // Grab the mimetype of the current row as it will be used in a lot of comparisons
                     mimetype = c.getString(colMimetype);
-                    
+
                     if (mimetype.equals(CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE) && isRequired("name", populate)) {
                         contact.put("displayName", c.getString(colDisplayName));
                     }
@@ -463,7 +471,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 oldContactId = contactId;
 
             }
-            
+
             // Push the last contact into the contacts array
             if (contacts.length() < limit) {
                 contacts.put(populateContact(contact, organizations, addresses, phones,
@@ -717,7 +725,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         if(hasPhoneNumber){
             if(where.size()>0){
                 selection.insert(0,"(");
-                selection.append(") AND (" + ContactsContract.Contacts.HAS_PHONE_NUMBER + " = ?)"); 
+                selection.append(") AND (" + ContactsContract.Contacts.HAS_PHONE_NUMBER + " = ?)");
                 whereArgs.add("1");
             }else{
                 selection.append("(" + ContactsContract.Contacts.HAS_PHONE_NUMBER + " = ?)");
@@ -925,6 +933,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      */
     private JSONObject photoQuery(Cursor cursor, String contactId) {
         JSONObject photo = new JSONObject();
+        Cursor photoCursor = null;
         try {
             photo.put("id", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Photo._ID)));
             photo.put("pref", false);
@@ -934,7 +943,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             photo.put("value", photoUri.toString());
 
             // Query photo existance
-            Cursor photoCursor = mApp.getActivity().getContentResolver().query(photoUri, new String[] {ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
+            photoCursor = mApp.getActivity().getContentResolver().query(photoUri, new String[] {ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
             if (photoCursor == null) return null;
             if (!photoCursor.moveToFirst()) {
                 photoCursor.close();
@@ -943,9 +952,12 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             photoCursor.close();
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
-        } catch (SQLiteException e)
-        {
+        } catch (SQLiteException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
+        } finally {
+            if(photoCursor != null && !photoCursor.isClosed()) {
+                photoCursor.close();
+            }
         }
         return photo;
     }
@@ -1857,9 +1869,9 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      * @return Android int value
      */
     private int getPhoneType(String string) {
-        
+
         int type = Phone.TYPE_OTHER;
-        
+
         if (string != null) {
             String lowerType = string.toLowerCase(Locale.getDefault());
 

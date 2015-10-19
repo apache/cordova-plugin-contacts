@@ -182,8 +182,8 @@
         <source-file src="src/blackberry10/ContactOrganization.js" target-dir="Contacts"></source-file>
         <source-file src="src/blackberry10/ContactPhoto.js" target-dir="Contacts"></source-file>
         <source-file src="src/blackberry10/contactUtils.js" target-dir="Contacts"></source-file>
-        <dependency id="com.blackberry.utils" />
-        <dependency id="com.blackberry.pim.lib" />
+        <dependency id="cordova-plugin-bb-contacts" />
+        <dependency id="cordova-plugin-bb-pimlib" />
     </platform>
 
 

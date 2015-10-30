@@ -271,8 +271,10 @@ public class ContactManager extends CordovaPlugin {
                 search(executeArgs);
                 break;
             case SAVE_REQ_CODE:
+                save(executeArgs);
                 break;
             case REMOVE_REQ_CODE:
+                remove(executeArgs);
                 break;
         }
     }

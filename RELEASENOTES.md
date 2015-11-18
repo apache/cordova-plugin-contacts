@@ -20,28 +20,109 @@
 -->
 # Release Notes
 
-### 0.2.1 (Sept 5, 2013)
-* [CB-4580] Fixed up duplicate definitions of module id
-* [CB-4432] Copyright notice change
+### 1.1.0 (Jun 17, 2015)
+* CB-9128 cordova-plugin-contacts documentation translation: cordova-plugin-contacts
+* fix npm md issue
+* Add more install text for legacy versions of cordova tools. This closes #60
+* CB-9056 Increased timeout of failing tests
+* CB-8987: Support for save and remove for Windows 10
+* CB-5278: We must close the cursor or we take down the whole app, and the debugger doesn't catch it.
 
-### 0.2.3 (Sept 25, 2013)
-* CB-4889 bumping&resetting version
-* [BlackBerry10] removed uneeded permission tags in plugin.xml
-* [BlackBerry10] removed uneeded permission tags in plugin.xml
-* CB-4889 renaming blackberry10 reference in plugin.xml
-* CB-4888 renaming org.apache.cordova.core.contacts to org.apache.cordova.contacts
-* added contacts api for firefoxos
-* Rename CHANGELOG.md -> RELEASENOTES.md
-* [CB-4824] Fix XCode 5 contacts plugin warnings
-* [CB-4752] Incremented plugin version on dev branch.
+### 1.0.0 (Apr 15, 2015)
+* CB-8746 gave plugin major version bump
+* CB-8683 updated wp specific references of old id to new id
+* CB-8683 changed plugin-id to pacakge-name
+* CB-8653 properly updated translated docs to use new id
+* CB-8653 updated translated docs to use new id
+* Use TRAVIS_BUILD_DIR, install paramedic by npm
+* CB-8653 Updated Readme
+* CB-8659: ios: 4.0.x Compatibility: Remove use of initWebView method
+* CB-8659: ios: 4.0.x Compatibility: Remove use of deprecated headers
+* CB-8604 Pended unsupported test for wp8, updated documentation
+* CB-8561 Integrate TravisCI
+* CB-8438 cordova-plugin-contacts documentation translation: cordova-plugin-contacts
+* CB-8538 Added package.json file
+* windows: pended .remove test as it is not supported on windows
+* CB-8395 marked unsupported tests pending on wp8
 
-### 0.2.4 (Oct 9, 2013)
-* [CB-4950] Remove the dependence on concrete component android.webkit.WebView.
-* [CB-4915] Incremented plugin version on dev branch.
+### 0.2.16 (Feb 04, 2015)
+* CB-8351 ios: Stop using (newly) deprecated CordovaLib functions
+* CB-8351 ios: Use argumentForIndex rather than NSArray extension
+* android: Update ContactName support
+* Updated the comments for ContactOrganization constructor.
 
- ### 0.2.5 (Oct 28, 2013)
-* CB-5128: added repo + issue tags for contacts
-* [CB-5010] Incremented plugin version on dev branch.
+### 0.2.15 (Dec 02, 2014)
+* CB-7131 Check for profile photo existance
+* CB-7896 Better way to detect **Windows** and **WindowsPhone8.1**
+* CB-7896 Pending tests for `Save` and `Find` methods for **Windows** cause they are not supported yet
+* CB-7977 Mention `deviceready` in plugin docs
+* CB-7772 - [Contacts] Cancelling `pickContact` should call the error callback, not the success callback
+* CB-7761 - Misleading text in documentation
+* CB-7762 - Parameter list is incorrect for `contacts.find`
+* CB-7700 cordova-plugin-contacts documentation translation: cordova-plugin-contacts
+
+### 0.2.14 (Oct 03, 2014)
+* CB-7373 Removes unnecessary Error object creation
+* CB-7373 Adds additional output if method is not supported.
+* CB-7357 Adds missing 'capability' element to phone's appxmanifest.
+
+### 0.2.13 (Sep 17, 2014)
+* CB-7546 [Contacts][iOS] pickContact shows exception in the console log
+* CB-6374 Fix iOS 6 deprecation warnings in Contacts
+* CB-7544 [Contacts][iOS 8] Contact picker is read-only in iOS 8
+* CB-7523 Fixing "ContactFieldType" error in the config.xml
+* CB-6724 Empty may be expected.
+* CB-7249 cordova-plugin-contacts documentation translation
+* Add missing test, skip some specs on wp
+* rm old test folder and merged with renamed tests folder
+* CB-7290 Adds support for universal Windows platform.
+* Renamed test dir, added nested plugin.xml
+* CB-7148 Added manual tests
+* Removed js-module for tests from plugin.xml
+* Changing cdvtest format to use module exports
+* register tests using new style
+* convert test to new style
+* added documentation for manual tests
+* merged changes for test framework plugin
+
+### 0.2.12 (Aug 06, 2014)
+* fixes .find method when 'options' param is not passed. Will return all contacts on missing 'options' param
+* [FFOS] update ContactsProxy.js
+* Removing a stray unicode character
+* CB-6127 Updated translations for docs
+* CB-5698 ios: Check to see if photoData exists before using
+
+### 0.2.11 (Jul 2, 2014)
+* CB-6127 Spanish and French Translations added. Github close #25
+* Remove deprecated symbols for iOS < 6
+* CB-6797 Add license
+* [wp8] now pupulates contact photos
+* Update license headers format
+* Add pickContact functionality to cordova contacts plugin
+* CB-5416 - Adding support for auto-managing permissions
+* CB-6682 move windows8 command proxy into it's missing platform tag. This closes #30
+* Add ContactError codes to index.md doc (closes #28)
+* CB-6491 add CONTRIBUTING.md
+* Docs typo: navigator.contacts.length -> contacts.length
+* CB-5698 ios: Check to see if photoData exists before using
+* CB-7003 android: Make pickContact pick correct contact on Android 4.3 and 4.4.3
+
+### 0.2.10 (Apr 17, 2014)
+* CB-6126: [BlackBerry10] Update docs quirks section for fields which are supported
+* CB-6212: [iOS] fix warnings compiled under arm64 64-bit
+* CB-6460: Update license headers
+* Add NOTICE file
+
+### 0.2.9 (Feb 26, 2014)
+* CB-6086 Fix typo in ffos part of plugin.xml: Camera -> Contacts
+* CB-5994 Switch Contact ID lookup to use Raw contact id.
+
+### 0.2.8 (Feb 05, 2014)
+* [CB-3208] FFOS docs updated
+* CB-4590 - chooseContact in CDVContacts crashes app
+
+### 0.2.7 (Jan 02, 2014)
+* B-5658 Add doc/index.md for Contacts plugin
 
 ### 0.2.6 (Dec 4, 2013)
 * Fix bad commit/merge
@@ -66,106 +147,25 @@
 * CB-5198 [BlackBerry10] Update dependencies to point to registry
 * handle null filter when fields are specified. ( long standing pull-req from @kevfromireland )
 
-### 0.2.7 (Jan 02, 2014)
-* B-5658 Add doc/index.md for Contacts plugin
+### 0.2.5 (Oct 28, 2013)
+* CB-5128: added repo + issue tags for contacts
+* [CB-5010] Incremented plugin version on dev branch.
 
-### 0.2.8 (Feb 05, 2014)
-* [CB-3208] FFOS docs updated
-* CB-4590 - chooseContact in CDVContacts crashes app
+### 0.2.4 (Oct 9, 2013)
+* [CB-4950] Remove the dependence on concrete component android.webkit.WebView.
+* [CB-4915] Incremented plugin version on dev branch.
 
-### 0.2.9 (Feb 26, 2014)
-* CB-6086 Fix typo in ffos part of plugin.xml: Camera -> Contacts
-* CB-5994 Switch Contact ID lookup to use Raw contact id.
+### 0.2.3 (Sept 25, 2013)
+* CB-4889 bumping&resetting version
+* [BlackBerry10] removed uneeded permission tags in plugin.xml
+* CB-4889 renaming blackberry10 reference in plugin.xml
+* CB-4888 renaming org.apache.cordova.core.contacts to org.apache.cordova.contacts
+* added contacts api for firefoxos
+* Rename CHANGELOG.md -> RELEASENOTES.md
+* [CB-4824] Fix XCode 5 contacts plugin warnings
+* [CB-4752] Incremented plugin version on dev branch.
 
-### 0.2.10 (Apr 17, 2014)
-* CB-6126: [BlackBerry10] Update docs quirks section for fields which are supported
-* CB-6212: [iOS] fix warnings compiled under arm64 64-bit
-* CB-6460: Update license headers
-* Add NOTICE file
+### 0.2.1 (Sept 5, 2013)
+* [CB-4580] Fixed up duplicate definitions of module id
+* [CB-4432] Copyright notice change
 
-### 0.2.11 (Jul 2, 2014)
-* CB-6127 Spanish and French Translations added. Github close #25
-* Remove deprecated symbols for iOS < 6
-* CB-6797 Add license
-* [wp8] now pupulates contact photos
-* Update license headers format
-* Add pickContact functionality to cordova contacts plugin
-* CB-5416 - Adding support for auto-managing permissions
-* CB-6682 move windows8 command proxy into it's missing platform tag. This closes #30
-* Add ContactError codes to index.md doc (closes #28)
-* CB-6491 add CONTRIBUTING.md
-* Docs typo: navigator.contacts.length -> contacts.length
-* CB-5698 ios: Check to see if photoData exists before using
-* CB-7003 android: Make pickContact pick correct contact on Android 4.3 and 4.4.3
-
-### 0.2.12 (Aug 06, 2014)
-* fixes .find method when 'options' param is not passed. Will return all contacts on missing 'options' param
-* [FFOS] update ContactsProxy.js
-* Removing a stray unicode character
-* CB-6127 Updated translations for docs
-* CB-5698 ios: Check to see if photoData exists before using
-
-### 0.2.13 (Sep 17, 2014)
-* CB-7546 [Contacts][iOS] pickContact shows exception in the console log
-* CB-6374 Fix iOS 6 deprecation warnings in Contacts
-* CB-7544 [Contacts][iOS 8] Contact picker is read-only in iOS 8
-* CB-7523 Fixing "ContactFieldType" error in the config.xml
-* CB-6724 Empty may be expected.
-* CB-7249 cordova-plugin-contacts documentation translation
-* Add missing test, skip some specs on wp
-* rm old test folder and merged with renamed tests folder
-* CB-7290 Adds support for universal Windows platform.
-* Renamed test dir, added nested plugin.xml
-* CB-7148 Added manual tests
-* Removed js-module for tests from plugin.xml
-* Changing cdvtest format to use module exports
-* register tests using new style
-* convert test to new style
-* added documentation for manual tests
-* merged changes for test framework plugin
-
-### 0.2.14 (Oct 03, 2014)
-* CB-7373 Removes unnecessary Error object creation
-* CB-7373 Adds additional output if method is not supported.
-* CB-7357 Adds missing 'capability' element to phone's appxmanifest.
-
-### 0.2.15 (Dec 02, 2014)
-* CB-7131 Check for profile photo existance
-* CB-7896 Better way to detect **Windows** and **WindowsPhone8.1**
-* CB-7896 Pending tests for `Save` and `Find` methods for **Windows** cause they are not supported yet
-* CB-7977 Mention `deviceready` in plugin docs
-* CB-7772 - [Contacts] Cancelling `pickContact` should call the error callback, not the success callback
-* CB-7761 - Misleading text in documentation
-* CB-7762 - Parameter list is incorrect for `contacts.find`
-* CB-7700 cordova-plugin-contacts documentation translation: cordova-plugin-contacts
-
-### 0.2.16 (Feb 04, 2015)
-* CB-8351 ios: Stop using (newly) deprecated CordovaLib functions
-* CB-8351 ios: Use argumentForIndex rather than NSArray extension
-* android: Update ContactName support
-* Updated the comments for ContactOrganization constructor.
-
-### 1.0.0 (Apr 15, 2015)
-* CB-8746 gave plugin major version bump
-* CB-8683 updated wp specific references of old id to new id
-* CB-8683 changed plugin-id to pacakge-name
-* CB-8653 properly updated translated docs to use new id
-* CB-8653 updated translated docs to use new id
-* Use TRAVIS_BUILD_DIR, install paramedic by npm
-* CB-8653 Updated Readme
-* CB-8659: ios: 4.0.x Compatibility: Remove use of initWebView method
-* CB-8659: ios: 4.0.x Compatibility: Remove use of deprecated headers
-* CB-8604 Pended unsupported test for wp8, updated documentation
-* CB-8561 Integrate TravisCI
-* CB-8438 cordova-plugin-contacts documentation translation: cordova-plugin-contacts
-* CB-8538 Added package.json file
-* windows: pended .remove test as it is not supported on windows
-* CB-8395 marked unsupported tests pending on wp8
-
-### 1.1.0 (Jun 17, 2015)
-* CB-9128 cordova-plugin-contacts documentation translation: cordova-plugin-contacts
-* fix npm md issue
-* Add more install text for legacy versions of cordova tools. This closes #60
-* CB-9056 Increased timeout of failing tests
-* CB-8987: Support for save and remove for Windows 10
-* CB-5278: We must close the cursor or we take down the whole app, and the debugger doesn't catch it.

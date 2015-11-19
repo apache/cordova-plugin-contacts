@@ -640,6 +640,10 @@ exports.defineManualTests = function(contentEl, createActionButton) {
         getContacts();
     }, 'get_contacts');
 
+    createActionButton("Pick contact", function() {
+        pickContact();
+    }, 'pick_contact');
+
     createActionButton("Add a new contact 'Dooney Evans'", function() {
         addContact();
     }, 'add_contact');

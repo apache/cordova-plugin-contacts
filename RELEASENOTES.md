@@ -20,6 +20,23 @@
 -->
 # Release Notes
 
+### 2.0.0 (Nov 18, 2015)
+* CB-10035 Updated `RELEASENOTES` to be newest to oldest
+* CB-9728 Solving memory leak issues due to opened cursor objects
+* CB-9940 Adding namespace declarations for `m3` and uap to `plugin.xml`. 
+* CB-9905 mark tests as pending if **iOS** permission is blocked.
+* Refactored `ContactManager` after feedback
+* Commit of Contacts Plugin with new `API` for new **MarshMallow** permissions for **Android 6.0**
+* Fixing contribute link.
+* CB-9823 Making sure the `photoCursor` is always closed.
+* Shortened multiple references to use `CommonDataKinds` directly
+* removed mulitple calls `toLowerCase(Locale.getDefault())` for the same string, use type Phone `enum` directly.
+* CB-8537 Updated source to pass `Fortify` scan.
+* Update `ContactProxy.js`
+* Do not return absolute path for contact images.
+* CB-9579 Fixed failed tests when `DeleteMe` contact already exists
+* CB-9054: Can't fully reproduce, but we should probably wrap this in an exception anyway.
+
 ### 1.1.0 (Jun 17, 2015)
 * CB-9128 cordova-plugin-contacts documentation translation: cordova-plugin-contacts
 * fix npm md issue

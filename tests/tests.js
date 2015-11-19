@@ -525,6 +525,28 @@ exports.defineManualTests = function(contentEl, createActionButton) {
         }, obj);
     }
 
+    function pickContact() {
+        var results = document.getElementById('contact_results');
+        navigator.contacts.pickContact(
+            function (contact) {
+                var s = "";
+                if (!contact)
+                    s = "No contacts found";
+                else
+                    s = "Picked contact: <code>" + JSON.stringify(contact, null, 4) + '<code>';
+
+                results.innerHTML = s;
+            },
+            function (e) {
+                if (e.code === ContactError.NOT_SUPPORTED_ERROR) {
+                    results.innerHTML = "Searching for contacts is not supported.";
+                } else {
+                    results.innerHTML = "Pick failed: error " + e.code;
+                }
+            }
+        );
+    }
+
     function addContact() {
         var results = document.getElementById('contact_results');
 
@@ -606,7 +628,18 @@ exports.defineManualTests = function(contentEl, createActionButton) {
 
     /******************************************************************************/
 
-    contentEl.innerHTML = '<div id="info">' + '<b>Results:</b><br>' + '<div id="contact_results"></div>' + '</div>' + '<div id="get_contacts"></div>' + 'Expected result: Status box will show number of contacts and list them. May be empty on a fresh device until you click Add.' + '</p> <div id="add_contact"></div>' + 'Expected result: Will add a new contact. Log will say "Contact saved." or "Saving contacts not supported." if not supported on current platform. Verify by running Get phone contacts again' + '<div id="remove_dooney_evans"></div>' + '<p>Expected result: Will remove any contacts named "Dooney Evans".  Log will output success or failure, plus ID, or fail like getting contacts will fail.</p>';
+    contentEl.innerHTML = '<div id="info">' +
+        '<b>Results:</b><br>' +
+            '<div id="contact_results"></div>' +
+        '</div>' +
+        '<div id="get_contacts"></div>' +
+            'Expected result: Status box will show number of contacts and list them. May be empty on a fresh device until you click Add.' +
+        '<div id="pick_contact"></div>' +
+            'Expected result: Device\'s address book will be shown. After picking a contact status box will show Contact object, passed to success callback</p>' +
+        '<div id="add_contact"></div>' +
+            'Expected result: Will add a new contact. Log will say "Contact saved." or "Saving contacts not supported." if not supported on current platform. Verify by running Get phone contacts again' +
+        '<div id="remove_dooney_evans"></div>' +
+            '<p>Expected result: Will remove any contacts named "Dooney Evans".  Log will output success or failure, plus ID, or fail like getting contacts will fail.</p>';
 
     createActionButton("Get phone's contacts", function() {
         getContacts();

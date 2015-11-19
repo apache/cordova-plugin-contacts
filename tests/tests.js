@@ -529,20 +529,15 @@ exports.defineManualTests = function(contentEl, createActionButton) {
         var results = document.getElementById('contact_results');
         navigator.contacts.pickContact(
             function (contact) {
-                var s = "";
-                if (!contact)
-                    s = "No contacts found";
-                else
-                    s = "Picked contact: <code>" + JSON.stringify(contact, null, 4) + '<code>';
+                results.innerHTML = contact ?
+                    "Picked contact: <pre>" + JSON.stringify(contact, null, 4) + "</pre>" :
+                    "No contacts found";
 
-                results.innerHTML = s;
             },
             function (e) {
-                if (e.code === ContactError.NOT_SUPPORTED_ERROR) {
-                    results.innerHTML = "Searching for contacts is not supported.";
-                } else {
-                    results.innerHTML = "Pick failed: error " + e.code;
-                }
+                results.innerHTML = (e && e.code === ContactError.NOT_SUPPORTED_ERROR) ?
+                    "Searching for contacts is not supported." :
+                    "Pick failed: error " + (e && e.code);
             }
         );
     }

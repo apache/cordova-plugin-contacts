@@ -1377,6 +1377,10 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
         }
 
         for (id i in fieldsArray) {
+
+            // CB-7906 ignore NULL desired fields to avoid fatal exception
+            if ([i isKindOfClass:[NSNull class]]) continue;
+
             NSMutableArray* keys = nil;
             NSString* fieldStr = nil;
             if ([i isKindOfClass:[NSNumber class]]) {

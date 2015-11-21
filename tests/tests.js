@@ -478,6 +478,7 @@ exports.defineAutoTests = function() {
                 expect(ContactError.PENDING_OPERATION_ERROR).toBe(3);
                 expect(ContactError.IO_ERROR).toBe(4);
                 expect(ContactError.NOT_SUPPORTED_ERROR).toBe(5);
+                expect(ContactError.OPERATION_CANCELLED_ERROR).toBe(6);
                 expect(ContactError.PERMISSION_DENIED_ERROR).toBe(20);
             });
         });
@@ -537,7 +538,9 @@ exports.defineManualTests = function(contentEl, createActionButton) {
             function (e) {
                 results.innerHTML = (e && e.code === ContactError.NOT_SUPPORTED_ERROR) ?
                     "Searching for contacts is not supported." :
-                    "Pick failed: error " + (e && e.code);
+                    (e && e.code === ContactError.OPERATION_CANCELLED_ERROR) ?
+                        "Pick cancelled" :
+                        "Pick failed: error " + (e && e.code);
             }
         );
     }

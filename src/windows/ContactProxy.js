@@ -242,7 +242,9 @@ module.exports = {
         pickRequest.done(function (contact) {
             // if contact was not picked
             if (!contact) {
-                fail && fail(new Error("User did not pick a contact."));
+                var cancelledError = new ContactError(ContactError.OPERATION_CANCELLED_ERROR);
+                cancelledError.message = "User did not pick a contact.";
+                fail(cancelledError);
                 return;
             }
             // If we are on desktop, just send em back

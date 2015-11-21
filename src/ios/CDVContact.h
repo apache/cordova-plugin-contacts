@@ -28,6 +28,7 @@ enum CDVContactError {
     PENDING_OPERATION_ERROR = 3,
     IO_ERROR = 4,
     NOT_SUPPORTED_ERROR = 5,
+    OPERATION_CANCELLED_ERROR = 6,
     PERMISSION_DENIED_ERROR = 20
 };
 typedef NSUInteger CDVContactError;

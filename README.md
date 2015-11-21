@@ -516,6 +516,7 @@ The `ContactError` object is returned to the user through the
 - `ContactError.PENDING_OPERATION_ERROR` (code 3)
 - `ContactError.IO_ERROR` (code 4)
 - `ContactError.NOT_SUPPORTED_ERROR` (code 5)
+- `ContactError.OPERATION_CANCELLED_ERROR` (code 6)
 - `ContactError.PERMISSION_DENIED_ERROR` (code 20)
 
 

@@ -52,6 +52,7 @@ public class ContactManager extends CordovaPlugin {
     public static final int PENDING_OPERATION_ERROR = 3;
     public static final int IO_ERROR = 4;
     public static final int NOT_SUPPORTED_ERROR = 5;
+    public static final int OPERATION_CANCELLED_ERROR = 6;
     public static final int PERMISSION_DENIED_ERROR = 20;
     private static final int CONTACT_PICKER_RESULT = 1000;
     public static String [] permissions;
@@ -246,10 +247,11 @@ public class ContactManager extends CordovaPlugin {
                 } catch (JSONException e) {
                     Log.e(LOG_TAG, "JSON fail.", e);
                 }
-            } else if (resultCode == Activity.RESULT_CANCELED){
-                this.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.NO_RESULT, UNKNOWN_ERROR));
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                callbackContext.error(OPERATION_CANCELLED_ERROR);
                 return;
             }
+
             this.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, UNKNOWN_ERROR));
         }
     }

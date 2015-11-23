@@ -1025,7 +1025,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
     private String modifyContact(String id, JSONObject contact, String accountType, String accountName) {
         // Get the RAW_CONTACT_ID which is needed to insert new values in an already existing contact.
         // But not needed to update existing values.
-        int rawId = (Integer.valueOf(getJsonString(contact, "rawId"))).intValue();
+        String rawId = getJsonString(contact, "rawId");
 
         // Create a list of attributes to add to the contact database
         ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
@@ -1475,7 +1475,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
 
         // if the save was a success return the contact ID
         if (retVal) {
-            return id;
+            return rawId;
         } else {
             return null;
         }

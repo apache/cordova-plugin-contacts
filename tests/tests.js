@@ -37,23 +37,30 @@ exports.defineAutoTests = function() {
 
     var MEDIUM_TIMEOUT = 30000;
 
-    var removeContact = function() {
-            if (gContactObj) {
-                gContactObj.remove(function() {}, function() {
-                    console.log("[CONTACTS ERROR]: removeContact cleanup method failed to clean up test artifacts.");
-                });
-                gContactObj = null;
-            }
-        };
+    var removeContact = function(done) {
+        if (!gContactObj) {
+            done();
+            return;
+        }
+
+        gContactObj.remove(function() {
+            gContactObj = null;
+            done();
+        }, function() {
+            done();
+        });
+    };
 
     describe("Contacts (navigator.contacts)", function() {
         it("contacts.spec.1 should exist", function() {
             expect(navigator.contacts).toBeDefined();
         });
+
         it("contacts.spec.2 should contain a find function", function() {
             expect(navigator.contacts.find).toBeDefined();
             expect(typeof navigator.contacts.find).toBe('function');
         });
+
         describe("find method", function() {
             it("contacts.spec.3 success callback should be called with an array", function(done) {
                 // Find method is not supported on Windows platform
@@ -120,7 +127,9 @@ exports.defineAutoTests = function() {
             });
             describe("with newly-created contact", function() {
 
-                afterEach(removeContact);
+                afterEach(function (done) {
+                    removeContact(done);
+                });
 
                 it("contacts.spec.6 should be able to find a contact by name", function(done) {
                     // Find method is not supported on Windows Store apps.
@@ -170,8 +179,8 @@ exports.defineAutoTests = function() {
                     gContactObj.save(test, fail.bind(null, done));
                 });
             });
-
         });
+
         describe('create method', function() {
             it("contacts.spec.1 should exist", function() {
                 expect(navigator.contacts.create).toBeDefined();
@@ -310,7 +319,13 @@ exports.defineAutoTests = function() {
                 expect(typeof contact.remove).toBe('function');
             });
         });
+
         describe('save method', function() {
+
+            afterEach(function (done) {
+                removeContact(done);
+            });
+
             it("contacts.spec.20 should be able to save a contact", function(done) {
                 // Save method is not supported on Windows platform
                 if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
@@ -318,7 +333,7 @@ exports.defineAutoTests = function() {
                 }
 
                 var bDay = new Date(1976, 6, 4);
-                gContactObj = navigator.contacts.create({
+                obj = {
                     "gender": "male",
                     "note": "my note",
                     "name": {
@@ -331,7 +346,7 @@ exports.defineAutoTests = function() {
                         "value": "there@here.com"
                     }],
                     "birthday": bDay
-                });
+                };
 
                 var saveSuccess = function(obj) {
                         expect(obj).toBeDefined();
@@ -347,10 +362,13 @@ exports.defineAutoTests = function() {
                         gContactObj = obj;
                         done();
                     },
-                    saveFail = fail;
+                    saveFail = fail.bind(null, done);
 
-                gContactObj.save(saveSuccess, saveFail);
+                navigator.contacts
+                    .create(obj)
+                    .save(saveSuccess, saveFail);
             });
+
             // HACK: there is a reliance between the previous and next test. This is bad form.
             it("contacts.spec.21 update a contact", function(done) {
                 // Save method is not supported on Windows platform
@@ -358,67 +376,89 @@ exports.defineAutoTests = function() {
                     pending();
                 }
 
-                expect(gContactObj).toBeDefined();
-
-                var bDay = new Date(1975, 5, 4);
+                var aDay = new Date(1976, 6, 4);
+                var bDay;
                 var noteText = "an UPDATED note";
 
-                var win = function(obj) {
-                        expect(obj).toBeDefined();
-                        expect(obj.id).toBe(gContactObj.id);
-                        expect(obj.note).toBe(noteText);
-                        expect(obj.birthday.toDateString()).toBe(bDay.toDateString());
-                        expect(obj.emails.length).toBe(1);
-                        expect(obj.emails[0].value).toBe('here@there.com');
-                        removeContact(); // Clean up contact object
-                        done();
+                var obj = {
+                    "gender": "male",
+                    "note": "my note",
+                    "name": {
+                        "familyName": "Delete",
+                        "givenName": "Test"
                     },
-                    fail = function() {
-                        removeContact();
-                        fail(done);
-                    };
+                    "emails": [{
+                        "value": "here@there.com"
+                    }, {
+                        "value": "there@here.com"
+                    }],
+                    "birthday": aDay
+                };
 
-                // remove an email
-                gContactObj.emails[1].value = "";
-                // change birthday
-                gContactObj.birthday = bDay;
-                // update note
-                gContactObj.note = noteText;
-                gContactObj.save(win, fail);
+                var saveFail = fail.bind(null, done);
+
+                var saveSuccess = function(obj) {
+                    // must store returned object in order to have id for update test below
+                    gContactObj = obj;
+                    gContactObj.emails[1].value = "";
+                    bDay = new Date(1975, 5, 4);
+                    gContactObj.birthday = bDay;
+                    gContactObj.note = noteText;
+                    gContactObj.save(updateSuccess, saveFail);
+                };
+
+                var updateSuccess = function(obj) {
+                    expect(obj).toBeDefined();
+                    expect(obj.id).toBe(gContactObj.id);
+                    expect(obj.note).toBe(noteText);
+                    expect(obj.birthday.toDateString()).toBe(bDay.toDateString());
+                    expect(obj.emails.length).toBe(1);
+                    expect(obj.emails[0].value).toBe('here@there.com');
+                    done();
+                };
+
+                navigator.contacts
+                    .create(obj)
+                    .save(saveSuccess, saveFail);
+
             }, MEDIUM_TIMEOUT);
         });
+
         describe('Contact.remove method', function(done) {
-            afterEach(removeContact);
+            afterEach(function (done) {
+                removeContact(done);
+            });
 
             it("contacts.spec.22 calling remove on a contact has an id of null should return ContactError.UNKNOWN_ERROR", function(done) {
-                var win = function() {};
-                var fail = function(result) {
-                        expect(result.code).toBe(ContactError.UNKNOWN_ERROR);
-                        done();
-                    };
+                var expectedFail = function(result) {
+                    expect(result.code).toBe(ContactError.UNKNOWN_ERROR);
+                    done();
+                };
 
                 var rmContact = new Contact();
-                rmContact.remove(win, fail);
+                rmContact.remove(fail.bind(null, done), expectedFail);
             });
             it("contacts.spec.23 calling remove on a contact that does not exist should return ContactError.UNKNOWN_ERROR", function(done) {
                 // remove method is not supported on Windows platform
                 if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
                     pending();
                 }
-                var rmWin = fail;
+                var rmWin = fail.bind(null, done);
                 var rmFail = function(result) {
-                        expect(result.code).toBe(ContactError.UNKNOWN_ERROR);
-                        done();
-                    };
+                    expect(result.code).toBe(ContactError.UNKNOWN_ERROR);
+                    done();
+                };
 
-                var rmContact = new Contact();
                 // this is a bit risky as some devices may have contact ids that large
                 var contact = new Contact("this string is supposed to be a unique identifier that will never show up on a device");
                 contact.remove(rmWin, rmFail);
             }, MEDIUM_TIMEOUT);
         });
+
         describe("Round trip Contact tests (creating + save + delete + find).", function() {
-            afterEach(removeContact);
+            afterEach(function (done) {
+                removeContact(done);
+            });
 
             it("contacts.spec.24 Creating, saving, finding a contact should work, removing it should work, after which we should not be able to find it, and we should not be able to delete it again.", function(done) {
                 // Save method is not supported on Windows platform
@@ -470,6 +510,7 @@ exports.defineAutoTests = function() {
                 }, function() {}, initialSearchOptions);
             }, MEDIUM_TIMEOUT);
         });
+
         describe('ContactError interface', function() {
             it("contacts.spec.25 ContactError constants should be defined", function() {
                 expect(ContactError.UNKNOWN_ERROR).toBe(0);

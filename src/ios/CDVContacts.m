@@ -192,9 +192,33 @@
                  callbackId:command.callbackId
                   className:command.className
                  methodName:command.methodName];
-    
-    [self chooseContact:newCommand];
-    
+
+    // First check for Address book permissions
+    ABAuthorizationStatus status = ABAddressBookGetAuthorizationStatus();
+    if (status == kABAuthorizationStatusAuthorized) {
+        [self chooseContact:newCommand];
+        return;
+    }
+
+    CDVPluginResult *errorResult = [CDVPluginResult resultWithStatus: CDVCommandStatus_ERROR messageAsInt:PERMISSION_DENIED_ERROR];
+
+    // if the access is already restricted/denied the only way is to fail
+    if (status == kABAuthorizationStatusRestricted || status == kABAuthorizationStatusDenied) {
+        [self.commandDelegate sendPluginResult: errorResult callbackId:command.callbackId];
+        return;
+    }
+
+    // if no permissions granted try to request them first
+    if (status == kABAuthorizationStatusNotDetermined) {
+        ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
+            if (granted) {
+                [self chooseContact:newCommand];
+                return;
+            }
+
+            [self.commandDelegate sendPluginResult: errorResult callbackId:command.callbackId];
+        });
+    }
 }
 
 - (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController*)peoplePicker

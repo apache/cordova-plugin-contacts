@@ -750,7 +750,9 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
     } else if ([label caseInsensitiveCompare:kW3ContactUrlProfile] == NSOrderedSame) {
         type = kABPersonHomePageLabel;
     } else {
-        type = kABOtherLabel;
+        // CB-3950 If label is not one of kW3*Label constants, threat it as custom label,
+        // otherwise fetching contact and then saving it will break this label in address book.
+        type = (__bridge CFStringRef)(label);
     }
 
     return type;
@@ -787,7 +789,9 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
         } else if ([label isEqualToString:(NSString*)kABPersonHomePageLabel]) {
             type = kW3ContactUrlProfile;
         } else {
-            type = kW3ContactOtherLabel;
+            // CB-3950 If label is not one of kW3*Label constants, threat it as custom label,
+            // otherwise fetching contact and then saving it will break this label in address book.
+            type = label;
         }
     }
     return type;

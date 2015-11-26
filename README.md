@@ -455,6 +455,7 @@ a `ContactAddress[]` array.
     // find all contacts
     var options = new ContactFindOptions();
     options.filter = "";
+    options.multiple = true;
     var filter = ["displayName", "addresses"];
     navigator.contacts.find(filter, onSuccess, onError, options);
 
@@ -645,6 +646,7 @@ Contains different kinds of information about a `Contact` object's name.
 
     var options = new ContactFindOptions();
     options.filter = "";
+    options.multiple = true;
     filter = ["displayName", "name"];
     navigator.contacts.find(filter, onSuccess, onError, options);
 
@@ -742,6 +744,7 @@ properties.  A `Contact` object stores one or more
 
     var options = new ContactFindOptions();
     options.filter = "";
+    options.multiple = true;
     filter = ["displayName", "organizations"];
     navigator.contacts.find(filter, onSuccess, onError, options);
 

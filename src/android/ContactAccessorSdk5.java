@@ -1475,9 +1475,9 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             retVal = false;
         }
 
-        // if the save was a success return the contact ID
+        // if the save was a success return the contact RAW_ID
         if (retVal) {
-            return id;
+            return Integer.toString(rawId);
         } else {
             return null;
         }

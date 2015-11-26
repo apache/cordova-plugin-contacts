@@ -1328,6 +1328,7 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
     NSMutableArray* photos = nil;
 
     if (ABPersonHasImageData(self.record)) {
+        CFIndex photoId = ABRecordGetRecordID(self.record);
         CFDataRef photoData = ABPersonCopyImageData(self.record);
         if (!photoData) {
             return nil;
@@ -1337,17 +1338,10 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
         // write to temp directory and store URI in photos array
         // get the temp directory path
         NSString* docsPath = [NSTemporaryDirectory()stringByStandardizingPath];
-        NSError* err = nil;
-        NSString* filePath = [NSString stringWithFormat:@"%@/photo_XXXXX", docsPath];
-        char template[filePath.length + 1];
-        strcpy(template, [filePath cStringUsingEncoding:NSASCIIStringEncoding]);
-        mkstemp(template);
-        filePath = [[NSFileManager defaultManager]
-            stringWithFileSystemRepresentation:template
-                                        length:strlen(template)];
+        NSString* filePath = [NSString stringWithFormat:@"%@/contact_photo_%ld", docsPath, photoId];
 
         // save file
-        if ([data writeToFile:filePath options:NSAtomicWrite error:&err]) {
+        if ([data writeToFile:filePath atomically:YES]) {
             photos = [NSMutableArray arrayWithCapacity:1];
             NSMutableDictionary* newDict = [NSMutableDictionary dictionaryWithCapacity:2];
             [newDict setObject:filePath forKey:kW3ContactFieldValue];

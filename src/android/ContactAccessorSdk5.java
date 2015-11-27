@@ -52,10 +52,8 @@ import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.text.TextUtils;
 import android.util.Log;
-
-
-
 
 /**
  * An implementation of {@link ContactAccessor} that uses current Contacts API.
@@ -824,19 +822,19 @@ public class ContactAccessorSdk5 extends ContactAccessor {
 
             // Create the formatted name
             StringBuffer formatted = new StringBuffer("");
-            if (honorificPrefix != null) {
+            if (!TextUtils.isEmpty(honorificPrefix)) {
                 formatted.append(honorificPrefix + " ");
             }
-            if (givenName != null) {
+            if (!TextUtils.isEmpty(givenName)) {
                 formatted.append(givenName + " ");
             }
-            if (middleName != null) {
+            if (!TextUtils.isEmpty(middleName)) {
                 formatted.append(middleName + " ");
             }
-            if (familyName != null) {
+            if (!TextUtils.isEmpty(familyName)) {
                 formatted.append(familyName);
             }
-            if (honorificSuffix != null) {
+            if (!TextUtils.isEmpty(honorificSuffix)) {
                 formatted.append(" " + honorificSuffix);
             }
 

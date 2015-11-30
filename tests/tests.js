@@ -606,9 +606,9 @@ exports.defineManualTests = function(contentEl, createActionButton) {
             phoneNumbers[0] = new ContactField('work', '512-555-1234', true);
             contact.phoneNumbers = phoneNumbers;
 
-            contact.save(
+            contact.birthday = new Date(1985, 0, 23);
 
-            function() {
+            contact.save(function() {
                 results.innerHTML = "Contact saved.";
             }, function(e) {
                 if (e.code === ContactError.NOT_SUPPORTED_ERROR) {

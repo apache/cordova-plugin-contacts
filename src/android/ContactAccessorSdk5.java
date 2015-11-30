@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -451,7 +452,13 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                     else if (mimetype.equals(CommonDataKinds.Event.CONTENT_ITEM_TYPE)) {
                         if (isRequired("birthday", populate) &&
                                 CommonDataKinds.Event.TYPE_BIRTHDAY == c.getInt(colEventType)) {
-                            contact.put("birthday", c.getString(colBirthday));
+
+                            try {
+                                long timestamp = Date.valueOf(c.getString(colBirthday)).getTime();
+                                contact.put("birthday", timestamp);
+                            } catch (IllegalArgumentException e) {
+                                Log.d(LOG_TAG, "Failed to get birthday for contact: " + e.getMessage());
+                            }
                         }
                     }
                     else if (mimetype.equals(CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
@@ -1399,15 +1406,22 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         }
 
         // Modify birthday
-        String birthday = getJsonString(contact, "birthday");
+        Date birthday = null;
+        try {
+            Long timestamp = contact.getLong("birthday");
+            birthday = new Date(timestamp);
+        } catch (JSONException e) {
+            Log.d(LOG_TAG, "Could not get birthday: " + e.getMessage());
+        }
+
         if (birthday != null) {
             ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
                     .withSelection(ContactsContract.Data.CONTACT_ID + "=? AND " +
                             ContactsContract.Data.MIMETYPE + "=? AND " +
                             CommonDataKinds.Event.TYPE + "=?",
-                            new String[] { id, CommonDataKinds.Event.CONTENT_ITEM_TYPE, new String("" + CommonDataKinds.Event.TYPE_BIRTHDAY) })
+                            new String[]{id, CommonDataKinds.Event.CONTENT_ITEM_TYPE, "" + CommonDataKinds.Event.TYPE_BIRTHDAY})
                     .withValue(CommonDataKinds.Event.TYPE, CommonDataKinds.Event.TYPE_BIRTHDAY)
-                    .withValue(CommonDataKinds.Event.START_DATE, birthday)
+                    .withValue(CommonDataKinds.Event.START_DATE, birthday.toString())
                     .build());
         }
 
@@ -1792,13 +1806,20 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         }
 
         // Add birthday
-        String birthday = getJsonString(contact, "birthday");
+        Date birthday = null;
+        try {
+            Long timestamp = contact.getLong("birthday");
+            birthday = new Date(timestamp);
+        } catch (JSONException e) {
+            Log.d(LOG_TAG, "Could not get birthday: " + e.getMessage());
+        }
+
         if (birthday != null) {
             ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Event.CONTENT_ITEM_TYPE)
                     .withValue(CommonDataKinds.Event.TYPE, CommonDataKinds.Event.TYPE_BIRTHDAY)
-                    .withValue(CommonDataKinds.Event.START_DATE, birthday)
+                    .withValue(CommonDataKinds.Event.START_DATE, birthday.toString())
                     .build());
         }
 

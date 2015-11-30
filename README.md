@@ -145,6 +145,8 @@ specified in the __contactFields__ parameter.  If there's a match for
 _any_ of the specified fields, the contact is returned. Use __contactFindOptions.desiredFields__
 parameter to control which contact properties must be returned back.
 
+Supported values for both __contactFields__ and __contactFindOptions.desiredFields__ parameters are enumerated in [`ContactFieldType`](#contactfieldtype) object.
+
 ### Parameters
 
 - __contactFields__: Contact fields to use as a search qualifier. _(DOMString[])_ [Required]
@@ -791,3 +793,34 @@ properties.  A `Contact` object stores one or more
 - __pref__: Not supported, returning `false`.
 
 - __type__: Not supported, returning `null`.
+
+## ContactFieldType
+The `ContactFieldType` object is an enumeration of possible field types, such as `'phoneNumbers'` or `'emails'`, that could be used to control which contact properties must be returned back from `contacts.find()` method (see `contactFindOptions.desiredFields`), or to specify fields to search in (through `contactFields` parameter). Possible values are:
+
+- `navigator.contacts.fieldType.addresses`
+- `navigator.contacts.fieldType.birthday`
+- `navigator.contacts.fieldType.categories`
+- `navigator.contacts.fieldType.country`
+- `navigator.contacts.fieldType.department`
+- `navigator.contacts.fieldType.displayName`
+- `navigator.contacts.fieldType.emails`
+- `navigator.contacts.fieldType.familyName`
+- `navigator.contacts.fieldType.formatted`
+- `navigator.contacts.fieldType.givenName`
+- `navigator.contacts.fieldType.honorificPrefix`
+- `navigator.contacts.fieldType.honorificSuffix`
+- `navigator.contacts.fieldType.id`
+- `navigator.contacts.fieldType.ims`
+- `navigator.contacts.fieldType.locality`
+- `navigator.contacts.fieldType.middleName`
+- `navigator.contacts.fieldType.name`
+- `navigator.contacts.fieldType.nickname`
+- `navigator.contacts.fieldType.note`
+- `navigator.contacts.fieldType.organizations`
+- `navigator.contacts.fieldType.phoneNumbers`
+- `navigator.contacts.fieldType.photos`
+- `navigator.contacts.fieldType.postalCode`
+- `navigator.contacts.fieldType.region`
+- `navigator.contacts.fieldType.streetAddress`
+- `navigator.contacts.fieldType.title`
+- `navigator.contacts.fieldType.urls`

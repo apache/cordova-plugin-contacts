@@ -1631,24 +1631,41 @@ public class ContactAccessorSdk5 extends ContactAccessor {
     }
 
     /**
-       * Get an input stream based on file path or uri content://, http://, file://
-       *
-       * @param path
-       * @return an input stream
+     * Get an input stream based on file path or uri content://, http://, file://
+     *
+     * @param path path to file
+     * @return an input stream
      * @throws IOException
-       */
+     */
     private InputStream getPathFromUri(String path) throws IOException {
+        String ASSET_PREFIX = "file:///android_asset/";
+
         if (path.startsWith("content:")) {
             Uri uri = Uri.parse(path);
             return mApp.getActivity().getContentResolver().openInputStream(uri);
         }
+
+        if (path.startsWith(ASSET_PREFIX) || isRelativePath(path)) {
+            String assetRelativePath = path.replace(ASSET_PREFIX, "");
+            return mApp.getActivity().getAssets().open(assetRelativePath);
+        }
+
         if (path.startsWith("http:") || path.startsWith("https:") || path.startsWith("file:")) {
             URL url = new URL(path);
             return url.openStream();
         }
-        else {
-            return new FileInputStream(path);
-        }
+
+        return new FileInputStream(path);
+    }
+
+    /**
+     * Checks if provided path is relative
+     *
+     * @param   path  path to file
+     * @return        true if provided path is absolute, false otherwise
+     */
+    boolean isRelativePath (String path) {
+        return !(new File(path).isAbsolute());
     }
 
     /**

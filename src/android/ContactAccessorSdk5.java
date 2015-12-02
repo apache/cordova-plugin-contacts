@@ -83,6 +83,8 @@ public class ContactAccessorSdk5 extends ContactAccessor {
 
     private static final String EMAIL_REGEXP = ".+@.+\\.+.+"; /* <anything>@<anything>.<anything>*/
 
+    private static final String ASSET_URL_PREFIX = "file:///android_asset/";
+
     /**
      * A static map that converts the JavaScript property name to Android database column name.
      */
@@ -1638,15 +1640,13 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      * @throws IOException
      */
     private InputStream getPathFromUri(String path) throws IOException {
-        String ASSET_PREFIX = "file:///android_asset/";
-
         if (path.startsWith("content:")) {
             Uri uri = Uri.parse(path);
             return mApp.getActivity().getContentResolver().openInputStream(uri);
         }
 
-        if (path.startsWith(ASSET_PREFIX) || isRelativePath(path)) {
-            String assetRelativePath = path.replace(ASSET_PREFIX, "");
+        if (path.startsWith(ASSET_URL_PREFIX) || isRelativePath(path)) {
+            String assetRelativePath = path.replace(ASSET_URL_PREFIX, "");
             return mApp.getActivity().getAssets().open(assetRelativePath);
         }
 

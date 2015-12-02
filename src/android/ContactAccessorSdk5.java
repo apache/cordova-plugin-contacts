@@ -362,7 +362,6 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         int colDisplayName = c.getColumnIndex(CommonDataKinds.StructuredName.DISPLAY_NAME);
         int colNote = c.getColumnIndex(CommonDataKinds.Note.NOTE);
         int colNickname = c.getColumnIndex(CommonDataKinds.Nickname.NAME);
-        int colBirthday = c.getColumnIndex(CommonDataKinds.Event.START_DATE);
         int colEventType = c.getColumnIndex(CommonDataKinds.Event.TYPE);
 
         if (c.getCount() > 0) {
@@ -453,11 +452,9 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                         if (isRequired("birthday", populate) &&
                                 CommonDataKinds.Event.TYPE_BIRTHDAY == c.getInt(colEventType)) {
 
-                            try {
-                                long timestamp = Date.valueOf(c.getString(colBirthday)).getTime();
-                                contact.put("birthday", timestamp);
-                            } catch (IllegalArgumentException e) {
-                                Log.d(LOG_TAG, "Failed to get birthday for contact: " + e.getMessage());
+                            Date birthday = getBirthday(c);
+                            if (birthday != null) {
+                                contact.put("birthday", birthday.getTime());
                             }
                         }
                     }
@@ -1406,14 +1403,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         }
 
         // Modify birthday
-        Date birthday = null;
-        try {
-            Long timestamp = contact.getLong("birthday");
-            birthday = new Date(timestamp);
-        } catch (JSONException e) {
-            Log.d(LOG_TAG, "Could not get birthday: " + e.getMessage());
-        }
-
+        Date birthday = getBirthday(contact);
         if (birthday != null) {
             ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
                     .withSelection(ContactsContract.Data.CONTACT_ID + "=? AND " +
@@ -1806,14 +1796,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         }
 
         // Add birthday
-        Date birthday = null;
-        try {
-            Long timestamp = contact.getLong("birthday");
-            birthday = new Date(timestamp);
-        } catch (JSONException e) {
-            Log.d(LOG_TAG, "Could not get birthday: " + e.getMessage());
-        }
-
+        Date birthday = getBirthday(contact);
         if (birthday != null) {
             ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
@@ -1863,6 +1846,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 null,
                 ContactsContract.Contacts._ID + " = ?",
                 new String[] { id }, null);
+
         if (cursor.getCount() == 1) {
             cursor.moveToFirst();
             String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
@@ -1873,6 +1857,39 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         }
 
         return (result > 0) ? true : false;
+    }
+
+    /**
+     * Gets birthday date from contact JSON object
+     * @param contact an object to get birthday from
+     * @return birthday or null, if the field isn't present or
+     *   is malformed in the contact
+     */
+    private Date getBirthday(JSONObject contact) {
+        try {
+            Long timestamp = contact.getLong("birthday");
+            return new Date(timestamp);
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, "Could not get birthday from JSON object", e);
+            return null;
+        }
+    }
+
+    /**
+     * Gets birthday from contacts database cursor object
+     * @param c cursor for the contact
+     * @return birthday or null, if birthday column is empty or
+     * the value can't be parsed into valid date object
+     */
+    private Date getBirthday(Cursor c) {
+        int colBirthday = c.getColumnIndex(CommonDataKinds.Event.START_DATE);
+
+        try {
+            return Date.valueOf(c.getString(colBirthday));
+        } catch (IllegalArgumentException e) {
+            Log.e(LOG_TAG, "Failed to get birthday for contact from cursor", e);
+            return null;
+        }
     }
 
     /**************************************************************************

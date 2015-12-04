@@ -84,6 +84,8 @@ public class ContactAccessorSdk5 extends ContactAccessor {
 
     private static final String EMAIL_REGEXP = ".+@.+\\.+.+"; /* <anything>@<anything>.<anything>*/
 
+    private static final String ASSET_URL_PREFIX = "file:///android_asset/";
+
     /**
      * A static map that converts the JavaScript property name to Android database column name.
      */
@@ -1635,24 +1637,29 @@ public class ContactAccessorSdk5 extends ContactAccessor {
     }
 
     /**
-       * Get an input stream based on file path or uri content://, http://, file://
-       *
-       * @param path
-       * @return an input stream
+     * Get an input stream based on file path or uri content://, http://, file://
+     *
+     * @param path path to file
+     * @return an input stream
      * @throws IOException
-       */
+     */
     private InputStream getPathFromUri(String path) throws IOException {
         if (path.startsWith("content:")) {
             Uri uri = Uri.parse(path);
             return mApp.getActivity().getContentResolver().openInputStream(uri);
         }
+
+        if (path.startsWith(ASSET_URL_PREFIX)) {
+            String assetRelativePath = path.replace(ASSET_URL_PREFIX, "");
+            return mApp.getActivity().getAssets().open(assetRelativePath);
+        }
+
         if (path.startsWith("http:") || path.startsWith("https:") || path.startsWith("file:")) {
             URL url = new URL(path);
             return url.openStream();
         }
-        else {
-            return new FileInputStream(path);
-        }
+
+        return new FileInputStream(path);
     }
 
     /**

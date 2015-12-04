@@ -178,10 +178,6 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             searchTerm = "%";
         }
 
-        //Log.d(LOG_TAG, "Search Term = " + searchTerm);
-        //Log.d(LOG_TAG, "Field Length = " + fields.length());
-        //Log.d(LOG_TAG, "Fields = " + fields.toString());
-
         // Loop through the fields the user provided to see what data should be returned.
         HashMap<String, Boolean> populate = buildPopulationSet(options);
 
@@ -842,6 +838,9 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             }
             if (!TextUtils.isEmpty(honorificSuffix)) {
                 formatted.append(" " + honorificSuffix);
+            }
+            if (TextUtils.isEmpty(formatted)) {
+                formatted = null;
             }
 
             contactName.put("familyName", familyName);
@@ -1679,23 +1678,21 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 .build());
 
         // Add name
-        try {
-            JSONObject name = contact.optJSONObject("name");
-            String displayName = contact.getString("displayName");
-            if (displayName != null || name != null) {
-                ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-                        .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                        .withValue(CommonDataKinds.StructuredName.DISPLAY_NAME, displayName)
-                        .withValue(CommonDataKinds.StructuredName.FAMILY_NAME, getJsonString(name, "familyName"))
-                        .withValue(CommonDataKinds.StructuredName.MIDDLE_NAME, getJsonString(name, "middleName"))
-                        .withValue(CommonDataKinds.StructuredName.GIVEN_NAME, getJsonString(name, "givenName"))
-                        .withValue(CommonDataKinds.StructuredName.PREFIX, getJsonString(name, "honorificPrefix"))
-                        .withValue(CommonDataKinds.StructuredName.SUFFIX, getJsonString(name, "honorificSuffix"))
-                        .build());
-            }
-        } catch (JSONException e) {
-            Log.d(LOG_TAG, "Could not get name object");
+        JSONObject name = contact.optJSONObject("name");
+        String displayName = getJsonString(contact, "displayName");
+        if (displayName != null || name != null) {
+            ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                    .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                    .withValue(CommonDataKinds.StructuredName.DISPLAY_NAME, displayName)
+                    .withValue(CommonDataKinds.StructuredName.FAMILY_NAME, getJsonString(name, "familyName"))
+                    .withValue(CommonDataKinds.StructuredName.MIDDLE_NAME, getJsonString(name, "middleName"))
+                    .withValue(CommonDataKinds.StructuredName.GIVEN_NAME, getJsonString(name, "givenName"))
+                    .withValue(CommonDataKinds.StructuredName.PREFIX, getJsonString(name, "honorificPrefix"))
+                    .withValue(CommonDataKinds.StructuredName.SUFFIX, getJsonString(name, "honorificSuffix"))
+                    .build());
+        } else {
+            Log.d(LOG_TAG, "Both \"name\" and \"displayName\" properties are empty");
         }
 
         //Add phone numbers

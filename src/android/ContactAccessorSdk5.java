@@ -1645,7 +1645,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             return mApp.getActivity().getContentResolver().openInputStream(uri);
         }
 
-        if (path.startsWith(ASSET_URL_PREFIX) || isRelativePath(path)) {
+        if (path.startsWith(ASSET_URL_PREFIX)) {
             String assetRelativePath = path.replace(ASSET_URL_PREFIX, "");
             return mApp.getActivity().getAssets().open(assetRelativePath);
         }
@@ -1656,16 +1656,6 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         }
 
         return new FileInputStream(path);
-    }
-
-    /**
-     * Checks if provided path is relative
-     *
-     * @param   path  path to file
-     * @return        true if provided path is absolute, false otherwise
-     */
-    boolean isRelativePath (String path) {
-        return !(new File(path).isAbsolute());
     }
 
     /**

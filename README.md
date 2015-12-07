@@ -227,6 +227,27 @@ function specified by the __contactSuccess__ parameter.
             console.log('Error: ' + err);
         });
 
+### Android Quirks
+
+This plugin launches an external Activity for picking contacts. See the
+[Android Lifecycle Guide](http://cordova.apache.org/docs/en/dev/guide/platforms/android/lifecycle.html)
+for an explanation of how this affects your application. If the plugin returns
+its result in the `resume` event, then you must first wrap the returned object
+in a `Contact` object before using it. Here is an example:
+
+```javascript
+function onResume(resumeEvent) {
+    if(resumeEvent.pendingResult) {
+        if(resumeEvent.pendingResult.pluginStatus === "OK") {
+            var contact = navigator.contacts.create(resumeEvent.pendingResult.result);
+            successCallback(contact);
+        } else {
+            failCallback(resumeEvent.pendingResult.result);
+        }
+    }
+}
+```
+
 ## Contact
 
 The `Contact` object represents a user's contact.  Contacts can be

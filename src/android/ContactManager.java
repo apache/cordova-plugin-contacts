@@ -32,6 +32,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.RawContacts;
 import android.util.Log;
@@ -292,4 +293,14 @@ public class ContactManager extends CordovaPlugin {
         }
     }
 
+    /**
+     * This plugin launches an external Activity when a contact is picked, so we
+     * need to implement the save/restore API in case the Activity gets killed
+     * by the OS while it's in the background. We don't actually save anything
+     * because picking a contact doesn't take in any arguments.
+     */
+    public void onRestoreStateForActivityResult(Bundle state, CallbackContext callbackContext) {
+        this.callbackContext = callbackContext;
+        this.contactAccessor = new ContactAccessorSdk5(this.cordova);
+    }
 }

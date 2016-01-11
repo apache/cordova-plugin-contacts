@@ -78,13 +78,13 @@ public class ContactManager extends CordovaPlugin {
 
     protected void getReadPermission(int requestCode)
     {
-        cordova.requestPermission(this, requestCode, READ);
+        PermissionHelper.requestPermission(this, requestCode, READ);
     }
 
 
     protected void getWritePermission(int requestCode)
     {
-        cordova.requestPermission(this, requestCode, WRITE);
+        PermissionHelper.requestPermission(this, requestCode, WRITE);
     }
 
 
@@ -119,7 +119,7 @@ public class ContactManager extends CordovaPlugin {
         }
 
         if (action.equals("search")) {
-            if(cordova.hasPermission(READ)) {
+            if(PermissionHelper.hasPermission(this, READ)) {
                 search(executeArgs);
             }
             else
@@ -128,7 +128,7 @@ public class ContactManager extends CordovaPlugin {
             }
         }
         else if (action.equals("save")) {
-            if(cordova.hasPermission(WRITE))
+            if(PermissionHelper.hasPermission(this, WRITE))
             {
                 save(executeArgs);
             }
@@ -138,7 +138,7 @@ public class ContactManager extends CordovaPlugin {
             }
         }
         else if (action.equals("remove")) {
-            if(cordova.hasPermission(WRITE))
+            if(PermissionHelper.hasPermission(this, WRITE))
             {
                 remove(executeArgs);
             }
@@ -148,7 +148,7 @@ public class ContactManager extends CordovaPlugin {
             }
         }
         else if (action.equals("pickContact")) {
-            if(cordova.hasPermission(READ))
+            if(PermissionHelper.hasPermission(this, READ))
             {
                 pickContactAsync();
             }

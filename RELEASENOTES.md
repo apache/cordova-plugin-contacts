@@ -20,6 +20,26 @@
 -->
 # Release Notes
 
+### 2.0.1 (Jan 15, 2016)
+* CB-10159 **Android** Adding restore callback to handle Activity destruction
+* CB-10319 **Android** Adding reflective helper methods for permission requests
+* CB-10117 Added new tests
+* CB-10131 Fixed null contact creation.
+* CB-10053 Documents `ContactFieldType` enumeration. 
+* CB-10148 **Android** Added `READ_CONTACTS` permission request when picking a contact
+* CB-10053 Accept assets `URIs` for contact photos
+* CB-8115 Save contact birthday properly
+* CB-6979 Don't create duplicates for extracted contacts photos
+* CB-5308 Makes contacts save specs passing
+* CB-5308 Return `rawId` instead of id when modifying existing contact
+* CB-4921 Corrects examples by adding missing `multiple` option where multiple contacts are expected
+* CB-10094 **Android** Fixed empty string comparison
+* CB-3950 Adds support for custom labels
+* CB-9770 Request user permissions before picking a contact
+* CB-8156 Call error callback on `pickContact` cancellation
+* CB-7906 Prevent app crash when `desiredFields` option has undefined items
+* CB-7021 Adds manual test for `pickContact`
+
 ### 2.0.0 (Nov 18, 2015)
 * [CB-10035](https://issues.apache.org/jira/browse/CB-10035) Updated `RELEASENOTES` to be newest to oldest
 * [CB-9728](https://issues.apache.org/jira/browse/CB-9728) Solving memory leak issues due to opened cursor objects

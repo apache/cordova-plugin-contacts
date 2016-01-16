@@ -24,7 +24,7 @@
     xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest"
     xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
     id="cordova-plugin-contacts"
-    version="2.0.1">
+    version="2.0.2-dev">
 
     <name>Contacts</name>
     <description>Cordova Contacts Plugin</description>

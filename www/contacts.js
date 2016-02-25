@@ -22,10 +22,8 @@
 var argscheck = require('cordova/argscheck'),
     exec = require('cordova/exec'),
     ContactError = require('./ContactError'),
-    utils = require('cordova/utils'),
     Contact = require('./Contact'),
     fieldType = require('./ContactFieldType');
-    
 
 /**
 * Represents a group of Contacts.
@@ -44,10 +42,12 @@ var contacts = {
     find:function(fields, successCB, errorCB, options) {
         argscheck.checkArgs('afFO', 'contacts.find', arguments);
         if (!fields.length) {
-            errorCB && errorCB(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
+            if (errorCB) {
+                errorCB(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
+            }
         } else {
             // missing 'options' param means return all contacts
-            options = options || {filter: '', multiple: true}
+            options = options || { filter: '', multiple: true };
             var win = function(result) {
                 var cs = [];
                 for (var i = 0, l = result.length; i < l; i++) {

@@ -17,6 +17,8 @@
 #         under the License.
 -->
 
+[![Build Status](https://travis-ci.org/apache/cordova-plugin-contacts.svg?branch=master)](https://travis-ci.org/apache/cordova-plugin-contacts)
+
 # cordova-plugin-contacts
 
 This plugin defines a global `navigator.contacts` object, which provides access to the device contacts database.

@@ -19,6 +19,9 @@
  *
 */
 
+/* jshint jasmine: true */
+/* global WinJS */
+
 exports.defineAutoTests = function() {
     // global to store a contact so it doesn't have to be created or retrieved multiple times
     // all of the setup/teardown test methods can reference the following variables to make sure to do the right cleanup
@@ -59,12 +62,12 @@ exports.defineAutoTests = function() {
             contacts.forEach(function(contact) {
                 removes.push(contact);
             });
-            if (removes.length == 0) {
+            if (removes.length === 0) {
                 done();
                 return;
             }
 
-            var nextToRemove = undefined;
+            var nextToRemove;
             if (removes.length > 0) {
                 nextToRemove = removes.shift();
             }
@@ -150,7 +153,9 @@ exports.defineAutoTests = function() {
                 obj.multiple = true;
 
                 expect(function() {
-                    navigator.contacts.find(["displayName", "name", "emails", "phoneNumbers"], null, fail.bind(null, done), obj);
+                    navigator.contacts.find(["displayName", "name", "emails", "phoneNumbers"], null, function (err) {
+                        expect(err).toBeUndefined();
+                    }, obj);
                 }).toThrow();
             });
 
@@ -450,16 +455,7 @@ exports.defineAutoTests = function() {
 
                 var saveFail = fail.bind(null, done);
 
-                var saveSuccess = function(obj) {
-                    gContactObj = obj;
-                    gContactObj.emails[1].value = "";
-                    bDay = new Date(1975, 5, 4);
-                    gContactObj.birthday = bDay;
-                    gContactObj.note = noteText;
-                    gContactObj.save(updateSuccess, saveFail);
-                };
-
-                var updateSuccess = function(obj) {
+                function updateSuccess(obj) {
                     expect(obj).toBeDefined();
                     expect(obj.id).toBe(gContactObj.id);
                     expect(obj.note).toBe(noteText);
@@ -467,6 +463,15 @@ exports.defineAutoTests = function() {
                     expect(obj.emails.length).toBe(1);
                     expect(obj.emails[0].value).toBe('here@there.com');
                     done();
+                }
+
+                var saveSuccess = function(obj) {
+                    gContactObj = obj;
+                    gContactObj.emails[1].value = "";
+                    bDay = new Date(1975, 5, 4);
+                    gContactObj.birthday = bDay;
+                    gContactObj.note = noteText;
+                    gContactObj.save(updateSuccess, saveFail);
                 };
 
                 navigator.contacts
@@ -647,7 +652,7 @@ exports.defineManualTests = function(contentEl, createActionButton) {
         obj.multiple = true;
         navigator.contacts.find(["displayName", "name", "phoneNumbers", "emails", "urls", "note"], function(contacts) {
             var s = "";
-            if (contacts.length == 0) {
+            if (contacts.length === 0) {
                 s = "No contacts found";
             } else {
                 s = "Number of contacts: " + contacts.length + "<br><table width='100%'><tr><th>Name</th><td>Phone</td><td>Email</td></tr>";
@@ -658,7 +663,7 @@ exports.defineManualTests = function(contentEl, createActionButton) {
                     if (contact.phoneNumbers && contact.phoneNumbers.length > 0) {
                         s = s + contact.phoneNumbers[0].value;
                     }
-                    s = s + "</td><td>"
+                    s = s + "</td><td>";
                     if (contact.emails && contact.emails.length > 0) {
                         s = s + contact.emails[0].value;
                     }
@@ -761,7 +766,7 @@ exports.defineManualTests = function(contentEl, createActionButton) {
         obj.multiple = false;
 
         navigator.contacts.find(['displayName', 'name'], function(contacts) {
-            if (contacts.length == 0) {
+            if (contacts.length === 0) {
                 results.innerHTML = 'No contacts to update.';
                 return;
             }
@@ -782,7 +787,7 @@ exports.defineManualTests = function(contentEl, createActionButton) {
             } else {
                 results.innerHTML = 'Search failed: error ' + e.code;
             }
-        }, obj)
+        }, obj);
     }
 
     function removeTestContacts() {
@@ -796,12 +801,12 @@ exports.defineManualTests = function(contentEl, createActionButton) {
             contacts.forEach(function(contact) {
                 removes.push(contact);
             });
-            if (removes.length == 0) {
+            if (removes.length === 0) {
                 results.innerHTML = "No contacts to remove";
                 return;
             }
 
-            var nextToRemove = undefined;
+            var nextToRemove;
             if (removes.length > 0) {
                 nextToRemove = removes.shift();
             }
@@ -833,15 +838,6 @@ exports.defineManualTests = function(contentEl, createActionButton) {
                 results.innerHTML = 'Search failed: error ' + e.code;
             }
         }, obj);
-    }
-    
-    function nameMatches(contact, contactName) {
-        if (contactName === null && (contact.name === null || contact.name.formatted === null)) {
-            return true;
-        } else if (contact.name && contact.name.formatted && contact.name.formatted.indexOf(contactName) > -1) {
-            return true;
-        }
-        return false;
     }
 
     /******************************************************************************/

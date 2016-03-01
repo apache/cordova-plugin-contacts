@@ -45,9 +45,9 @@ marketplaces may require the app to provide a just-in-time notice and
 obtain the user's permission before accessing contact data.  A
 clear and easy-to-understand user experience surrounding the use of
 contact data helps avoid user confusion and perceived misuse of
-contact data.  For more information, please see the Privacy Guide.
+contact data.  For more information, please see the [Privacy Guide](http://cordova.apache.org/docs/en/latest/guide/appdev/privacy/index.html).
 
-:warning: Report issues on the [Apache Cordova issue tracker](https://issues.apache.org/jira/issues/?jql=project%20%3D%20CB%20AND%20status%20in%20%28Open%2C%20%22In%20Progress%22%2C%20Reopened%29%20AND%20resolution%20%3D%20Unresolved%20AND%20component%20%3D%20%22Plugin%20Contacts%22%20ORDER%20BY%20priority%20DESC%2C%20summary%20ASC%2C%20updatedDate%20DESC)
+Report issues with this plugin on the [Apache Cordova issue tracker](https://issues.apache.org/jira/issues/?jql=project%20%3D%20CB%20AND%20status%20in%20%28Open%2C%20%22In%20Progress%22%2C%20Reopened%29%20AND%20resolution%20%3D%20Unresolved%20AND%20component%20%3D%20%22Plugin%20Contacts%22%20ORDER%20BY%20priority%20DESC%2C%20summary%20ASC%2C%20updatedDate%20DESC)
 
 ## Installation
 
@@ -218,7 +218,6 @@ function specified by the __contactSuccess__ parameter.
 - Android
 - iOS
 - Windows Phone 8
-- Windows 8
 - Windows
 
 ### Example
@@ -232,7 +231,7 @@ function specified by the __contactSuccess__ parameter.
 ### Android Quirks
 
 This plugin launches an external Activity for picking contacts. See the
-[Android Lifecycle Guide](http://cordova.apache.org/docs/en/dev/guide/platforms/android/lifecycle.html)
+[Android Lifecycle Guide](http://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html#lifecycle-guide)
 for an explanation of how this affects your application. If the plugin returns
 its result in the `resume` event, then you must first wrap the returned object
 in a `Contact` object before using it. Here is an example:
@@ -308,7 +307,6 @@ for details.
 - Firefox OS
 - iOS
 - Windows Phone 8
-- Windows 8
 - Windows
 
 ### Save Example
@@ -451,7 +449,6 @@ a `ContactAddress[]` array.
 - Firefox OS
 - iOS
 - Windows Phone 8
-- Windows 8
 - Windows
 
 ### Example
@@ -516,10 +513,6 @@ a `ContactAddress[]` array.
 
 - __formatted__: Currently not supported.
 
-### Windows 8 Quirks
-
-- __pref__: Not supported
-
 ### Windows Quirks
 
 - __pref__: Not supported
@@ -580,7 +573,6 @@ string.
 - Firefox OS
 - iOS
 - Windows Phone 8
-- Windows 8
 - Windows
 
 ### Example
@@ -611,10 +603,6 @@ string.
 - __pref__: Not supported, returning `false`.
 
 ### iOS Quirks
-
-- __pref__: Not supported, returning `false`.
-
-### Windows8 Quirks
 
 - __pref__: Not supported, returning `false`.
 
@@ -649,7 +637,6 @@ Contains different kinds of information about a `Contact` object's name.
 - Firefox OS
 - iOS
 - Windows Phone 8
-- Windows 8
 - Windows
 
 ### Example
@@ -702,7 +689,7 @@ Contains different kinds of information about a `Contact` object's name.
 
 - __formatted__: Partially supported.  Returns iOS Composite Name, but is read-only.
 
-### Windows 8 Quirks
+### Windows Quirks
 
 - __formatted__: This is the only name property, and is identical to `displayName`, and `nickname`
 
@@ -715,10 +702,6 @@ Contains different kinds of information about a `Contact` object's name.
 - __honorificPrefix__: not supported
 
 - __honorificSuffix__: not supported
-
-### Windows Quirks
-
-- __formatted__: It is identical to `displayName`
 
 
 ## ContactOrganization

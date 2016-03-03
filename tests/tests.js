@@ -48,8 +48,10 @@ exports.defineAutoTests = function() {
         gContactObj.remove(function() {
             gContactObj = null;
             done();
-        }, function() {
-            fail(done);
+        }, function(contactError) {
+            // Because Jasmine won't print the error otherwise
+            expect(contactError).toBeUndefined();
+            done();
         });
     };
 

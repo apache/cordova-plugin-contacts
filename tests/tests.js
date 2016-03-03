@@ -30,6 +30,17 @@ exports.defineAutoTests = function() {
         isWindows = (cordova.platformId === "windows") || (cordova.platformId === "windows8"),
         isWindowsPhone81 = isWindows && WinJS.Utilities.isPhone;
 
+    // Error callback spies should not be called
+    var errorCallbacks = {};
+    errorCallbacks[ContactError.UNKNOWN_ERROR]              = jasmine.createSpy('unknownErrorCallback');
+    errorCallbacks[ContactError.INVALID_ARGUMENT_ERROR]     = jasmine.createSpy('invalidArgumentErrorCallback');
+    errorCallbacks[ContactError.TIMEOUT_ERROR]              = jasmine.createSpy('timeoutErrorCallback');
+    errorCallbacks[ContactError.PENDING_OPERATION_ERROR]    = jasmine.createSpy('pendingOperationErrorCallback');
+    errorCallbacks[ContactError.IO_ERROR]                   = jasmine.createSpy('ioErrorCallback');
+    errorCallbacks[ContactError.NOT_SUPPORTED_ERROR]        = jasmine.createSpy('notSupportedErrorCallback');
+    errorCallbacks[ContactError.OPERATION_CANCELLED_ERROR]  = jasmine.createSpy('operationCancelledErrorCallback');
+    errorCallbacks[ContactError.PERMISSION_DENIED_ERROR]    = jasmine.createSpy('permissionDeniedErrorCallback');
+
     var isIOSPermissionBlocked = false;
 
     var fail = function(done) {
@@ -48,7 +59,19 @@ exports.defineAutoTests = function() {
         gContactObj.remove(function() {
             gContactObj = null;
             done();
-        }, function() {
+        }, function(contactError) {
+            if (contactError) {
+                if (errorCallbacks[contactError.code]) {
+                    errorCallbacks[contactError.code]();
+                } else {
+                    fail(done);
+                }
+            }
+
+            for (var error in errorCallbacks) {
+                expect(errorCallbacks[error]).not.toHaveBeenCalled();
+            }
+
             done();
         });
     };
@@ -545,9 +568,10 @@ exports.defineAutoTests = function() {
                 gContactObj = new Contact();
                 gContactObj.name = new ContactName();
                 gContactObj.name.familyName = contactName;
+                gContactObj.note = "DeleteMe";
                 saveAndFindBy(["displayName", "name"], contactName, done);
             }, MEDIUM_TIMEOUT);
-            
+
             it("contacts.spec.26 Creating, saving, finding a contact should work, removing it should work", function(done) {
                 // Save method is not supported on Windows platform
                 if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
@@ -557,15 +581,17 @@ exports.defineAutoTests = function() {
                 gContactObj = new Contact();
                 gContactObj.name = new ContactName();
                 gContactObj.name.familyName = contactName;
+                gContactObj.note = "DeleteMe";
                 saveAndFindBy(["displayName", "name"], contactName, function() {
                     gContactObj.remove(function() {
+                        gContactObj = null;
                         done();
                     }, function(e) {
                         throw ("Newly created contact's remove function invoked error callback. Test failed.");
                     });
                 });
             }, MEDIUM_TIMEOUT);
-            
+
             it("contacts.spec.27 Should not be able to delete the same contact twice", function(done) {
                 // Save method is not supported on Windows platform
                 if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
@@ -575,6 +601,7 @@ exports.defineAutoTests = function() {
                 gContactObj = new Contact();
                 gContactObj.name = new ContactName();
                 gContactObj.name.familyName = contactName;
+                gContactObj.note = "DeleteMe";
                 saveAndFindBy(["displayName", "name"], contactName, function() {
                     gContactObj.remove(function() {
                         var findWin = function(seas) {
@@ -582,6 +609,7 @@ exports.defineAutoTests = function() {
                             gContactObj.remove(function() {
                                 throw ("Success callback called after non-existent Contact object called remove(). Test failed.");
                             }, function(e) {
+                                gContactObj = null;
                                 expect(e.code).toBe(ContactError.UNKNOWN_ERROR);
                                 done();
                             });
@@ -612,14 +640,14 @@ exports.defineAutoTests = function() {
                 if (isWindows || isWindowsPhone8) {
                     pending();
                 }
-    
+
                 gContactObj = new Contact();
                 var phoneNumbers = [1];
                 phoneNumbers[0] = new ContactField('work', '555-555-1234', true);
                 gContactObj.phoneNumbers = phoneNumbers;
-                
+
                 saveAndFindBy(["phoneNumbers"], "555-555-1234", done);
-    
+
             }, MEDIUM_TIMEOUT);
         });
 
@@ -705,7 +733,7 @@ exports.defineManualTests = function(contentEl, createActionButton) {
             }
         );
     }
-    
+
     function addContact(displayName, name, phoneNumber, birthday) {
         try {
             var results = document.getElementById('contact_results');

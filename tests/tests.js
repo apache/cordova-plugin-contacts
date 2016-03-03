@@ -49,7 +49,7 @@ exports.defineAutoTests = function() {
             gContactObj = null;
             done();
         }, function() {
-            done();
+            fail(done);
         });
     };
 
@@ -545,9 +545,10 @@ exports.defineAutoTests = function() {
                 gContactObj = new Contact();
                 gContactObj.name = new ContactName();
                 gContactObj.name.familyName = contactName;
+                gContactObj.note = "DeleteMe";
                 saveAndFindBy(["displayName", "name"], contactName, done);
             }, MEDIUM_TIMEOUT);
-            
+
             it("contacts.spec.26 Creating, saving, finding a contact should work, removing it should work", function(done) {
                 // Save method is not supported on Windows platform
                 if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
@@ -557,15 +558,17 @@ exports.defineAutoTests = function() {
                 gContactObj = new Contact();
                 gContactObj.name = new ContactName();
                 gContactObj.name.familyName = contactName;
+                gContactObj.note = "DeleteMe";
                 saveAndFindBy(["displayName", "name"], contactName, function() {
                     gContactObj.remove(function() {
+                        gContactObj = null;
                         done();
                     }, function(e) {
                         throw ("Newly created contact's remove function invoked error callback. Test failed.");
                     });
                 });
             }, MEDIUM_TIMEOUT);
-            
+
             it("contacts.spec.27 Should not be able to delete the same contact twice", function(done) {
                 // Save method is not supported on Windows platform
                 if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
@@ -575,6 +578,7 @@ exports.defineAutoTests = function() {
                 gContactObj = new Contact();
                 gContactObj.name = new ContactName();
                 gContactObj.name.familyName = contactName;
+                gContactObj.note = "DeleteMe";
                 saveAndFindBy(["displayName", "name"], contactName, function() {
                     gContactObj.remove(function() {
                         var findWin = function(seas) {
@@ -582,6 +586,7 @@ exports.defineAutoTests = function() {
                             gContactObj.remove(function() {
                                 throw ("Success callback called after non-existent Contact object called remove(). Test failed.");
                             }, function(e) {
+                                gContactObj = null;
                                 expect(e.code).toBe(ContactError.UNKNOWN_ERROR);
                                 done();
                             });
@@ -612,14 +617,14 @@ exports.defineAutoTests = function() {
                 if (isWindows || isWindowsPhone8) {
                     pending();
                 }
-    
+
                 gContactObj = new Contact();
                 var phoneNumbers = [1];
                 phoneNumbers[0] = new ContactField('work', '555-555-1234', true);
                 gContactObj.phoneNumbers = phoneNumbers;
-                
+
                 saveAndFindBy(["phoneNumbers"], "555-555-1234", done);
-    
+
             }, MEDIUM_TIMEOUT);
         });
 
@@ -705,7 +710,7 @@ exports.defineManualTests = function(contentEl, createActionButton) {
             }
         );
     }
-    
+
     function addContact(displayName, name, phoneNumber, birthday) {
         try {
             var results = document.getElementById('contact_results');

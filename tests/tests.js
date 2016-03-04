@@ -30,6 +30,17 @@ exports.defineAutoTests = function() {
         isWindows = (cordova.platformId === "windows") || (cordova.platformId === "windows8"),
         isWindowsPhone81 = isWindows && WinJS.Utilities.isPhone;
 
+    // Error callback spies should not be called
+    var errorCallbacks = {};
+    errorCallbacks[ContactError.UNKNOWN_ERROR]              = jasmine.createSpy('unknownErrorCallback');
+    errorCallbacks[ContactError.INVALID_ARGUMENT_ERROR]     = jasmine.createSpy('invalidArgumentErrorCallback');
+    errorCallbacks[ContactError.TIMEOUT_ERROR]              = jasmine.createSpy('timeoutErrorCallback');
+    errorCallbacks[ContactError.PENDING_OPERATION_ERROR]    = jasmine.createSpy('pendingOperationErrorCallback');
+    errorCallbacks[ContactError.IO_ERROR]                   = jasmine.createSpy('ioErrorCallback');
+    errorCallbacks[ContactError.NOT_SUPPORTED_ERROR]        = jasmine.createSpy('notSupportedErrorCallback');
+    errorCallbacks[ContactError.OPERATION_CANCELLED_ERROR]  = jasmine.createSpy('operationCancelledErrorCallback');
+    errorCallbacks[ContactError.PERMISSION_DENIED_ERROR]    = jasmine.createSpy('permissionDeniedErrorCallback');
+
     var isIOSPermissionBlocked = false;
 
     var fail = function(done) {
@@ -49,8 +60,18 @@ exports.defineAutoTests = function() {
             gContactObj = null;
             done();
         }, function(contactError) {
-            // Because Jasmine won't print the error otherwise
-            expect(contactError).toBeUndefined();
+            if (contactError) {
+                if (errorCallbacks[contactError.code]) {
+                    errorCallbacks[contactError.code]();
+                } else {
+                    fail(done);
+                }
+            }
+
+            for (var error in errorCallbacks) {
+                expect(errorCallbacks[error]).not.toHaveBeenCalled();
+            }
+
             done();
         });
     };

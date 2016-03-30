@@ -741,6 +741,25 @@ exports.defineAutoTests = function() {
                 saveAndFindBy(contact, ["phoneNumbers"], "555-555-1234", done, this);
 
             }, MEDIUM_TIMEOUT);
+
+            it("contacts.spec.31 Find should return a contact with correct birthday field type", function(done) {
+                // Save method is not supported on Windows platform
+                if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
+                    pending();
+                }
+                var contactName = "DeleteMe";
+                var bDay = new Date(1976, 7, 4);
+                var contact = new Contact();
+                contact.name = new ContactName();
+                contact.name.familyName = contactName;
+                contact.note = "DeleteMe";
+                contact.birthday = bDay;
+                saveAndFindBy(contact, ["displayName", "name"], contactName, function(found) {
+                    expect(found.birthday).toEqual(jasmine.any(Date));
+                    expect(found.birthday).toEqual(bDay);
+                    done();
+                }, done, this);
+            }, MEDIUM_TIMEOUT);
         });
 
         describe('ContactError interface', function() {

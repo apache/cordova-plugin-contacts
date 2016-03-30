@@ -23,7 +23,8 @@ var argscheck = require('cordova/argscheck'),
     exec = require('cordova/exec'),
     ContactError = require('./ContactError'),
     Contact = require('./Contact'),
-    fieldType = require('./ContactFieldType');
+    fieldType = require('./ContactFieldType'),
+    convertUtils = require('./convertUtils');
 
 /**
 * Represents a group of Contacts.
@@ -39,7 +40,7 @@ var contacts = {
      * @param {ContactFindOptions} options that can be applied to contact searching
      * @return array of Contacts matching search criteria
      */
-    find:function(fields, successCB, errorCB, options) {
+    find: function(fields, successCB, errorCB, options) {
         argscheck.checkArgs('afFO', 'contacts.find', arguments);
         if (!fields.length) {
             if (errorCB) {
@@ -51,7 +52,7 @@ var contacts = {
             var win = function(result) {
                 var cs = [];
                 for (var i = 0, l = result.length; i < l; i++) {
-                    cs.push(contacts.create(result[i]));
+                    cs.push(convertUtils.toCordovaFormat(contacts.create(result[i])));
                 }
                 successCB(cs);
             };
@@ -71,7 +72,7 @@ var contacts = {
             // if Contacts.pickContact return instance of Contact object
             // don't create new Contact object, use current
             var contact = result instanceof Contact ? result : contacts.create(result);
-            successCB(contact);
+            successCB(convertUtils.toCordovaFormat(contact));
         };
         exec(win, errorCB, "Contacts", "pickContact", []);
     },
@@ -83,7 +84,7 @@ var contacts = {
      * @param properties an object whose properties will be examined to create a new Contact
      * @returns new Contact object
      */
-    create:function(properties) {
+    create: function(properties) {
         argscheck.checkArgs('O', 'contacts.create', arguments);
         var contact = new Contact();
         for (var i in properties) {

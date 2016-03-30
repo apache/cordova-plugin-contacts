@@ -41,6 +41,9 @@
         <clobbers target="Contact" />
     </js-module>
 
+    <js-module src="www/convertUtils.js" name="convertUtils">
+    </js-module>
+
     <js-module src="www/ContactAddress.js" name="ContactAddress">
         <clobbers target="ContactAddress" />
     </js-module>

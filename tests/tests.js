@@ -23,12 +23,9 @@
 /* global WinJS */
 
 exports.defineAutoTests = function() {
-    // global to store a contact so it doesn't have to be created or retrieved multiple times
-    // all of the setup/teardown test methods can reference the following variables to make sure to do the right cleanup
-    var gContactObj = null,
-        isWindowsPhone8 = cordova.platformId == 'windowsphone',
-        isWindows = (cordova.platformId === "windows") || (cordova.platformId === "windows8"),
-        isWindowsPhone81 = isWindows && WinJS.Utilities.isPhone;
+    var isWindowsPhone8 = cordova.platformId == 'windowsphone';
+    var isWindows = (cordova.platformId === "windows") || (cordova.platformId === "windows8");
+    var isWindowsPhone81 = isWindows && WinJS.Utilities.isPhone;
 
     // Error callback spies should not be called
     var errorCallbacks = {};
@@ -51,14 +48,13 @@ exports.defineAutoTests = function() {
     var MEDIUM_TIMEOUT = 30000;
     var HIGH_TIMEOUT = 120000;
 
-    var removeContact = function(done) {
-        if (!gContactObj) {
+    var removeContact = function(done, contactObj) {
+        if (!contactObj) {
             done();
             return;
         }
 
-        gContactObj.remove(function() {
-            gContactObj = null;
+        contactObj.remove(function() {
             done();
         }, function(contactError) {
             if (contactError) {
@@ -137,6 +133,8 @@ exports.defineAutoTests = function() {
     }
 
     describe("Contacts (navigator.contacts)", function() {
+        this.contactObj = null;
+
         it("contacts.spec.1 should exist", function() {
             expect(navigator.contacts).toBeDefined();
         });
@@ -219,7 +217,7 @@ exports.defineAutoTests = function() {
             describe("with newly-created contact", function() {
 
                 afterEach(function (done) {
-                    removeContact(done);
+                    removeContact(done, this.contactObj);
                 });
 
                 it("contacts.spec.7 should be able to find a contact by name", function(done) {
@@ -229,45 +227,48 @@ exports.defineAutoTests = function() {
                         pending();
                     }
 
+                    var specContext = this;
+                    specContext.contactObj = new Contact();
+                    specContext.contactObj.name = new ContactName();
+                    specContext.contactObj.name.familyName = "Delete";
+
                     var foundName = function(result) {
-                            var bFound = false;
-                            try {
-                                for (var i = 0; i < result.length; i++) {
-                                    if (result[i].name.familyName == "Delete") {
-                                        bFound = true;
-                                        break;
-                                    }
+                        var bFound = false;
+                        try {
+                            for (var i = 0; i < result.length; i++) {
+                                if (result[i].name.familyName == "Delete") {
+                                    bFound = true;
+                                    break;
                                 }
-                            } catch (e) {
-                                return false;
                             }
-                            return bFound;
-                        },
-                        test = function(savedContact) {
-                            // update so contact will get removed
-                            gContactObj = savedContact;
-                            // ----
-                            // Find asserts
-                            // ---
-                            var findWin = function(object) {
-                                    expect(object instanceof Array).toBe(true);
-                                    expect(object.length >= 1).toBe(true);
-                                    expect(foundName(object)).toBe(true);
-                                    done();
-                                },
-                                findFail = fail,
-                                obj = new ContactFindOptions();
+                        } catch (e) {
+                            return false;
+                        }
+                        return bFound;
+                    };
 
-                            obj.filter = "Delete";
-                            obj.multiple = true;
+                    var test = function(savedContact) {
+                        // update so contact will get removed
+                        specContext.contactObj = savedContact;
+                        // ----
+                        // Find asserts
+                        // ---
+                        var findWin = function(object) {
+                                expect(object instanceof Array).toBe(true);
+                                expect(object.length >= 1).toBe(true);
+                                expect(foundName(object)).toBe(true);
+                                done();
+                            },
+                            findFail = fail,
+                            obj = new ContactFindOptions();
 
-                            navigator.contacts.find(["displayName", "name", "phoneNumbers", "emails"], findWin, findFail.bind(null, done), obj);
-                        };
+                        obj.filter = "Delete";
+                        obj.multiple = true;
 
-                    gContactObj = new Contact();
-                    gContactObj.name = new ContactName();
-                    gContactObj.name.familyName = "Delete";
-                    gContactObj.save(test, fail.bind(null, done));
+                        navigator.contacts.find(["displayName", "name", "phoneNumbers", "emails"], findWin, findFail.bind(null, done), obj);
+                    };
+
+                    specContext.contactObj.save(test, fail.bind(null, done));
                 });
             });
         });
@@ -425,7 +426,7 @@ exports.defineAutoTests = function() {
         describe('save method', function() {
 
             afterEach(function (done) {
-                removeContact(done);
+                removeContact(done, this.contactObj);
             });
 
             it("contacts.spec.21 should be able to save a contact", function(done) {
@@ -434,6 +435,7 @@ exports.defineAutoTests = function() {
                     pending();
                 }
 
+                var specContext = this;
                 var bDay = new Date(1976, 6, 4);
                 var obj = {
                     "gender": "male",
@@ -451,6 +453,7 @@ exports.defineAutoTests = function() {
                 };
 
                 var saveSuccess = function(obj) {
+                        specContext.contactObj = obj;
                         expect(obj).toBeDefined();
                         expect(obj.note).toBe('my note');
                         expect(obj.name.familyName).toBe('Delete');
@@ -460,10 +463,9 @@ exports.defineAutoTests = function() {
                         expect(obj.emails[1].value).toBe('there@here.com');
                         expect(obj.birthday.toDateString()).toBe(bDay.toDateString());
                         expect(obj.addresses).toBe(null);
-                        gContactObj = obj;
                         done();
-                    },
-                    saveFail = fail.bind(null, done);
+                };
+                var saveFail = fail.bind(null, done);
 
                 navigator.contacts
                     .create(obj)
@@ -480,6 +482,7 @@ exports.defineAutoTests = function() {
                     pending();
                 }
 
+                var specContext = this;
                 var aDay = new Date(1976, 6, 4);
                 var bDay;
                 var noteText = "an UPDATED note";
@@ -508,6 +511,7 @@ exports.defineAutoTests = function() {
                 };
 
                 function updateSuccess(obj) {
+                    specContext.contactObj = obj;
                     expect(obj).toBeDefined();
                     expect(obj.id).toBe(savedContact.id);
                     expect(obj.note).toBe(noteText);
@@ -523,6 +527,7 @@ exports.defineAutoTests = function() {
                 }
 
                 var saveSuccess = function(newContact) {
+                    specContext.contactObj = newContact;
                     savedContact = newContact;
                     newContact.emails[1].value = "";
                     bDay = new Date(1975, 5, 4);
@@ -540,7 +545,7 @@ exports.defineAutoTests = function() {
 
         describe('Contact.remove method', function(done) {
             afterEach(function (done) {
-                removeContact(done);
+                removeContact(done, this.contactObj);
             });
 
             it("contacts.spec.23 calling remove on a contact that has an id of null should return ContactError.UNKNOWN_ERROR", function(done) {
@@ -586,11 +591,13 @@ exports.defineAutoTests = function() {
         });
 
         describe("Round trip Contact tests (creating + save + delete + find)", function() {
-            var saveAndFindBy = function (contact, fields, filter, callback) {
+            var saveAndFindBy = function (contact, fields, filter, callback, specContext) {
                 removeContactsByFields(["note"], "DeleteMe", function() {
                     contact.save(function(c_obj) {
+                        specContext.contactObj = c_obj;
                         var findWin = function(cs) {
                             expect(cs.length).toBe(1);
+                            specContext.contactObj = cs[0];
                             callback(cs[0]);
                         };
                         var findFail = fail;
@@ -603,7 +610,7 @@ exports.defineAutoTests = function() {
             };
 
             afterEach(function (done) {
-                removeContact(done);
+                removeContact(done, this.contactObj);
             });
 
             it("contacts.spec.25 Creating, saving, finding a contact should work", function(done) {
@@ -616,11 +623,12 @@ exports.defineAutoTests = function() {
                 contact.name = new ContactName();
                 contact.name.familyName = contactName;
                 contact.note = "DeleteMe";
-                saveAndFindBy(contact, ["displayName", "name"], contactName, done);
+                saveAndFindBy(contact, ["displayName", "name"], contactName, done, this);
             }, MEDIUM_TIMEOUT);
 
             it("contacts.spec.26 Creating, saving, finding a contact should work, removing it should work", function(done) {
 
+                var specContext = this;
                 var startTime = new Date();
                 console.log("Spec26 - Start Time: " + getTimeInHHMMSS(startTime));
 
@@ -636,6 +644,7 @@ exports.defineAutoTests = function() {
                 saveAndFindBy(contact, ["displayName", "name"], contactName, function(savedContact) {
                     savedContact.remove(function() {
                         var endTime = new Date();
+                        specContext.contactObj = null;
                         console.log("Spec26 - EndTime: " + getTimeInHHMMSS(endTime));
                         console.log("Time Elapsed: " + toHHMMSS( (startTime / 1000) - (endTime / 1000) ));
 
@@ -648,7 +657,7 @@ exports.defineAutoTests = function() {
 
                         throw ("Newly created contact's remove function invoked error callback. Test failed: " + JSON.stringify(e));
                     });
-                });
+                }, this);
             }, MEDIUM_TIMEOUT);
 
             it("contacts.spec.27 Should not be able to delete the same contact twice", function(done) {
@@ -660,6 +669,7 @@ exports.defineAutoTests = function() {
                 if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
                     pending();
                 }
+                var specContext = this;
                 var contactName = "DeleteMe2";
                 var contact = new Contact();
                 contact.name = new ContactName();
@@ -675,6 +685,7 @@ exports.defineAutoTests = function() {
 
                 saveAndFindBy(contact, ["displayName", "name"], contactName, function(savedContact) {
                     savedContact.remove(function() {
+                        specContext.contactObj = null;
                         var findWin = function(seas) {
                             expect(seas.length).toBe(0);
                             savedContact.remove(function(e) {
@@ -700,7 +711,7 @@ exports.defineAutoTests = function() {
                         obj.multiple = true;
                         navigator.contacts.find(["displayName", "name", "phoneNumbers", "emails"], findWin, fail, obj);
                     }, failureHandler);
-                });
+                }, this);
             }, MEDIUM_TIMEOUT);
 
             it("contacts.spec.28 should find a contact with unicode name", function (done) {
@@ -713,7 +724,7 @@ exports.defineAutoTests = function() {
                 contact.note = "DeleteMe";
                 contact.name = new ContactName();
                 contact.name.familyName = contactName;
-                saveAndFindBy(contact, ["displayName", "name"], contactName, done);
+                saveAndFindBy(contact, ["displayName", "name"], contactName, done, this);
             }, MEDIUM_TIMEOUT);
 
             it("contacts.spec.29 should find a contact without a name", function (done) {
@@ -727,7 +738,7 @@ exports.defineAutoTests = function() {
                 phoneNumbers[0] = new ContactField('work', '555-555-1234', true);
                 contact.phoneNumbers = phoneNumbers;
 
-                saveAndFindBy(contact, ["phoneNumbers"], "555-555-1234", done);
+                saveAndFindBy(contact, ["phoneNumbers"], "555-555-1234", done, this);
 
             }, MEDIUM_TIMEOUT);
         });

@@ -49,7 +49,7 @@ exports.defineAutoTests = function() {
         };
 
     var MEDIUM_TIMEOUT = 30000;
-    
+
     var removeContact = function(done) {
         if (!gContactObj) {
             done();
@@ -116,7 +116,7 @@ exports.defineAutoTests = function() {
             removeNext(nextToRemove);
         }, done, obj);
     }
-    
+
     // Convert seconds to HH:MM:SS format: http://stackoverflow.com/a/6313008/91607
     function toHHMMSS(secs) {
         var sec_num = parseInt(secs, 10); // don't forget the second param
@@ -130,7 +130,7 @@ exports.defineAutoTests = function() {
         var time = hours + ':' + minutes  + ':' + seconds;
         return time;
     }
-    
+
     function getTimeInHHMMSS(date) {
         return date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     }
@@ -216,7 +216,7 @@ exports.defineAutoTests = function() {
             });
 
             describe("with newly-created contact", function() {
-                
+
                 afterEach(function (done) {
                     removeContact(done);
                 });
@@ -473,7 +473,7 @@ exports.defineAutoTests = function() {
 
                 var startTime = new Date();
                 console.log("Spec22 - Start Time: " + getTimeInHHMMSS(startTime));
-                
+
                 // Save method is not supported on Windows platform
                 if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
                     pending();
@@ -513,11 +513,11 @@ exports.defineAutoTests = function() {
                     expect(obj.birthday.toDateString()).toBe(bDay.toDateString());
                     expect(obj.emails.length).toBe(1);
                     expect(obj.emails[0].value).toBe('here@there.com');
-                    
+
                     var endTime = new Date();
                     console.log("Spec22 - EndTime: " + getTimeInHHMMSS(endTime));
                     console.log("Time Elapsed: " + toHHMMSS( (startTime.getTime() / 1000) - (endTime.getTime() / 1000) ));
-                    
+
                     done();
                 }
 
@@ -545,21 +545,21 @@ exports.defineAutoTests = function() {
             it("contacts.spec.23 calling remove on a contact that has an id of null should return ContactError.UNKNOWN_ERROR", function(done) {
                 var startTime = new Date();
                 console.log("Spec23 - Start Time: " + getTimeInHHMMSS(startTime));
-                
+
                 var unexpectedSuccess = function() {
                     var endTime = new Date();
                     console.log("Spec23 - EndTime: " + getTimeInHHMMSS(endTime));
                     console.log("Time Elapsed: " + toHHMMSS( (startTime / 1000) - (endTime / 1000) ));
-                    
+
                     fail.bind(null, done);
                 };
                 var expectedFail = function(result) {
                     expect(result.code).toBe(ContactError.UNKNOWN_ERROR);
-                    
+
                     var endTime = new Date();
                     console.log("Spec23 - EndTime: " + getTimeInHHMMSS(endTime));
                     console.log("Time Elapsed: " + toHHMMSS( (startTime / 1000) - (endTime / 1000) ));
-                    
+
                     done();
                 };
 
@@ -585,14 +585,12 @@ exports.defineAutoTests = function() {
         });
 
         describe("Round trip Contact tests (creating + save + delete + find)", function() {
-            var saveAndFindBy = function (contact, fields, filter, done) {
+            var saveAndFindBy = function (contact, fields, filter, callback) {
                 removeContactsByFields(["note"], "DeleteMe", function() {
                     contact.save(function(c_obj) {
                         var findWin = function(cs) {
-                            // update to have proper saved id
-                            contact = cs[0];
                             expect(cs.length).toBe(1);
-                            done();
+                            callback(cs[0]);
                         };
                         var findFail = fail;
                         var obj = new ContactFindOptions();
@@ -621,10 +619,10 @@ exports.defineAutoTests = function() {
             }, MEDIUM_TIMEOUT);
 
             it("contacts.spec.26 Creating, saving, finding a contact should work, removing it should work", function(done) {
-                
+
                 var startTime = new Date();
                 console.log("Spec26 - Start Time: " + getTimeInHHMMSS(startTime));
-                
+
                 // Save method is not supported on Windows platform
                 if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
                     pending();
@@ -634,31 +632,29 @@ exports.defineAutoTests = function() {
                 contact.name = new ContactName();
                 contact.name.familyName = contactName;
                 contact.note = "DeleteMe";
-                saveAndFindBy(contact, ["displayName", "name"], contactName, function() {
-                    contact.remove(function() {
-                        contact = null;
-                        
+                saveAndFindBy(contact, ["displayName", "name"], contactName, function(savedContact) {
+                    savedContact.remove(function() {
                         var endTime = new Date();
                         console.log("Spec26 - EndTime: " + getTimeInHHMMSS(endTime));
                         console.log("Time Elapsed: " + toHHMMSS( (startTime / 1000) - (endTime / 1000) ));
-                    
+
                         done();
                     }, function(e) {
-                        
+
                         var endTime = new Date();
                         console.log("Spec26 - EndTime: " + getTimeInHHMMSS(endTime));
                         console.log("Time Elapsed: " + toHHMMSS( (startTime / 1000) - (endTime / 1000) ));
-                        
+
                         throw ("Newly created contact's remove function invoked error callback. Test failed: " + JSON.stringify(e));
                     });
                 });
             }, MEDIUM_TIMEOUT);
 
             it("contacts.spec.27 Should not be able to delete the same contact twice", function(done) {
-                
+
                 var startTime = new Date();
                 console.log("Spec27 - Start Time: " + getTimeInHHMMSS(startTime));
-                
+
                 // Save method is not supported on Windows platform
                 if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
                     pending();
@@ -668,33 +664,32 @@ exports.defineAutoTests = function() {
                 contact.name = new ContactName();
                 contact.name.familyName = contactName;
                 contact.note = "DeleteMe2";
-                
+
                 var failureHandler = function() {
                     console.log("Inside failureHandler");
                     var endTime = new Date();
                     console.log("Spec27 - EndTime: " + endTime);
                     console.log("Time Elapsed: " + toHHMMSS( (startTime / 1000) - (endTime / 1000) ));
                 };
-                
-                saveAndFindBy(contact, ["displayName", "name"], contactName, function() {
-                    contact.remove(function() {
+
+                saveAndFindBy(contact, ["displayName", "name"], contactName, function(savedContact) {
+                    savedContact.remove(function() {
                         var findWin = function(seas) {
                             expect(seas.length).toBe(0);
-                            contact.remove(function(e) {
-                                
+                            savedContact.remove(function(e) {
+
                                 var endTime = new Date();
                                 console.log("Spec27 - EndTime: " + getTimeInHHMMSS(endTime));
                                 console.log("Time Elapsed: " + toHHMMSS( (startTime / 1000) - (endTime / 1000) ));
-                                
+
                                 throw ("Success callback called after non-existent Contact object called remove(). Test failed: " + JSON.stringify(e));
                             }, function(e) {
-                                contact = null;
-                                
+
                                 console.log("Inside contact.remove() failure callback");
                                 var endTime = new Date();
                                 console.log("Spec27 - EndTime: " + getTimeInHHMMSS(endTime));
                                 console.log("Time Elapsed: " + toHHMMSS( (startTime / 1000) - (endTime / 1000) ));
-                        
+
                                 expect(e.code).toBe(ContactError.UNKNOWN_ERROR);
                                 done();
                             });

@@ -49,6 +49,7 @@ exports.defineAutoTests = function() {
         };
 
     var MEDIUM_TIMEOUT = 30000;
+    var HIGH_TIMEOUT = 120000;
 
     var removeContact = function(done) {
         if (!gContactObj) {
@@ -534,7 +535,7 @@ exports.defineAutoTests = function() {
                     .create(contact)
                     .save(saveSuccess, saveFail);
 
-            }, MEDIUM_TIMEOUT);
+            }, HIGH_TIMEOUT);
         });
 
         describe('Contact.remove method', function(done) {

@@ -904,7 +904,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             im.put("id", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im._ID)));
             im.put("pref", false); // Android does not store pref attribute
             im.put("value", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im.DATA)));
-            im.put("type", getImType(cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im.PROTOCOL))));
+            im.put("type", getImType(Integer.parseInt(cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im.PROTOCOL)))));
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
         }
@@ -1513,7 +1513,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
                 .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Im.CONTENT_ITEM_TYPE)
                 .withValue(CommonDataKinds.Im.DATA, getJsonString(im, "value"))
-                .withValue(CommonDataKinds.Im.TYPE, getImType(getJsonString(im, "type")))
+                .withValue(CommonDataKinds.Im.PROTOCOL, getImType(getJsonString(im, "type")))
                 .build());
     }
 

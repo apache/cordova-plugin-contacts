@@ -677,6 +677,32 @@ exports.defineAutoTests = function() {
                     done();
                 }, done, this);
             }, MEDIUM_TIMEOUT);
+
+            it("contacts.spec.32 Find should return a contact with correct IM field", function(done) {
+                // Save method is not supported on Windows platform
+                if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
+                    pending();
+                }
+                var contactName = "DeleteMe";
+                var ims = [{
+                    type: "Skype",
+                    value: "imValue"
+                }];
+                var contact = new Contact();
+                contact.name = new ContactName();
+                contact.name.familyName = contactName;
+                contact.note = "DeleteMe";
+                contact.ims = ims;
+                saveAndFindBy(contact, ["displayName", "name"], contactName, function(found) {
+                    expect(found.ims).toEqual(jasmine.any(Array));
+                    expect(found.ims[0]).toBeDefined();
+                    if (found.ims[0]) {
+                        expect(found.ims[0].type).toEqual(ims[0].type);
+                        expect(found.ims[0].value).toEqual(ims[0].value);
+                    }
+                    done();
+                }, done, this);
+            }, MEDIUM_TIMEOUT);
         });
 
         describe('ContactError interface', function() {

@@ -133,7 +133,7 @@ describe('Contacts Android', function () {
     function renameContact(oldName, newGivenName, newFamilyName) {
         return driver
             .context(webviewContext)
-            .setAsyncScriptTimeout(MINUTE)
+            .setAsyncScriptTimeout(5 * MINUTE)
             .executeAsync(function (oldname, newgivenname, newfamilyname, callback) {
                 var obj = new ContactFindOptions();
                 obj.filter = oldname;
@@ -141,6 +141,7 @@ describe('Contacts Android', function () {
 
                 navigator.contacts.find(['displayName', 'name'], function(contacts) {
                     if (contacts.length === 0) {
+                        callback({ 'code': -35142 });
                         return;
                     }
                     var contact = contacts[0];
@@ -154,6 +155,9 @@ describe('Contacts Android', function () {
             }, [oldName, newGivenName, newFamilyName])
             .then(function(result) {
                 if (result && result.hasOwnProperty('code')) {
+                    if (result.code === -35142) {
+                        throw 'Couldn\'t find the contact "' + oldName + '"';
+                    }
                     throw result;
                 }
                 return result;

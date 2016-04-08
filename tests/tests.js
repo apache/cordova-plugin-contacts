@@ -605,19 +605,20 @@ exports.defineAutoTests = function() {
                 if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
                     pending();
                 }
+                var specContext = this;
                 var contactName = "DeleteMe2";
                 var contact = new Contact();
                 contact.name = new ContactName();
                 contact.name.familyName = contactName;
                 contact.note = "DeleteMe2";
-                saveAndFindBy(contact, ["displayName", "name"], contactName, function() {
-                    contact.remove(function() {
+                saveAndFindBy(contact, ["displayName", "name"], contactName, function(savedContact) {
+                    savedContact.remove(function() {
+                        specContext.contactObj = null;
                         var findWin = function(seas) {
                             expect(seas.length).toBe(0);
-                            contact.remove(function() {
-                                throw ("Success callback called after non-existent Contact object called remove(). Test failed.");
+                            savedContact.remove(function(e) {
+                                throw ("Success callback called after non-existent Contact object called remove(). Test failed: " + JSON.stringify(e));
                             }, function(e) {
-                                contact = null;
                                 expect(e.code).toBe(ContactError.UNKNOWN_ERROR);
                                 done();
                             });

@@ -1701,8 +1701,10 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             phones = contact.getJSONArray("phoneNumbers");
             if (phones != null) {
                 for (int i = 0; i < phones.length(); i++) {
-                    JSONObject phone = (JSONObject) phones.get(i);
-                    insertPhone(ops, phone);
+                    if(!phones.isNull(i)){
+                        JSONObject phone = (JSONObject) phones.get(i);
+                        insertPhone(ops, phone);
+                    }
                 }
             }
         } catch (JSONException e) {

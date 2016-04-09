@@ -369,7 +369,6 @@ for details.
     myContact.save(function (contact_obj) {
         var contactObjToModify = contact_obj.clone();
         contact_obj.remove(function(){
-            // Note: Do NOT use delete operator to remove the phone numbers. It will break in android.
             var phoneNumbers = [contactObjToModify.phoneNumbers[0]];
             contactObjToModify.phoneNumbers = phoneNumbers;
             contactObjToModify.save(function(c_obj){

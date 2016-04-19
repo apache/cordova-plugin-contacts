@@ -155,6 +155,13 @@
         <framework src="CoreGraphics.framework" />
     </platform>
 
+    <!-- Browser -->
+    <platform name="browser">
+        <js-module src="src/browser/ContactsProxy.js" name="ContactsProxy">
+            <merges target="navigator.contacts" />
+        </js-module>
+    </platform>
+
     <!-- blackberry10 -->
     <platform name="blackberry10">
         <config-file target="www/config.xml" parent="/widget">

@@ -313,5 +313,5 @@ describe('Contacts Android', function () {
         driver
             .quit()
             .done(done);
-    }, MINUTE);
+    }, 5 * MINUTE);
 });

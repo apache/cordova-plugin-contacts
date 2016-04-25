@@ -133,7 +133,7 @@ describe('Contacts Android', function () {
     function renameContact(oldName, newGivenName, newFamilyName) {
         return driver
             .context(webviewContext)
-            .setAsyncScriptTimeout(5 * MINUTE)
+            .setAsyncScriptTimeout(4 * MINUTE)
             .executeAsync(function (oldname, newgivenname, newfamilyname, callback) {
                 var obj = new ContactFindOptions();
                 obj.filter = oldname;
@@ -263,7 +263,7 @@ describe('Contacts Android', function () {
                 })
                 .fail(saveScreenshotAndFail)
                 .done(done);
-        }, 5 * MINUTE);
+        }, 6 * MINUTE);
 
         it('contacts.ui.spec.3 Create a contact with no name', function (done) {
             driver

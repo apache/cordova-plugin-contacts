@@ -71,18 +71,20 @@ describe('Contacts Android', function () {
             });
     }
 
-    function addContact(firstName, lastName) {
+    function addContact(firstName, lastName, bday) {
+        var bdayString = bday ? bday.toDateString() : undefined;
         var contactName = contactsHelper.getContactName(firstName, lastName);
         return driver
             .context(webviewContext)
             .setAsyncScriptTimeout(MINUTE)
-            .executeAsync(function(contactname, callback) {
+            .executeAsync(function(contactname, bday, callback) {
                 navigator.contacts.create({
                     'displayName': contactname.formatted,
                     'name': contactname,
-                    'note': 'DeleteMe'
+                    'note': 'DeleteMe',
+                    'birthday': new Date(bday)
                 }).save(callback, callback);
-            }, [contactName])
+            }, [contactName, bdayString])
             .then(function(result) {
                 if (result && result.hasOwnProperty('code')) {
                     throw result;
@@ -107,16 +109,18 @@ describe('Contacts Android', function () {
             .then(function () {
                 switch (PLATFORM) {
                     case 'ios':
-                        return driver.waitForElementByXPath(UNORM.nfd('//UIAStaticText[@label="' + name + '"]'), MINUTE);
+                        return wdHelper.tapElementByXPath(UNORM.nfd('//UIAStaticText[@label="' + name + '"]'), driver);
                     case 'android':
-                        return driver.waitForElementByXPath('//android.widget.TextView[@text="' + name + '"]', MINUTE);
+                        return driver.waitForElementByXPath('//android.widget.TextView[@text="' + name + '"]', MINUTE).click();
                 }
             })
-            .click()
             .context(webviewContext)
             .executeAsync(function (pID, cb) {
                 navigator._appiumPromises[pID].promise
                 .then(function (contact) {
+                    // for some reason Appium cannot get Date object
+                    // let's make birthday a string then
+                    contact.birthday = contact.birthday.toDateString();
                     cb(contact);
                 }, function (err) {
                     cb('ERROR: ' + err);
@@ -133,7 +137,7 @@ describe('Contacts Android', function () {
     function renameContact(oldName, newGivenName, newFamilyName) {
         return driver
             .context(webviewContext)
-            .setAsyncScriptTimeout(4 * MINUTE)
+            .setAsyncScriptTimeout(7 * MINUTE)
             .executeAsync(function (oldname, newgivenname, newfamilyname, callback) {
                 var obj = new ContactFindOptions();
                 obj.filter = oldname;
@@ -227,9 +231,10 @@ describe('Contacts Android', function () {
         }, MINUTE);
 
         it('contacts.ui.spec.1 Pick a contact', function (done) {
+            var bday = new Date(1991, 1, 1);
             driver
                 .then(function () {
-                    return addContact('Test', 'Contact');
+                    return addContact('Test', 'Contact', bday);
                 })
                 .then(function () {
                     return pickContact('Test Contact');
@@ -237,6 +242,7 @@ describe('Contacts Android', function () {
                 .then(function (contact) {
                     expect(contact.name.givenName).toBe('Test');
                     expect(contact.name.familyName).toBe('Contact');
+                    expect(contact.birthday).toBe(bday.toDateString());
                 })
                 .fail(saveScreenshotAndFail)
                 .done(done);
@@ -263,7 +269,7 @@ describe('Contacts Android', function () {
                 })
                 .fail(saveScreenshotAndFail)
                 .done(done);
-        }, 6 * MINUTE);
+        }, 10 * MINUTE);
 
         it('contacts.ui.spec.3 Create a contact with no name', function (done) {
             driver

@@ -41,6 +41,8 @@ describe('Contacts Android', function () {
     var driver;
     var webviewContext;
     var promiseCount = 0;
+    // going to set this to false if session is created successfully
+    var failedToStart = true;
 
     function getNextPromiseId() {
         return 'appium_promise_' + promiseCount++;
@@ -109,11 +111,16 @@ describe('Contacts Android', function () {
             .then(function () {
                 switch (PLATFORM) {
                     case 'ios':
-                        return wdHelper.tapElementByXPath(UNORM.nfd('//UIAStaticText[@label="' + name + '"]'), driver);
+                        return driver
+                            .waitForElementByXPath(UNORM.nfd('//UIAStaticText[@label="' + name + '"]'), 20000)
+                            .elementByXPath(UNORM.nfd('//UIAStaticText[@label="' + name + '"]'))
+                            .elementByXPath(UNORM.nfd('//UIAStaticText[@label="' + name + '"]'));
                     case 'android':
-                        return driver.waitForElementByXPath('//android.widget.TextView[@text="' + name + '"]', MINUTE).click();
+                        return driver
+                            .waitForElementByXPath('//android.widget.TextView[@text="' + name + '"]', MINUTE);
                 }
             })
+            .click()
             .context(webviewContext)
             .executeAsync(function (pID, cb) {
                 navigator._appiumPromises[pID].promise
@@ -218,9 +225,18 @@ describe('Contacts Android', function () {
             });
     }
 
+    function checkSession(done) {
+        if (failedToStart) {
+            fail('Failed to start a session');
+            done();
+        }
+    }
+
     it('contacts.ui.util configuring driver and starting a session', function (done) {
         getDriver()
-            .fail(fail)
+            .then(function () {
+                failedToStart = false;
+            }, fail)
             .done(done);
     }, 5 * MINUTE);
 
@@ -231,6 +247,7 @@ describe('Contacts Android', function () {
         }, MINUTE);
 
         it('contacts.ui.spec.1 Pick a contact', function (done) {
+            checkSession(done);
             var bday = new Date(1991, 1, 1);
             driver
                 .then(function () {
@@ -249,6 +266,7 @@ describe('Contacts Android', function () {
         }, 5 * MINUTE);
 
         it('contacts.ui.spec.2 Update an existing contact', function (done) {
+            checkSession(done);
             driver
                 .then(function () {
                     return addContact('Dooney', 'Evans');
@@ -272,6 +290,7 @@ describe('Contacts Android', function () {
         }, 10 * MINUTE);
 
         it('contacts.ui.spec.3 Create a contact with no name', function (done) {
+            checkSession(done);
             driver
                 .then(function () {
                     return addContact();
@@ -299,6 +318,7 @@ describe('Contacts Android', function () {
         }, 5 * MINUTE);
 
         it('contacts.ui.spec.4 Create a contact with Unicode characters in name', function (done) {
+            checkSession(done);
             driver
                 .then(function () {
                     return addContact('Н€йромонах', 'ФеофаЊ');
@@ -316,6 +336,7 @@ describe('Contacts Android', function () {
     });
 
     it('contacts.ui.util Destroy the session', function (done) {
+        checkSession(done);
         driver
             .quit()
             .done(done);

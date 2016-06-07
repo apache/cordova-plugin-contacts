@@ -904,7 +904,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             im.put("id", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im._ID)));
             im.put("pref", false); // Android does not store pref attribute
             im.put("value", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im.DATA)));
-            im.put("type", getImType(Integer.parseInt(cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im.PROTOCOL)))));
+            im.put("type", getImType(Integer.parseInt(cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im.CUSTOM_PROTOCOL)))));
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
         }

@@ -69,6 +69,17 @@ It is also possible to install via repo url directly ( unstable )
     cordova plugin add https://github.com/apache/cordova-plugin-contacts.git
 
 
+### iOS Quirks
+
+Since iOS 10 it's mandatory to add a `NSContactsUsageDescription` entry in the info.plist.
+
+`NSContactsUsageDescription` describes the reason that the app accesses the user’s contacts. When the system prompts the user to allow access, this string is displayed as part of the dialog box. To add this entry you can pass the variable `CONTACTS_USAGE_DESCRIPTION` on plugin install.
+
+Example:
+`cordova plugin add cordova-plugin-contacts --variable CONTACTS_USAGE_DESCRIPTION="your usage message"`
+
+If you don't pass the variable, the plugin will add an empty string as value.
+
 ### Firefox OS Quirks
 
 Create __www/manifest.webapp__ as described in

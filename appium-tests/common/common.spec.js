@@ -234,7 +234,7 @@ describe('Contacts Android', function () {
                 failedToStart = false;
             }, fail)
             .done(done);
-    }, 5 * MINUTE);
+    }, 10 * MINUTE);
 
     describe('Picking contacts', function () {
         afterEach(function (done) {

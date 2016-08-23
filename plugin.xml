@@ -132,6 +132,10 @@
             </feature>
         </config-file>
 
+        <config-file target="*-Info.plist" parent="NSContactsUsageDescription">
+            <string></string>
+        </config-file>
+
         <js-module src="www/ios/contacts.js" name="contacts-ios">
             <merges target="navigator.contacts" />
         </js-module>

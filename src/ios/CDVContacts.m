@@ -326,6 +326,7 @@
             NSArray* foundRecords = nil;
             // get the findOptions values
             BOOL multiple = NO;         // default is false
+            BOOL hasPhoneNumber = NO;         // default is false
             NSString* filter = nil;
             NSArray* desiredFields = nil;
             if (![findOptions isKindOfClass:[NSNull class]]) {
@@ -336,6 +337,10 @@
                     // multiple is a boolean that will come through as an NSNumber
                     multiple = [(NSNumber*)value boolValue];
                     // NSLog(@"multiple is: %d", multiple);
+                }
+                value = [findOptions objectForKey:@"hasPhoneNumber"];
+                if ([value isKindOfClass:[NSNumber class]]) {
+                    hasPhoneNumber = [(NSNumber*)value boolValue];
                 }
                 desiredFields = [findOptions objectForKey:@"desiredFields"];
                 // return all fields if desired fields are not explicitly defined
@@ -391,6 +396,11 @@
                     for (int i = 0; i < count; i++) {
                         CDVContact* newContact = [matches objectAtIndex:i];
                         NSDictionary* aContact = [newContact toDictionary:returnFields];
+                        NSMutableArray *phoneNumberArray = [[NSMutableArray alloc] init];
+                        phoneNumberArray = [aContact valueForKey:@"phoneNumbers"];
+                        if ([phoneNumberArray isKindOfClass:[NSNull class]]) {
+                          continue;
+                        }
                         [returnContacts addObject:aContact];
                     }
                 }

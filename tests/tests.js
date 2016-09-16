@@ -511,7 +511,7 @@ exports.defineAutoTests = function() {
             }, HIGH_TIMEOUT);
         });
 
-        describe('Contact.remove method', function(done) {
+        describe('Contact.remove method', function() {
             afterEach(function (done) {
                 removeContact(done, this.contactObj);
             });

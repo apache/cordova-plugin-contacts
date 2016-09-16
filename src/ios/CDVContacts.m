@@ -398,7 +398,7 @@
                         NSDictionary* aContact = [newContact toDictionary:returnFields];
                         NSMutableArray *phoneNumberArray = [[NSMutableArray alloc] init];
                         phoneNumberArray = [aContact valueForKey:@"phoneNumbers"];
-                        if ([phoneNumberArray isKindOfClass:[NSNull class]]) {
+                        if (([phoneNumberArray isKindOfClass:[NSNull class]]) && (hasPhoneNumber)) {
                           continue;
                         }
                         [returnContacts addObject:aContact];

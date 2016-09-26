@@ -252,6 +252,35 @@ exports.defineAutoTests = function() {
 
                     specContext.contactObj.save(test, fail.bind(null, done));
                 });
+
+                it("contacts.spec.7.1 should contain displayName if specified in desiredFields", function(done) {
+                    if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
+                        pending();
+                    }
+                    var testDisplayName = "testContact";
+                    var specContext = this;
+                    specContext.contactObj = new Contact();
+                    specContext.contactObj.displayName = testDisplayName;
+
+                    var win = function(contactResult) {
+                        expect(contactResult.length > 0).toBe(true);
+                        var namesDisplayed = contactResult.every(function(contact, index) {
+                            return contact.displayName !== null;
+                        });
+                        expect(namesDisplayed).toBe(true);
+                        done();
+                    };
+
+                    var onSuccessSave = function(savedContact) {
+                        specContext.contactObj = savedContact;
+                        var options = new ContactFindOptions();
+                        options.filter = testDisplayName;
+                        options.multiple = true;
+                        options.desiredFields = [navigator.contacts.fieldType.displayName];
+                        navigator.contacts.find(["displayName", "nickname"], win, fail.bind(null, done), options);
+                    };
+                    specContext.contactObj.save(onSuccessSave, fail.bind(null, done));
+                });
             });
         });
 

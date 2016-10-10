@@ -281,6 +281,27 @@ exports.defineAutoTests = function() {
                     };
                     specContext.contactObj.save(onSuccessSave, fail.bind(null, done));
                 });
+                it("contacts.spec.7.2 should find contact despite id isn't string ", function(done) {
+                    if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
+                        pending();
+                    }
+                    var testDisplayName = "testContact";
+                    var specContext = this;
+                    specContext.contactObj = new Contact();
+                    specContext.contactObj.displayName = testDisplayName;
+                    var win = function(contactResult) {
+                        expect(contactResult.length > 0).toBe(true);
+                        done();
+                    };
+                    var onSuccessSave = function(savedContact) {
+                        specContext.contactObj = savedContact;
+                        var options = new ContactFindOptions();
+                        options.filter = savedContact.id;
+                        options.multiple = true;
+                        navigator.contacts.find(["id"], win, fail.bind(null, done), options);
+                    };
+                    specContext.contactObj.save(onSuccessSave, fail.bind(null, done));
+                });
             });
         });
 

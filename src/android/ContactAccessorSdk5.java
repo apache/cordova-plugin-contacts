@@ -904,7 +904,15 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             im.put("id", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im._ID)));
             im.put("pref", false); // Android does not store pref attribute
             im.put("value", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im.DATA)));
-            im.put("type", getImType(Integer.parseInt(cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im.PROTOCOL)))));
+            String protocol = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im.PROTOCOL));
+            if (!isInteger(protocol) || Integer.parseInt(protocol) == CommonDataKinds.Im.PROTOCOL_CUSTOM) {
+                // the protocol is custom, get its name and put it into JSON
+                protocol = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im.CUSTOM_PROTOCOL));
+                im.put("type", protocol);
+            } else {
+                // (the protocol is one of the standard ones) look up its type and then put it into JSON
+                im.put("type", getImType(Integer.parseInt(protocol)));
+            }
         } catch (JSONException e) {
             LOG.e(LOG_TAG, e.getMessage(), e);
         }
@@ -2288,6 +2296,21 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             break;
         }
         return stringType;
+    }
+
+    /**
+     * checks if a String can be converted to an Integer
+     * @param str
+     * @return boolean
+     */
+    private static boolean isInteger(String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        }
+        catch(Exception e) {
+            return false;
+        }
     }
 
 }

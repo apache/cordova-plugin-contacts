@@ -1709,6 +1709,21 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      * @throws IOException
      */
     private InputStream getPathFromUri(String path) throws IOException {
+        if (path.startsWith("data:")) { // data:image/png;base64,[ENCODED_IMAGE]
+            String dataInfos = path.substring(0, path.indexOf(','));
+            dataInfos = dataInfos.substring(dataInfos.indexOf(':') + 1);
+            String baseEncoding = dataInfos.substring(dataInfos.indexOf(';') + 1);
+            // [ENCODED_IMAGE]
+            if("base64".equalsIgnoreCase(baseEncoding)) {
+                String img = path.substring(path.indexOf(',') + 1); 
+                byte[] encodedData = img.getBytes();
+                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(encodedData, 0, encodedData.length);
+                Base64InputStream base64InputStream = new Base64InputStream(byteArrayInputStream, Base64.DEFAULT);
+                return base64InputStream;
+            } else {
+                Log.w(LOG_TAG, "Could not decode image. The found base encoding is " + baseEncoding);
+            }
+        }  
         if (path.startsWith("content:")) {
             Uri uri = Uri.parse(path);
             return mApp.getActivity().getContentResolver().openInputStream(uri);

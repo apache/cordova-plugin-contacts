@@ -225,11 +225,13 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             columnsToFetch.add(CommonDataKinds.Phone._ID);
             columnsToFetch.add(CommonDataKinds.Phone.NUMBER);
             columnsToFetch.add(CommonDataKinds.Phone.TYPE);
+            columnsToFetch.add(CommonDataKinds.Phone.LABEL);
         }
         if (isRequired("emails", populate)) {
             columnsToFetch.add(CommonDataKinds.Email._ID);
             columnsToFetch.add(CommonDataKinds.Email.DATA);
             columnsToFetch.add(CommonDataKinds.Email.TYPE);
+            
         }
         if (isRequired("addresses", populate)) {
             columnsToFetch.add(CommonDataKinds.StructuredPostal._ID);
@@ -866,6 +868,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             phoneNumber.put("id", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Phone._ID)));
             phoneNumber.put("pref", false); // Android does not store pref attribute
             phoneNumber.put("value", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Phone.NUMBER)));
+            phoneNumber.put("label", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Phone.LABEL)));
             phoneNumber.put("type", getPhoneType(cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Phone.TYPE))));
         } catch (JSONException e) {
             LOG.e(LOG_TAG, e.getMessage(), e);
@@ -1115,6 +1118,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                             contentValues.put(ContactsContract.Data.RAW_CONTACT_ID, rawId);
                             contentValues.put(ContactsContract.Data.MIMETYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
                             contentValues.put(CommonDataKinds.Phone.NUMBER, getJsonString(phone, "value"));
+                            contentValues.put(CommonDataKinds.Phone.LABEL, getJsonString(phone, "label"));
                             contentValues.put(CommonDataKinds.Phone.TYPE, getPhoneType(getJsonString(phone, "type")));
 
                             ops.add(ContentProviderOperation.newInsert(
@@ -1127,6 +1131,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                                             ContactsContract.Data.MIMETYPE + "=?",
                                             new String[] { phoneId, CommonDataKinds.Phone.CONTENT_ITEM_TYPE })
                                     .withValue(CommonDataKinds.Phone.NUMBER, getJsonString(phone, "value"))
+                                    .withValue(CommonDataKinds.Phone.LABEL, getJsonString(phone, "label"))
                                     .withValue(CommonDataKinds.Phone.TYPE, getPhoneType(getJsonString(phone, "type")))
                                     .build());
                         }
@@ -1590,6 +1595,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
                 .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
                 .withValue(CommonDataKinds.Phone.NUMBER, getJsonString(phone, "value"))
+                .withValue(CommonDataKinds.Phone.LABEL, getJsonString(phone, "label"))
                 .withValue(CommonDataKinds.Phone.TYPE, getPhoneType(getJsonString(phone, "type")))
                 .build());
     }

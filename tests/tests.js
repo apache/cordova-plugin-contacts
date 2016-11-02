@@ -302,6 +302,50 @@ exports.defineAutoTests = function() {
                     };
                     specContext.contactObj.save(onSuccessSave, fail.bind(null, done));
                 });
+
+                it("contacts.spec.7.3 should contain custom label in type", function(done) {
+                    if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
+                        pending();
+                    }
+                    var testDisplayName = "testContact";
+                    var customLabel = "myType";
+                    var testContactDetail = new ContactField(customLabel, "a", true);
+                    var contactFields = ["phoneNumbers", "emails", "urls", "ims"];
+                    var specContext = this;
+
+                    specContext.contactObj = new Contact();
+                    specContext.contactObj.nickname = testDisplayName;
+                    specContext.contactObj.displayName = testDisplayName;
+                    contactFields.forEach(function(contactField) {
+                        specContext.contactObj[contactField] = [];
+                        specContext.contactObj[contactField][0] = testContactDetail;
+                    });
+                    specContext.contactObj.addresses = [];
+                    specContext.contactObj.addresses[0]  = new ContactAddress(true, customLabel, "a", "b", "c", "d", "e", "f");
+                    var checkTypes = function(contact) {
+                        var allFieldsWithCustomLabel = contactFields.concat(["addresses"]);
+                        return allFieldsWithCustomLabel.every(function(contactField) {
+                            return contact[contactField] && contact[contactField][0].type === customLabel;
+                        });
+                    };
+                    var win = function(contactResult) {
+                        expect(contactResult.length > 0).toBe(true);
+                        var typesCustomized = contactResult.every(function(contact) {
+                            return checkTypes(contact);
+                        });
+                        expect(typesCustomized).toBe(true);
+                        done();
+                    };
+                    var onSuccessSave = function(savedContact) {
+                        expect(checkTypes(savedContact)).toBe(true);
+                        specContext.contactObj = savedContact;
+                        var options = new ContactFindOptions();
+                        options.filter = testDisplayName;
+                        options.multiple = true;
+                        navigator.contacts.find(["displayName", "nickname"], win, fail.bind(null, done), options);
+                    };
+                    specContext.contactObj.save(onSuccessSave, fail.bind(null, done));
+                });
             });
         });
 

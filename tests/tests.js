@@ -348,6 +348,9 @@ exports.defineAutoTests = function() {
                 });
 
                 it('spec 7.4 contact detail type should equal default label', function(done) {
+                    if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
+                        pending();
+                    }
                     var specContext = this;
                     specContext.contactObj = navigator.contacts.create({
                         "displayName": "test name",

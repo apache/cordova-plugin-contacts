@@ -346,6 +346,25 @@ exports.defineAutoTests = function() {
                     };
                     specContext.contactObj.save(onSuccessSave, fail.bind(null, done));
                 });
+
+                it('spec 7.4 contact detail type should equal default label', function(done) {
+                    var specContext = this;
+                    specContext.contactObj = navigator.contacts.create({
+                        "displayName": "test name",
+                        "ims": [{
+                            "type": "SKYPE",
+                            "value": "000"
+                        }]
+                    });
+                    specContext.contactObj.save(onSuccessSave, fail.bind(null, done));
+                    function onSuccessSave(savedContact) {
+                        specContext.contactObj = savedContact;
+                        var imsType = savedContact.ims[0].type;
+                        var expectedType = (cordova.platformId == 'android') ? "Skype" : "skype";
+                        expect(imsType).toBe(expectedType);
+                        done();
+                    }
+                });
             });
         });
 
@@ -769,7 +788,7 @@ exports.defineAutoTests = function() {
                     expect(found.birthday).toEqual(jasmine.any(Date));
                     expect(found.birthday).toEqual(bDay);
                     done();
-                }, done, this);
+                }, this);
             }, MEDIUM_TIMEOUT);
 
             it("contacts.spec.32 Find should return a contact with correct IM field", function(done) {
@@ -791,11 +810,11 @@ exports.defineAutoTests = function() {
                     expect(found.ims).toEqual(jasmine.any(Array));
                     expect(found.ims[0]).toBeDefined();
                     if (found.ims[0]) {
-                        expect(found.ims[0].type).toEqual(ims[0].type);
+                        expect(found.ims[0].type).toEqual(cordova.platformId == 'android' ? ims[0].type : ims[0].type.toLowerCase());
                         expect(found.ims[0].value).toEqual(ims[0].value);
                     }
                     done();
-                }, done, this);
+                }, this);
             }, MEDIUM_TIMEOUT);
         });
 

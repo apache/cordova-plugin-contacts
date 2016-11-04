@@ -1722,7 +1722,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 Base64InputStream base64InputStream = new Base64InputStream(byteArrayInputStream, Base64.DEFAULT);
                 return base64InputStream;
             } else {
-                Log.w(LOG_TAG, "Could not decode image. The found base encoding is " + baseEncoding);
+                LOG.d(LOG_TAG, "Could not decode image. The found base encoding is " + baseEncoding);
             }
         }  
         if (path.startsWith("content:")) {

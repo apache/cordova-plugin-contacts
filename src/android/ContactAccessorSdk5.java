@@ -61,7 +61,8 @@ import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.CommonDataKinds.Website;
 import android.provider.ContactsContract.CommonDataKinds.Im;
 import android.text.TextUtils;
-
+import android.util.Base64;
+import android.util.Base64InputStream;
 /**
  * An implementation of {@link ContactAccessor} that uses current Contacts API.
  * This class should be used on Eclair or beyond, but would not work on any earlier

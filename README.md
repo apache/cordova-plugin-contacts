@@ -27,6 +27,8 @@ description: Manage the contacts on the device.
 
 # cordova-plugin-contacts
 
+:warning: This plugin is SUPPORTED by OutSystems. Customers entitled to Support Services may obtain assistance through Support.
+
 This plugin defines a global `navigator.contacts` object, which provides access to the device contacts database.
 
 Although the object is attached to the global scoped `navigator`, it is not available until after the `deviceready` event.

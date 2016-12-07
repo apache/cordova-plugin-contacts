@@ -281,6 +281,93 @@ exports.defineAutoTests = function() {
                     };
                     specContext.contactObj.save(onSuccessSave, fail.bind(null, done));
                 });
+                it("contacts.spec.7.2 should find contact despite id isn't string ", function(done) {
+                    if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
+                        pending();
+                    }
+                    var testDisplayName = "testContact";
+                    var specContext = this;
+                    specContext.contactObj = new Contact();
+                    specContext.contactObj.displayName = testDisplayName;
+                    var win = function(contactResult) {
+                        expect(contactResult.length > 0).toBe(true);
+                        done();
+                    };
+                    var onSuccessSave = function(savedContact) {
+                        specContext.contactObj = savedContact;
+                        var options = new ContactFindOptions();
+                        options.filter = savedContact.id;
+                        options.multiple = true;
+                        navigator.contacts.find(["id"], win, fail.bind(null, done), options);
+                    };
+                    specContext.contactObj.save(onSuccessSave, fail.bind(null, done));
+                });
+
+                it("contacts.spec.7.3 should contain custom label in type", function(done) {
+                    if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
+                        pending();
+                    }
+                    var testDisplayName = "testContact";
+                    var customLabel = "myType";
+                    var testContactDetail = new ContactField(customLabel, "a", true);
+                    var contactFields = ["phoneNumbers", "emails", "urls", "ims"];
+                    var specContext = this;
+
+                    specContext.contactObj = new Contact();
+                    specContext.contactObj.nickname = testDisplayName;
+                    specContext.contactObj.displayName = testDisplayName;
+                    contactFields.forEach(function(contactField) {
+                        specContext.contactObj[contactField] = [];
+                        specContext.contactObj[contactField][0] = testContactDetail;
+                    });
+                    specContext.contactObj.addresses = [];
+                    specContext.contactObj.addresses[0]  = new ContactAddress(true, customLabel, "a", "b", "c", "d", "e", "f");
+                    var checkTypes = function(contact) {
+                        var allFieldsWithCustomLabel = contactFields.concat(["addresses"]);
+                        return allFieldsWithCustomLabel.every(function(contactField) {
+                            return contact[contactField] && contact[contactField][0].type === customLabel;
+                        });
+                    };
+                    var win = function(contactResult) {
+                        expect(contactResult.length > 0).toBe(true);
+                        var typesCustomized = contactResult.every(function(contact) {
+                            return checkTypes(contact);
+                        });
+                        expect(typesCustomized).toBe(true);
+                        done();
+                    };
+                    var onSuccessSave = function(savedContact) {
+                        expect(checkTypes(savedContact)).toBe(true);
+                        specContext.contactObj = savedContact;
+                        var options = new ContactFindOptions();
+                        options.filter = testDisplayName;
+                        options.multiple = true;
+                        navigator.contacts.find(["displayName", "nickname"], win, fail.bind(null, done), options);
+                    };
+                    specContext.contactObj.save(onSuccessSave, fail.bind(null, done));
+                });
+
+                it('spec 7.4 contact detail type should equal default label', function(done) {
+                    if (isWindows || isWindowsPhone8 || isIOSPermissionBlocked) {
+                        pending();
+                    }
+                    var specContext = this;
+                    specContext.contactObj = navigator.contacts.create({
+                        "displayName": "test name",
+                        "ims": [{
+                            "type": "SKYPE",
+                            "value": "000"
+                        }]
+                    });
+                    specContext.contactObj.save(onSuccessSave, fail.bind(null, done));
+                    function onSuccessSave(savedContact) {
+                        specContext.contactObj = savedContact;
+                        var imsType = savedContact.ims[0].type;
+                        var expectedType = (cordova.platformId == 'android') ? "Skype" : "skype";
+                        expect(imsType).toBe(expectedType);
+                        done();
+                    }
+                });
             });
         });
 
@@ -704,7 +791,7 @@ exports.defineAutoTests = function() {
                     expect(found.birthday).toEqual(jasmine.any(Date));
                     expect(found.birthday).toEqual(bDay);
                     done();
-                }, done, this);
+                }, this);
             }, MEDIUM_TIMEOUT);
 
             it("contacts.spec.32 Find should return a contact with correct IM field", function(done) {
@@ -726,11 +813,11 @@ exports.defineAutoTests = function() {
                     expect(found.ims).toEqual(jasmine.any(Array));
                     expect(found.ims[0]).toBeDefined();
                     if (found.ims[0]) {
-                        expect(found.ims[0].type).toEqual(ims[0].type);
+                        expect(found.ims[0].type).toEqual(cordova.platformId == 'android' ? ims[0].type : ims[0].type.toLowerCase());
                         expect(found.ims[0].value).toEqual(ims[0].value);
                     }
                     done();
-                }, done, this);
+                }, this);
             }, MEDIUM_TIMEOUT);
         });
 

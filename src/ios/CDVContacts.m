@@ -330,7 +330,9 @@
             NSArray* desiredFields = nil;
             if (![findOptions isKindOfClass:[NSNull class]]) {
                 id value = nil;
-                filter = (NSString*)[findOptions objectForKey:@"filter"];
+                id filterValue = [findOptions objectForKey:@"filter"];
+                BOOL filterValueIsNumber = [filterValue isKindOfClass:[NSNumber class]];
+                filter = filterValueIsNumber ? [filterValue stringValue] : (NSString *) filterValue;
                 value = [findOptions objectForKey:@"multiple"];
                 if ([value isKindOfClass:[NSNumber class]]) {
                     // multiple is a boolean that will come through as an NSNumber

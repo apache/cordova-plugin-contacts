@@ -60,13 +60,17 @@ describe('Contacts Android', function () {
 
     function getDriver() {
         driver = wdHelper.getDriver(PLATFORM);
-        return driver.getWebviewContext()
+        return wdHelper.getWebviewContext(driver, 2)
             .then(function(context) {
                 webviewContext = context;
                 return driver.context(webviewContext);
             })
-            .waitForDeviceReady()
-            .injectLibraries();
+            .then(function(driver) {
+                return wdHelper.waitForDeviceReady(driver);
+            })
+            .then(function(driver) {
+                return wdHelper.injectLibraries(driver);
+            });
     }
 
     function addContact(firstName, lastName, bday) {

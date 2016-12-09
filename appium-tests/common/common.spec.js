@@ -37,7 +37,7 @@ var MINUTE = 60 * 1000;
 var PLATFORM = global.PLATFORM;
 var UNORM = global.UNORM;
 
-describe('Contacts Android', function () {
+describe('Contacts UI Automation Tests', function () {
     var driver;
     var webviewContext;
     var promiseCount = 0;
@@ -232,7 +232,14 @@ describe('Contacts Android', function () {
         }
     }
 
-    it('contacts.ui.util configuring driver and starting a session', function (done) {
+    afterAll(function (done) {
+        checkSession(done);
+        driver
+            .quit()
+            .done(done);
+    }, MINUTE);
+
+    it('should connect to an appium endpoint properly', function (done) {
         getDriver()
             .then(function () {
                 failedToStart = false;
@@ -335,11 +342,4 @@ describe('Contacts Android', function () {
                 .done(done);
         }, 5 * MINUTE);
     });
-
-    it('contacts.ui.util Destroy the session', function (done) {
-        checkSession(done);
-        driver
-            .quit()
-            .done(done);
-    }, 5 * MINUTE);
 });

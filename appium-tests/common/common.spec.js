@@ -65,10 +65,10 @@ describe('Contacts Android', function () {
                 webviewContext = context;
                 return driver.context(webviewContext);
             })
-            .then(function(driver) {
+            .then(function() {
                 return wdHelper.waitForDeviceReady(driver);
             })
-            .then(function(driver) {
+            .then(function() {
                 return wdHelper.injectLibraries(driver);
             });
     }

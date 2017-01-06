@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.lang.IllegalArgumentException;
 
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.LOG;
@@ -230,11 +231,13 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             columnsToFetch.add(CommonDataKinds.Phone._ID);
             columnsToFetch.add(CommonDataKinds.Phone.NUMBER);
             columnsToFetch.add(CommonDataKinds.Phone.TYPE);
+            columnsToFetch.add(CommonDataKinds.Phone.LABEL);
         }
         if (isRequired("emails", populate)) {
             columnsToFetch.add(CommonDataKinds.Email._ID);
             columnsToFetch.add(CommonDataKinds.Email.DATA);
             columnsToFetch.add(CommonDataKinds.Email.TYPE);
+            columnsToFetch.add(CommonDataKinds.Email.LABEL);
         }
         if (isRequired("addresses", populate)) {
             columnsToFetch.add(CommonDataKinds.StructuredPostal._ID);
@@ -245,6 +248,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             columnsToFetch.add(CommonDataKinds.StructuredPostal.REGION);
             columnsToFetch.add(CommonDataKinds.StructuredPostal.POSTCODE);
             columnsToFetch.add(CommonDataKinds.StructuredPostal.COUNTRY);
+            columnsToFetch.add(CommonDataKinds.StructuredPostal.LABEL);
         }
         if (isRequired("organizations", populate)) {
             columnsToFetch.add(CommonDataKinds.Organization._ID);
@@ -252,6 +256,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             columnsToFetch.add(CommonDataKinds.Organization.DEPARTMENT);
             columnsToFetch.add(CommonDataKinds.Organization.COMPANY);
             columnsToFetch.add(CommonDataKinds.Organization.TITLE);
+            columnsToFetch.add(CommonDataKinds.Organization.LABEL);
         }
         if (isRequired("ims", populate)) {
             columnsToFetch.add(CommonDataKinds.Im._ID);
@@ -268,6 +273,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             columnsToFetch.add(CommonDataKinds.Website._ID);
             columnsToFetch.add(CommonDataKinds.Website.URL);
             columnsToFetch.add(CommonDataKinds.Website.TYPE);
+            columnsToFetch.add(CommonDataKinds.Website.LABEL);
         }
         if (isRequired("birthday", populate)) {
             columnsToFetch.add(CommonDataKinds.Event.START_DATE);
@@ -777,17 +783,19 @@ public class ContactAccessorSdk5 extends ContactAccessor {
     */
     private JSONObject organizationQuery(Cursor cursor) {
         JSONObject organization = new JSONObject();
-        int typeCode = cursor.getInt(cursor.getColumnIndex(Organization.TYPE));
-        String typeLabel = cursor.getString(cursor.getColumnIndex(Organization.LABEL));
-        String type = (typeCode == Organization.TYPE_CUSTOM) ? typeLabel : getOrgType(typeCode);
         try {
-            organization.put("id", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Organization._ID)));
+            int typeCode = cursor.getInt(cursor.getColumnIndexOrThrow(Organization.TYPE));
+            String typeLabel = cursor.getString(cursor.getColumnIndexOrThrow(Organization.LABEL));
+            String type = (typeCode == Organization.TYPE_CUSTOM) ? typeLabel : getOrgType(typeCode);
+            organization.put("id", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.Organization._ID)));
             organization.put("pref", false); // Android does not store pref attribute
             organization.put("type", type);
-            organization.put("department", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Organization.DEPARTMENT)));
-            organization.put("name", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Organization.COMPANY)));
-            organization.put("title", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Organization.TITLE)));
+            organization.put("department", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.Organization.DEPARTMENT)));
+            organization.put("name", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.Organization.COMPANY)));
+            organization.put("title", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.Organization.TITLE)));
         } catch (JSONException e) {
+            LOG.e(LOG_TAG, e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
             LOG.e(LOG_TAG, e.getMessage(), e);
         }
         return organization;
@@ -800,20 +808,22 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      */
     private JSONObject addressQuery(Cursor cursor) {
         JSONObject address = new JSONObject();
-        int typeCode = cursor.getInt(cursor.getColumnIndex(StructuredPostal.TYPE));
-        String typeLabel = cursor.getString(cursor.getColumnIndex(StructuredPostal.LABEL));
-        String type = (typeCode == StructuredPostal.TYPE_CUSTOM) ? typeLabel : getAddressType(typeCode);
         try {
-            address.put("id", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredPostal._ID)));
+            int typeCode = cursor.getInt(cursor.getColumnIndexOrThrow(StructuredPostal.TYPE));
+            String typeLabel = cursor.getString(cursor.getColumnIndexOrThrow(StructuredPostal.LABEL));
+            String type = (typeCode == StructuredPostal.TYPE_CUSTOM) ? typeLabel : getAddressType(typeCode);
+            address.put("id", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.StructuredPostal._ID)));
             address.put("pref", false); // Android does not store pref attribute
             address.put("type", type);
-            address.put("formatted", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS)));
-            address.put("streetAddress", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredPostal.STREET)));
-            address.put("locality", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredPostal.CITY)));
-            address.put("region", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredPostal.REGION)));
-            address.put("postalCode", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredPostal.POSTCODE)));
-            address.put("country", cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredPostal.COUNTRY)));
+            address.put("formatted", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS)));
+            address.put("streetAddress", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.StructuredPostal.STREET)));
+            address.put("locality", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.StructuredPostal.CITY)));
+            address.put("region", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.StructuredPostal.REGION)));
+            address.put("postalCode", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.StructuredPostal.POSTCODE)));
+            address.put("country", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.StructuredPostal.COUNTRY)));
         } catch (JSONException e) {
+            LOG.e(LOG_TAG, e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
             LOG.e(LOG_TAG, e.getMessage(), e);
         }
         return address;
@@ -827,11 +837,11 @@ public class ContactAccessorSdk5 extends ContactAccessor {
     private JSONObject nameQuery(Cursor cursor) {
         JSONObject contactName = new JSONObject();
         try {
-            String familyName = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.FAMILY_NAME));
-            String givenName = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.GIVEN_NAME));
-            String middleName = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.MIDDLE_NAME));
-            String honorificPrefix = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.PREFIX));
-            String honorificSuffix = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredName.SUFFIX));
+            String familyName = cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.StructuredName.FAMILY_NAME));
+            String givenName = cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.StructuredName.GIVEN_NAME));
+            String middleName = cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.StructuredName.MIDDLE_NAME));
+            String honorificPrefix = cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.StructuredName.PREFIX));
+            String honorificSuffix = cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.StructuredName.SUFFIX));
 
             // Create the formatted name
             StringBuffer formatted = new StringBuffer("");
@@ -862,6 +872,8 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             contactName.put("formatted", formatted);
         } catch (JSONException e) {
             LOG.e(LOG_TAG, e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            LOG.e(LOG_TAG, e.getMessage(), e);
         }
         return contactName;
     }
@@ -873,15 +885,17 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      */
     private JSONObject phoneQuery(Cursor cursor) {
         JSONObject phoneNumber = new JSONObject();
-        int typeCode = cursor.getInt(cursor.getColumnIndex(Phone.TYPE));
-        String typeLabel = cursor.getString(cursor.getColumnIndex(Phone.LABEL));
-        String type = (typeCode == Phone.TYPE_CUSTOM) ? typeLabel : getPhoneType(typeCode);
         try {
-            phoneNumber.put("id", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Phone._ID)));
+            int typeCode = cursor.getInt(cursor.getColumnIndexOrThrow(Phone.TYPE));
+            String typeLabel = cursor.getString(cursor.getColumnIndexOrThrow(Phone.LABEL));
+            String type = (typeCode == Phone.TYPE_CUSTOM) ? typeLabel : getPhoneType(typeCode);
+            phoneNumber.put("id", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.Phone._ID)));
             phoneNumber.put("pref", false); // Android does not store pref attribute
-            phoneNumber.put("value", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Phone.NUMBER)));
+            phoneNumber.put("value", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.Phone.NUMBER)));
             phoneNumber.put("type",type);
         } catch (JSONException e) {
+            LOG.e(LOG_TAG, e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
             LOG.e(LOG_TAG, e.getMessage(), e);
         } catch (Exception excp) {
             LOG.e(LOG_TAG, excp.getMessage(), excp);
@@ -896,15 +910,17 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      */
     private JSONObject emailQuery(Cursor cursor) {
         JSONObject email = new JSONObject();
-        int typeCode = cursor.getInt(cursor.getColumnIndex(Email.TYPE));
-        String typeLabel = cursor.getString(cursor.getColumnIndex(Email.LABEL));
-        String type = (typeCode == Email.TYPE_CUSTOM) ? typeLabel : getContactType(typeCode);
         try {
-            email.put("id", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Email._ID)));
+            int typeCode = cursor.getInt(cursor.getColumnIndexOrThrow(Email.TYPE));
+            String typeLabel = cursor.getString(cursor.getColumnIndexOrThrow(Email.LABEL));
+            String type = (typeCode == Email.TYPE_CUSTOM) ? typeLabel : getContactType(typeCode);
+            email.put("id", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.Email._ID)));
             email.put("pref", false); // Android does not store pref attribute
-            email.put("value", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Email.DATA)));
+            email.put("value", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.Email.DATA)));
             email.put("type", type);
         } catch (JSONException e) {
+            LOG.e(LOG_TAG, e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
             LOG.e(LOG_TAG, e.getMessage(), e);
         }
         return email;
@@ -918,19 +934,21 @@ public class ContactAccessorSdk5 extends ContactAccessor {
     private JSONObject imQuery(Cursor cursor) {
         JSONObject im = new JSONObject();
         try {
-            im.put("id", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im._ID)));
+            im.put("id", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.Im._ID)));
             im.put("pref", false); // Android does not store pref attribute
-            im.put("value", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im.DATA)));
-            String protocol = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im.PROTOCOL));
+            im.put("value", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.Im.DATA)));
+            String protocol = cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.Im.PROTOCOL));
             if (!isInteger(protocol) || Integer.parseInt(protocol) == CommonDataKinds.Im.PROTOCOL_CUSTOM) {
                 // the protocol is custom, get its name and put it into JSON
-                protocol = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Im.CUSTOM_PROTOCOL));
+                protocol = cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.Im.CUSTOM_PROTOCOL));
                 im.put("type", protocol);
             } else {
                 // (the protocol is one of the standard ones) look up its type and then put it into JSON
                 im.put("type", getImType(Integer.parseInt(protocol)));
             }
         } catch (JSONException e) {
+            LOG.e(LOG_TAG, e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
             LOG.e(LOG_TAG, e.getMessage(), e);
         }
         return im;
@@ -943,15 +961,17 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      */
     private JSONObject websiteQuery(Cursor cursor) {
         JSONObject website = new JSONObject();
-        int typeCode = cursor.getInt(cursor.getColumnIndex(Website.TYPE));
-        String typeLabel = cursor.getString(cursor.getColumnIndex(Website.LABEL));
-        String type = (typeCode == Website.TYPE_CUSTOM) ? typeLabel : getContactType(typeCode);
         try {
-            website.put("id", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Website._ID)));
+            int typeCode = cursor.getInt(cursor.getColumnIndexOrThrow(Website.TYPE));
+            String typeLabel = cursor.getString(cursor.getColumnIndexOrThrow(Website.LABEL));
+            String type = (typeCode == Website.TYPE_CUSTOM) ? typeLabel : getContactType(typeCode);
+            website.put("id", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.Website._ID)));
             website.put("pref", false); // Android does not store pref attribute
-            website.put("value", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Website.URL)));
+            website.put("value", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.Website.URL)));
             website.put("type", type);
         } catch (JSONException e) {
+            LOG.e(LOG_TAG, e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
             LOG.e(LOG_TAG, e.getMessage(), e);
         }
         return website;
@@ -966,7 +986,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         JSONObject photo = new JSONObject();
         Cursor photoCursor = null;
         try {
-            photo.put("id", cursor.getString(cursor.getColumnIndex(CommonDataKinds.Photo._ID)));
+            photo.put("id", cursor.getString(cursor.getColumnIndexOrThrow(CommonDataKinds.Photo._ID)));
             photo.put("pref", false);
             photo.put("type", "url");
             Uri person = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, (Long.valueOf(contactId)));
@@ -984,6 +1004,8 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         } catch (JSONException e) {
             LOG.e(LOG_TAG, e.getMessage(), e);
         } catch (SQLiteException e) {
+            LOG.e(LOG_TAG, e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
             LOG.e(LOG_TAG, e.getMessage(), e);
         } finally {
             if(photoCursor != null && !photoCursor.isClosed()) {
@@ -1932,9 +1954,9 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      * the value can't be parsed into valid date object
      */
     private Date getBirthday(Cursor c) {
-        int colBirthday = c.getColumnIndex(CommonDataKinds.Event.START_DATE);
 
         try {
+            int colBirthday = c.getColumnIndexOrThrow(CommonDataKinds.Event.START_DATE);
             return Date.valueOf(c.getString(colBirthday));
         } catch (IllegalArgumentException e) {
             LOG.e(LOG_TAG, "Failed to get birthday for contact from cursor", e);

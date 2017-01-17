@@ -150,7 +150,7 @@ exports.defineAutoTests = function() {
                     }
                 }
                 navigator.contacts.find(["displayName", "name", "phoneNumbers", "emails"], win, failed, obj);
-            });
+            }, HIGH_TIMEOUT); // give permission buster or a user a chance to accept the permission alert
 
             it("contacts.spec.4 success callback should be called with an array, even if partial ContactFindOptions specified", function(done) {
                 // Find method is not supported on Windows platform

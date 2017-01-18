@@ -213,14 +213,14 @@
     <!-- Windows 8 -->
     <platform name="windows8">
         <js-module src="src/windows8/ContactProxy.js" name="ContactProxy">
-            <merges target="" />
+            <runs />
         </js-module>
     </platform>
 
     <!-- Windows -->
     <platform name="windows">
         <js-module src="src/windows/ContactProxy.js" name="ContactProxy">
-            <merges target="" />
+            <runs />
         </js-module>
         <config-file target="package.phone.appxmanifest" parent="/Package/Capabilities">
             <m3:Capability Name="contacts" />

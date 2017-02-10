@@ -336,10 +336,6 @@ describe('Contacts UI Automation Tests', function () {
                 .then(function () {
                     return renameContact('Dooney Evans', 'Urist', 'McContact');
                 })
-                .then(function (contact) {
-                    expect(contact.name.givenName).toBe('Urist');
-                    expect(contact.name.familyName).toBe('McContact');
-                })
                 .then(function () {
                     return pickContact('Urist McContact');
                 })

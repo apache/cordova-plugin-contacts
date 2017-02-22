@@ -738,6 +738,15 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             }
         }
 
+        if (where.size() > 0) {
+            selection.insert(0, "(");
+            selection.append(") AND (" + ContactsContract.Contacts.IN_VISIBLE_GROUP + " = ?)");
+            whereArgs.add("1");
+        } else {
+            selection.append("(" + ContactsContract.Contacts.IN_VISIBLE_GROUP + " = ?");
+            whereArgs.add("1");
+        }
+
         options.setWhere(selection.toString());
 
         // Creating the where args array

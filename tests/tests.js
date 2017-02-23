@@ -209,6 +209,8 @@ exports.defineAutoTests = function() {
                         pending();
                     }
 
+                    fail('intentionally failed to check if CI correctly picks up changes');
+
                     var specContext = this;
                     specContext.contactObj = new Contact();
                     specContext.contactObj.name = new ContactName();

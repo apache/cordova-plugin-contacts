@@ -20,6 +20,17 @@
 -->
 # Release Notes
 
+### 2.2.2 (Feb 28, 2017)
+* [CB-12326](https://issues.apache.org/jira/browse/CB-12326) **Android:** `CommonDataKinds.*.LABEL`
+* [CB-8076](https://issues.apache.org/jira/browse/CB-8076) Provide error support for **browser** platform
+* [CB-12445](https://issues.apache.org/jira/browse/CB-12445) (Appium) Removed double check for contact's name
+* [CB-12353](https://issues.apache.org/jira/browse/CB-12353) Corrected merges usage in `plugin.xml`
+* [CB-12369](https://issues.apache.org/jira/browse/CB-12369) Add plugin typings from `DefinitelyTyped`
+* [CB-12363](https://issues.apache.org/jira/browse/CB-12363) Added build badges for **iOS 9.3** and ** iOS 10.0**
+* [CB-12357](https://issues.apache.org/jira/browse/CB-12357) Tests give user some time to accept the permission alert
+* [CB-12300](https://issues.apache.org/jira/browse/CB-12300) fix tests failure when running it using `jasmine-node`
+* [CB-12230](https://issues.apache.org/jira/browse/CB-12230) Removed **Windows 8.1** build badges
+
 ### 2.2.1 (Dec 07, 2016)
 * [CB-12224](https://issues.apache.org/jira/browse/CB-12224) Updated version and RELEASENOTES.md for release 2.2.1
 * [CB-11541](https://issues.apache.org/jira/browse/CB-11541) Pended one unsupported test on Windows

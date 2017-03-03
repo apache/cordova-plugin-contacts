@@ -20,7 +20,7 @@
 -->
 # Release Notes
 
-### 2.2.2 (Feb 28, 2017)
+### 2.3.0 (Feb 28, 2017)
 * [CB-12326](https://issues.apache.org/jira/browse/CB-12326) **Android:** `CommonDataKinds.*.LABEL`
 * [CB-8076](https://issues.apache.org/jira/browse/CB-8076) Provide error support for **browser** platform
 * [CB-12445](https://issues.apache.org/jira/browse/CB-12445) (Appium) Removed double check for contact's name

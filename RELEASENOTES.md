@@ -20,6 +20,13 @@
 -->
 # Release Notes
 
+### 2.3.1 (Apr 27, 2017)
+* [CB-12622](https://issues.apache.org/jira/browse/CB-12622) Added **Android 6.0** build badge to `README`
+* [CB-10496](https://issues.apache.org/jira/browse/CB-10496) (android) now support data: URIs to save photo for contact by image data base64 encoded
+* [CB-12685](https://issues.apache.org/jira/browse/CB-12685) added `package.json` to tests folder
+* [CB-12622](https://issues.apache.org/jira/browse/CB-12622) (android) Adapt Appium tests for **Android** 6 and 7
+* [CB-10784](https://issues.apache.org/jira/browse/CB-10784) CDVContactsPicker finish animating before callback
+
 ### 2.3.0 (Feb 28, 2017)
 * [CB-12326](https://issues.apache.org/jira/browse/CB-12326) **Android:** `CommonDataKinds.*.LABEL`
 * [CB-8076](https://issues.apache.org/jira/browse/CB-8076) Provide error support for **browser** platform

@@ -79,10 +79,10 @@
         recordId = ABRecordGetRecordID(person);
     }
 
-    [[newPersonViewController presentingViewController] dismissViewControllerAnimated:YES completion:nil];
-
-    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:recordId];
-    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+    [[newPersonViewController presentingViewController] dismissViewControllerAnimated:YES completion:^{
+     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:recordId];
+     [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+    }];
 }
 
 - (bool)existsValue:(NSDictionary*)dict val:(NSString*)expectedValue forKey:(NSString*)key
@@ -253,18 +253,17 @@
         CFRelease(addrBook);
     }
     
-    CDVPluginResult* result = nil;
     NSNumber* recordId = picker.pickedContactDictionary[kW3ContactId];
     
-    if ([recordId isEqualToNumber:[NSNumber numberWithInt:kABRecordInvalidID]]) {
-        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsInt:OPERATION_CANCELLED_ERROR] ;
-    } else {
-        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:picker.pickedContactDictionary];
-    }
-    
-    [self.commandDelegate sendPluginResult:result callbackId:picker.callbackId];
-
-    [[peoplePicker presentingViewController] dismissViewControllerAnimated:YES completion:nil];
+    [[peoplePicker presentingViewController] dismissViewControllerAnimated:YES completion:^{
+        CDVPluginResult* result = nil;
+        if ([recordId isEqualToNumber:[NSNumber numberWithInt:kABRecordInvalidID]]) {
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsInt:OPERATION_CANCELLED_ERROR] ;
+        } else {
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:picker.pickedContactDictionary];
+        }
+        [self.commandDelegate sendPluginResult:result callbackId:picker.callbackId];
+    }];
 }
 
 // Called after a person has been selected by the user.
@@ -289,10 +288,10 @@
         NSDictionary* returnFields = [[CDVContact class] calcReturnFields:fields];
         picker.pickedContactDictionary = [pickedContact toDictionary:returnFields];
         
-        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:picker.pickedContactDictionary];
-        [self.commandDelegate sendPluginResult:result callbackId:picker.callbackId];
-        
-        [[picker presentingViewController] dismissViewControllerAnimated:YES completion:nil];
+        [[picker presentingViewController] dismissViewControllerAnimated:YES completion:^{
+            CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:picker.pickedContactDictionary];
+            [self.commandDelegate sendPluginResult:result callbackId:picker.callbackId];
+        }];
     }
 }
 

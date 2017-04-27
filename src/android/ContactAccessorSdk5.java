@@ -19,6 +19,7 @@
 
 package org.apache.cordova.contacts;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -61,7 +62,8 @@ import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.CommonDataKinds.Website;
 import android.provider.ContactsContract.CommonDataKinds.Im;
 import android.text.TextUtils;
-
+import android.util.Base64;
+import android.util.Base64InputStream;
 /**
  * An implementation of {@link ContactAccessor} that uses current Contacts API.
  * This class should be used on Eclair or beyond, but would not work on any earlier
@@ -1709,6 +1711,21 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      * @throws IOException
      */
     private InputStream getPathFromUri(String path) throws IOException {
+        if (path.startsWith("data:")) { // data:image/png;base64,[ENCODED_IMAGE]
+            String dataInfos = path.substring(0, path.indexOf(','));
+            dataInfos = dataInfos.substring(dataInfos.indexOf(':') + 1);
+            String baseEncoding = dataInfos.substring(dataInfos.indexOf(';') + 1);
+            // [ENCODED_IMAGE]
+            if("base64".equalsIgnoreCase(baseEncoding)) {
+                String img = path.substring(path.indexOf(',') + 1); 
+                byte[] encodedData = img.getBytes();
+                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(encodedData, 0, encodedData.length);
+                Base64InputStream base64InputStream = new Base64InputStream(byteArrayInputStream, Base64.DEFAULT);
+                return base64InputStream;
+            } else {
+                LOG.d(LOG_TAG, "Could not decode image. The found base encoding is " + baseEncoding);
+            }
+        }  
         if (path.startsWith("content:")) {
             Uri uri = Uri.parse(path);
             return mApp.getActivity().getContentResolver().openInputStream(uri);

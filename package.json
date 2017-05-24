@@ -21,6 +21,9 @@
     "type": "git",
     "url": "https://github.com/apache/cordova-plugin-contacts"
   },
+  "bugs": {
+    "url": "https://github.com/apache/cordova-website/issues"
+  },
   "keywords": [
     "cordova",
     "contacts",

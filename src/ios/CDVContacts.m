@@ -301,6 +301,19 @@
     // not implemented
 }
 
+NSString *ReplaceSpecialChars(NSString *inputString)
+{
+    NSString* returnString = inputString != nil ? inputString : @"";
+    if(inputString != [NSNull null] && [inputString length] > 0){
+        NSArray *split = [inputString componentsSeparatedByCharactersInSet:[[NSCharacterSet letterCharacterSet]invertedSet]];
+        split = [split filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"length > 0"]];
+        NSString *res = [split componentsJoinedByString:@" "];
+        returnString = res;
+        
+    };
+    return returnString;
+}
+
 - (void)search:(CDVInvokedUrlCommand*)command
 {
     NSString* callbackId = command.callbackId;
@@ -392,7 +405,26 @@
                     for (int i = 0; i < count; i++) {
                         CDVContact* newContact = [matches objectAtIndex:i];
                         NSDictionary* aContact = [newContact toDictionary:returnFields];
-                        [returnContacts addObject:aContact];
+                        
+                        // Create a dictionarry that can be changed
+                        NSMutableDictionary *newaContact = [[NSMutableDictionary alloc] init];
+                        // Add the entries from aContact
+                        [newaContact addEntriesFromDictionary:aContact];
+                        // Create an inner dictionary based on the name fileds
+                        NSMutableDictionary *innerName = [newaContact[@"name"] mutableCopy];
+                        // Update name
+                        innerName[@"familyName"] = ReplaceSpecialChars(innerName[@"familyName"]);
+                        innerName[@"formatted"] = ReplaceSpecialChars(innerName[@"formatted"]);
+                        innerName[@"givenName"] = ReplaceSpecialChars(innerName[@"givenName"]);
+                        innerName[@"honorificPrefix"] = ReplaceSpecialChars(innerName[@"honorificPrefix"]);
+                        innerName[@"honorificSuffix"] = ReplaceSpecialChars(innerName[@"honorificSuffix"]);
+                        innerName[@"middleName"] = ReplaceSpecialChars(innerName[@"middleName"]);
+                        // Set name back into the original
+                        newaContact[@"name"] = innerName;
+                        // Update the contact at i with the updated contact
+                        [matches replaceObjectAtIndex:i withObject:newaContact];
+                        
+                        [returnContacts addObject:newaContact];
                     }
                 }
             }

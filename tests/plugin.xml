@@ -28,4 +28,9 @@
 
     <js-module src="tests.js" name="tests">
     </js-module>
+    <config-file target="*-Info.plist" parent="com.apple.private.tcc.allow.overridable">
+        <array>
+            <string>kTCCServiceAddressBook</string>
+        </array>
+    </config-file>
 </plugin>

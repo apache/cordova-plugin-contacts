@@ -247,7 +247,15 @@ describe('Contacts UI Automation Tests', function () {
     }, MINUTE);
 
     it('should connect to an appium endpoint properly', function (done) {
+        // retry up to 3 times
         getDriver()
+            .fail(function () {
+                return getDriver()
+                    .fail(function () {
+                        return getDriver()
+                            .fail(fail);
+                    });
+            })
             .then(function () {
                 failedToStart = false;
             }, fail)
@@ -318,7 +326,7 @@ describe('Contacts UI Automation Tests', function () {
                     });
             })
             .done(done);
-    }, 10 * MINUTE);
+    }, 30 * MINUTE);
 
     describe('Picking contacts', function () {
         afterEach(function (done) {

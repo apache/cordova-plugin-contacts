@@ -71,14 +71,19 @@ It is also possible to install via repo url directly ( unstable )
 
 ### iOS Quirks
 
-Since iOS 10 it's mandatory to add a `NSContactsUsageDescription` entry in the info.plist.
+Since iOS 10 it's mandatory to provide an usage description in the `info.plist` if trying to access privacy-sensitive data. When the system prompts the user to allow access, this usage description string will displayed as part of the permission dialog box, but if you didn't provide the usage description, the app will crash before showing the dialog. Also, Apple will reject apps that access private data but don't provide an usage description.
 
-`NSContactsUsageDescription` describes the reason that the app accesses the user’s contacts. When the system prompts the user to allow access, this string is displayed as part of the dialog box. To add this entry you can pass the variable `CONTACTS_USAGE_DESCRIPTION` on plugin install.
+ This plugins requires the following usage description:
 
-Example:
-`cordova plugin add cordova-plugin-contacts --variable CONTACTS_USAGE_DESCRIPTION="your usage message"`
+ * `NSContactsUsageDescription` describes the reason that the app accesses the user's contacts.
 
-If you don't pass the variable, the plugin will add an empty string as value.
+ To add this entry into the `info.plist`, you can use the `edit-config` tag in the `config.xml` like this:
+
+```
+<edit-config target="NSContactsUsageDescription" file="*-Info.plist" mode="merge">
+    <string>need contacts access to search friends</string>
+</edit-config>
+```
 
 ### Firefox OS Quirks
 

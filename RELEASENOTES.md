@@ -20,6 +20,15 @@
 -->
 # Release Notes
 
+### 3.0.0 (Nov 06, 2017)
+* [CB-13522](https://issues.apache.org/jira/browse/CB-13522) (iOS): Remove usage description
+* [CB-13521](https://issues.apache.org/jira/browse/CB-13521) (all): Add 'protective' entry to `cordovaDependencies`
+* [CB-13472](https://issues.apache.org/jira/browse/CB-13472) (CI) Fixed Travis **Android** builds again
+* [CB-13294](https://issues.apache.org/jira/browse/CB-13294) Remove `cordova-plugin-compat`
+* [CB-13299](https://issues.apache.org/jira/browse/CB-13299) (CI) Fix **Android** builds
+* [CB-12991](https://issues.apache.org/jira/browse/CB-12991) (CI) Updated CI badges
+* [CB-12847](https://issues.apache.org/jira/browse/CB-12847) added `bugs` entry to `package.json`.
+
 ### 2.3.1 (Apr 27, 2017)
 * [CB-12622](https://issues.apache.org/jira/browse/CB-12622) Added **Android 6.0** build badge to `README`
 * [CB-10496](https://issues.apache.org/jira/browse/CB-10496) (android) now support data: URIs to save photo for contact by image data base64 encoded

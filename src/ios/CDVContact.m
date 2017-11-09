@@ -463,6 +463,8 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
 /* Set MultiValue string properties into Address Book Record.
  * NSArray* fieldArray - array of dictionaries containing W3C properties to be set into record
  * ABPropertyID prop - the property to be set (generally used for phones and emails)
+ *   If set to -1, this property won't be set/updated (-1 is a special flag that indicates
+ *   that this property was fetched from linked contact and hence no need to save it into unified contact)
  * ABRecordRef  person - the record to set values into
  * BOOL bUpdate - whether or not to update date or set as new.
  *	When updating:
@@ -496,30 +498,39 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
                 NSString* label = nil;
                 val = [dict valueForKey:kW3ContactFieldValue];
                 label = (__bridge NSString*)[CDVContact convertContactTypeToPropertyLabel:[dict valueForKey:kW3ContactFieldType]];
-                if (IS_VALID_VALUE(val)) {
-                    // is an update,  find index of entry with matching id, if values are different, update.
-                    id idValue = [dict valueForKey:kW3ContactFieldId];
-                    int identifier = [idValue isKindOfClass:[NSNumber class]] ? [idValue intValue] : -1;
-                    CFIndex i = identifier >= 0 ? ABMultiValueGetIndexForIdentifier(multi, identifier) : kCFNotFound;
-                    if (i != kCFNotFound) {
-                        if ([val length] == 0) {
-                            // remove both value and label
-                            ABMultiValueRemoveValueAndLabelAtIndex(multi, i);
-                        } else {
-                            NSString* valueAB = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(multi, i);
-                            NSString* labelAB = (__bridge_transfer NSString*)ABMultiValueCopyLabelAtIndex(multi, i);
-                            if ((valueAB == nil) || ![val isEqualToString:valueAB]) {
-                                ABMultiValueReplaceValueAtIndex(multi, (__bridge CFTypeRef)val, i);
-                            }
-                            if ((labelAB == nil) || ![label isEqualToString:labelAB]) {
-                                ABMultiValueReplaceLabelAtIndex(multi, (__bridge CFStringRef)label, i);
-                            }
-                        }
+
+                if (!IS_VALID_VALUE(val)) continue;
+
+                // is an update,  find index of entry with matching id, if values are different, update.
+                id idValue = [dict valueForKey:kW3ContactFieldId];
+
+                if ([idValue isKindOfClass: [NSNumber class]] && [idValue intValue] == -1) {
+                    // A special case - when id == -1, do not save this field as it is fetched
+                    // from linked contact and cannot be saved into unified one
+                    continue;
+                }
+
+                int identifier = [idValue isKindOfClass:[NSNumber class]] ? [idValue intValue] : -1;
+                CFIndex i = identifier >= 0 ? ABMultiValueGetIndexForIdentifier(multi, identifier) : kCFNotFound;
+                if (i != kCFNotFound) {
+                    if ([val length] == 0) {
+                        // remove both value and label
+                        ABMultiValueRemoveValueAndLabelAtIndex(multi, i);
                     } else {
-                        // is a new value - insert
-                        [self addToMultiValue:multi fromDictionary:dict];
+                        NSString* valueAB = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(multi, i);
+                        NSString* labelAB = (__bridge_transfer NSString*)ABMultiValueCopyLabelAtIndex(multi, i);
+                        if ((valueAB == nil) || ![val isEqualToString:valueAB]) {
+                            ABMultiValueReplaceValueAtIndex(multi, (__bridge CFTypeRef)val, i);
+                        }
+                        if ((labelAB == nil) || ![label isEqualToString:labelAB]) {
+                            ABMultiValueReplaceLabelAtIndex(multi, (__bridge CFStringRef)label, i);
+                        }
                     }
-                } // end of if value
+                } else {
+                    // is a new value - insert
+                    [self addToMultiValue:multi fromDictionary:dict];
+                }
+
             } // end of for
         } else { // adding all new value(s)
             multi = [self allocStringMultiValueFromArray:fieldArray];
@@ -895,18 +906,18 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
     }
     // phoneNumbers array
     // NSLog(@"getting phoneNumbers");
-    value = [self extractMultiValue:kW3ContactPhoneNumbers];
+    value = [self extractMultiValue:kW3ContactPhoneNumbers andFetchLinkedContacts:YES];
     if (value != nil) {
         [nc setObject:value forKey:kW3ContactPhoneNumbers];
     }
     // emails array
     // NSLog(@"getting emails");
-    value = [self extractMultiValue:kW3ContactEmails];
+    value = [self extractMultiValue:kW3ContactEmails andFetchLinkedContacts:YES];
     if (value != nil) {
         [nc setObject:value forKey:kW3ContactEmails];
     }
     // urls array
-    value = [self extractMultiValue:kW3ContactUrls];
+    value = [self extractMultiValue:kW3ContactUrls andFetchLinkedContacts: YES];
     if (value != nil) {
         [nc setObject:value forKey:kW3ContactUrls];
     }
@@ -1058,33 +1069,46 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
     return newName;
 }
 
-/* Create array of Dictionaries to match JavaScript ContactField object for simple multiValue properties phoneNumbers, emails
+/* Creates array of Dictionaries to match JavaScript ContactField object for simple multiValue properties phoneNumbers, emails.
+ * If asked, also fetches specified property from all linked contacts. Items, fetched from linked contacts gets an id field set to -1
+ * which indicates that these fields must not be saved into contact, since they were gotten from linked contacts
  * Input: (NSString*) W3Contact Property name
+ *        (BOOL) should we look for corresponding values in linked contacts
  * type
- *		for phoneNumbers type is one of (work,home,other, mobile, fax, pager)
- *		for emails type is one of (work,home, other)
+ *      for phoneNumbers type is one of (work,home,other, mobile, fax, pager)
+ *      for emails type is one of (work,home, other)
  * value - phone number or email address
  * (bool) primary (not supported on iphone)
  * id
-*/
-- (NSObject*)extractMultiValue:(NSString*)propertyId
+ */
+- (NSObject*)extractMultiValue:(NSString*)propertyId andFetchLinkedContacts: (BOOL) doFetch
 {
     NSArray* fields = [self.returnFields objectForKey:propertyId];
 
     if (fields == nil) {
         return nil;
     }
-    ABMultiValueRef multi = nil;
-    NSObject* valuesArray = nil;
-    NSNumber* propNumber = [[CDVContact defaultW3CtoAB] valueForKey:propertyId];
-    ABPropertyID propId = [propNumber intValue];
-    multi = ABRecordCopyValue(self.record, propId);
-    // multi = ABRecordCopyValue(self.record, (ABPropertyID)[[[Contact defaultW3CtoAB] valueForKey:propertyId] intValue]);
-    CFIndex count = multi != nil ? ABMultiValueGetCount(multi) : 0;
-    id value;
-    if (count) {
-        valuesArray = [NSMutableArray arrayWithCapacity:count];
 
+    CFArrayRef linkedContacts = (doFetch) ?
+        ABPersonCopyArrayOfAllLinkedPeople(self.record) :
+        (__bridge CFArrayRef)([NSArray arrayWithObject:self.record]);
+
+    NSObject* valuesArray = [[NSMutableArray alloc] init];
+    ABPropertyID propId = [[[CDVContact defaultW3CtoAB] valueForKey:propertyId] intValue];
+
+    ABMultiValueRef multi;
+
+    CFIndex contactsCount = CFArrayGetCount(linkedContacts);
+    for (CFIndex i = 0; i < contactsCount; i++) {
+
+        ABRecordRef abRecord = CFArrayGetValueAtIndex(linkedContacts, i);
+        multi = ABRecordCopyValue(abRecord, propId);
+        CFIndex count = multi != nil ? ABMultiValueGetCount(multi) : 0;
+
+        // No phoneNumbers for this contacts - skip this iteration
+        if (!count) continue;
+
+        id value;
         for (CFIndex i = 0; i < count; i++) {
             NSMutableDictionary* newDict = [NSMutableDictionary dictionaryWithCapacity:4];
             if ([fields containsObject:kW3ContactFieldType]) {
@@ -1100,15 +1124,25 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
                 [newDict setObject:[NSNumber numberWithBool:(BOOL)NO] forKey:kW3ContactFieldPrimary];   // iOS doesn't support primary so set all to false
             }
             // always set id
-            value = [NSNumber numberWithUnsignedInt:ABMultiValueGetIdentifierAtIndex(multi, i)];
+            // if we're fetching phonenumbers from linked contacts, set id to -1 to
+            // indicate that we don't need to write these fields when saving contact
+            value = (abRecord != self.record) ?
+                [NSNumber numberWithInt: -1] :
+                [NSNumber numberWithUnsignedInt:ABMultiValueGetIdentifierAtIndex(multi, i)];
+
             [newDict setObject:(value != nil) ? value:[NSNull null] forKey:kW3ContactFieldId];
             [(NSMutableArray*)valuesArray addObject : newDict];
         }
-    } else {
-        valuesArray = [NSNull null];
     }
+
+    CFRelease(linkedContacts);
+
     if (multi) {
         CFRelease(multi);
+    }
+
+    if (sizeof(valuesArray) == 0) {
+        valuesArray = [NSNull null];
     }
 
     return valuesArray;

@@ -248,6 +248,10 @@ function specified by the __contactSuccess__ parameter.
 - Windows Phone 8
 - Windows
 
+### iOS Quirks
+
+- On iOS, contact object, passed to `contactSuccess` will also contain some properties, such as `phoneNumbers`, `emails` and `ims`, fetched from contacts, linked to one, which was picked by user. However these fields from linked contacts won't be saved to device's address book. This is made intentionally to prevent creating lots of fields duplicates in both unified and linked contact.
+
 ### Example
 
 ```js
@@ -444,6 +448,8 @@ myContact.save(function (contact_obj) {
 - __photos__: Returns a File URL to the image, which is stored in the application's temporary directory.  Contents of the temporary directory are removed when the application exits.
 
 - __categories__:  This property is currently not supported, returning `null`.
+
+- __phoneNumbers__, __emails__ and __ims__: If these properties contains fields, fetched from linked contacts, these fields from linked contacts won't be saved to device's address book. This is made intentionally to prevent creating lots of fields duplicates in both unified and linked contact.
 
 ### Windows Phone 8 Quirks
 

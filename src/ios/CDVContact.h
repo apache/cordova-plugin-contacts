@@ -63,7 +63,7 @@ typedef NSUInteger CDVContactError;
 - (NSDictionary*)toDictionary:(NSDictionary*)withFields;
 - (NSNumber*)getDateAsNumber:(ABPropertyID)datePropId;
 - (NSObject*)extractName;
-- (NSObject*)extractMultiValue:(NSString*)propertyId;
+- (NSObject*)extractMultiValue:(NSString*)propertyId andFetchLinkedContacts: (BOOL) doFetch;
 - (NSObject*)extractAddresses;
 - (NSObject*)extractIms;
 - (NSObject*)extractOrganizations;

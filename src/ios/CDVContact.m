@@ -365,7 +365,11 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
                             data = [NSData dataWithContentsOfURL:photoUrl options:NSDataReadingUncached error:&err];
                         }
                         if (data && ([data length] > 0)) {
-                            bSuccess = ABPersonSetImageData(person, (__bridge CFDataRef)data, &error);
+                            // bSuccess = ABPersonSetImageData(person, (__bridge CFDataRef)data, &error);
+                            // Direct base64 data into the ABPersonSetImageData can lead to failure of synchronizing the contacts into icloud.
+                            // converted to JPEG format can fix this problem
+                            NSData *imageData = UIImageJPEGRepresentation([UIImage imageWithData:data],1);
+                            bSuccess = ABPersonSetImageData(person, (__bridge CFDataRef)imageData, &error);
                         }
                         if (!data || !bSuccess) {
                             NSLog(@"error setting contact image: %@", (err != nil ? [err localizedDescription] : @""));

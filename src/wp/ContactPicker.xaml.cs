@@ -27,6 +27,7 @@ namespace WPCordovaClassLib.Cordova.Commands
     using Microsoft.Phone.Tasks;
     using Microsoft.Phone.UserData;
     using DeviceContacts = Microsoft.Phone.UserData.Contacts;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Custom implemented class for picking single contact
@@ -39,6 +40,7 @@ namespace WPCordovaClassLib.Cordova.Commands
         /// Result of ContactPicker call, represent contact returned.
         /// </summary>
         private ContactPickerTask.PickResult result;
+        private List<Contact> _cached;
 
         #endregion
 
@@ -91,14 +93,33 @@ namespace WPCordovaClassLib.Cordova.Commands
         {
             if (e.Results.Count() != 0)
             {
-                lstContacts.ItemsSource = e.Results.ToList();
+                _cached = e.Results.ToList();
+                lstContacts.ItemsSource = _cached;
                 lstContacts.Visibility = Visibility.Visible;
                 NoContactsBlock.Visibility = Visibility.Collapsed;
+                txtSearchBox.TextChanged += txtSearchBox_TextChanged;
             }
             else
             {
                 lstContacts.Visibility = Visibility.Collapsed;
+                txtSearchBox.Visibility = System.Windows.Visibility.Collapsed;
+                NoContactsBlock.Margin = new Thickness(7, 21, 10, 59);
                 NoContactsBlock.Visibility = Visibility.Visible;
+            }
+        }
+
+        void txtSearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var text = txtSearchBox.Text;
+            if (!string.IsNullOrEmpty(text))
+            {
+                lstContacts.ItemsSource = (from c in _cached
+                                           where c.DisplayName.ToLower().Contains(text.ToLower())
+                                           select c).ToList();
+            }
+            else
+            {
+                lstContacts.ItemsSource = _cached;
             }
         }
 

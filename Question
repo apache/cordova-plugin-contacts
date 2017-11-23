@@ -1,0 +1,16 @@
+I do not see an issue tab so please excuse me I will choose this method to catch your atention.
+I am trying to get Favorites contacts with the plugin but I noticed that whatever contact type I mark as favorites 
+under my andorid phone, the object contacts taken with 
+
+        var options      = new ContactFindOptions();
+        options.multiple = true;
+        options.filter = "";
+        var fields       = ["*"];
+
+        navigator.contacts.find(fields, cb, onError, options);
+        
+is returning the: categories: null !
+I was reading somewhere that should come as {"Favorites_", "Other Category"} or so ?
+
+Thx for your possible answer
+malutanpetronel@gmail.com

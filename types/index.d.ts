@@ -24,7 +24,7 @@ interface Contacts {
      * and returning an array of Contact objects. The resulting objects are passed to the onSuccess
      * callback function specified by the onSuccess parameter.
      * @param fields The fields parameter should always be an array and specifies the fields to be used
-     * as a search qualifier.  A zero-length fields parameter is invalid and results in `ContactError.INVALID_ARGUMENT_ERROR`.
+     * as a search qualifier.  A zero-length fields parameter is invalid and results in ContactError.INVALID_ARGUMENT_ERROR.
      * A fields value of `["*"]` searches all contact fields.
      * @param onSuccess Success callback function invoked with the array of Contact objects returned from the database
      * @param onError Error callback function, invoked when an error occurs.

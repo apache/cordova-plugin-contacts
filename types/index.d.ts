@@ -23,9 +23,9 @@ interface Contacts {
      * The navigator.contacts.find method executes asynchronously, querying the device contacts database
      * and returning an array of Contact objects. The resulting objects are passed to the onSuccess
      * callback function specified by the onSuccess parameter.
-     * @param fields The fields parameter specifies the fields to be used as a search qualifier,
-     * and only those results are passed to the onSuccess callback function. A zero-length fields parameter
-     * is invalid and results in ContactError.INVALID_ARGUMENT_ERROR. A contactFields value of "*" returns all contact fields.
+     * @param fields The fields parameter should always be an array and specifies the fields to be used
+     * as a search qualifier.  A zero-length fields parameter is invalid and results in `ContactError.INVALID_ARGUMENT_ERROR`.
+     * A fields value of `["*"]` searches all contact fields.
      * @param onSuccess Success callback function invoked with the array of Contact objects returned from the database
      * @param onError Error callback function, invoked when an error occurs.
      * @param options Search options to filter navigator.contacts.

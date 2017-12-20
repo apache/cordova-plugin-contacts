@@ -165,9 +165,10 @@ device contacts database and returning an array of `Contact` objects.
 The resulting objects are passed to the `contactSuccess` callback
 function specified by the __contactSuccess__ parameter.
 
-The __contactFields__ parameter should always be an array and specifies the fields to be used as a search qualifier.  A zero-length __contactFields__ parameter is invalid and results in
-`ContactError.INVALID_ARGUMENT_ERROR`. A __contactFields__ value of
-`["*"]` searches all contact fields.
+The __contactFields__ parameter should always be an array and specifies the
+fields to be used as a search qualifier.  A zero-length __contactFields__
+parameter is invalid and results in `ContactError.INVALID_ARGUMENT_ERROR`.
+A __contactFields__ value of `["*"]` searches all contact fields.
 
 The __contactFindOptions.filter__ string can be used as a search
 filter when querying the contacts database.  If provided, a

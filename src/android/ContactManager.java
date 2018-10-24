@@ -130,7 +130,7 @@ public class ContactManager extends CordovaPlugin {
             }
         }
         else if (action.equals("save")) {
-            if(PermissionHelper.hasPermission(this, WRITE))
+            if(PermissionHelper.hasPermission(this, WRITE) && PermissionHelper.hasPermission(this, READ))
             {
                 save(executeArgs);
             }
@@ -140,7 +140,7 @@ public class ContactManager extends CordovaPlugin {
             }
         }
         else if (action.equals("remove")) {
-            if(PermissionHelper.hasPermission(this, WRITE))
+            if(PermissionHelper.hasPermission(this, WRITE) && PermissionHelper.hasPermission(this, READ))
             {
                 remove(executeArgs);
             }
@@ -283,10 +283,18 @@ public class ContactManager extends CordovaPlugin {
                 search(executeArgs);
                 break;
             case SAVE_REQ_CODE:
-                save(executeArgs);
+                if (!PermissionHelper.hasPermission(this, READ)) { 
+                    getReadPermission(SAVE_REQ_CODE);
+                } else {
+                    save(executeArgs);
+                }
                 break;
             case REMOVE_REQ_CODE:
-                remove(executeArgs);
+                if (!PermissionHelper.hasPermission(this, READ)) { 
+                    getReadPermission(REMOVE_REQ_CODE);
+                } else {
+                    remove(executeArgs);
+                }
                 break;
             case PICK_REQ_CODE:
                 pickContactAsync();

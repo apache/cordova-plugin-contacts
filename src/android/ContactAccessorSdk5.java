@@ -65,9 +65,6 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Base64InputStream;
 
-/**
- * including regex by Raza
- */
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 /**
@@ -1000,10 +997,6 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             Uri person = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, (Long.valueOf(contactId)));
             Uri photoUri = Uri.withAppendedPath(person, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
                
-    /**
-     * Create base64 images if content:// URI
-     * @author Raza
-     */
             Pattern p = Pattern.compile("content:");
             Matcher m = p.matcher(photoUri.toString());
             if (m.find()){
@@ -1037,6 +1030,10 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         } catch (JSONException e) {
             LOG.e(LOG_TAG, e.getMessage(), e);
         } catch (SQLiteException e) {
+            LOG.e(LOG_TAG, e.getMessage(), e);
+        } catch (FileNotFoundException e) {
+            LOG.e(LOG_TAG, e.getMessage(), e);
+        } catch (IOException e) {
             LOG.e(LOG_TAG, e.getMessage(), e);
         } catch (IllegalArgumentException e) {
             LOG.e(LOG_TAG, e.getMessage(), e);

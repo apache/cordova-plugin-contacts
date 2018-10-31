@@ -64,6 +64,12 @@ import android.provider.ContactsContract.CommonDataKinds.Im;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Base64InputStream;
+
+/**
+ * including regex by Raza
+ */
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 /**
  * An implementation of {@link ContactAccessor} that uses current Contacts API.
  * This class should be used on Eclair or beyond, but would not work on any earlier
@@ -993,7 +999,32 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             photo.put("type", "url");
             Uri person = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, (Long.valueOf(contactId)));
             Uri photoUri = Uri.withAppendedPath(person, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
-            photo.put("value", photoUri.toString());
+               
+    /**
+     * Create base64 images if content:// URI
+     * @author Raza
+     */
+            Pattern p = Pattern.compile("content:");
+            Matcher m = p.matcher(photoUri.toString());
+            if (m.find()){
+            InputStream inputStream = mApp.getActivity().getContentResolver().openInputStream(photoUri);
+
+            ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+            int bufferSize = 1024;
+            byte[] buffer = new byte[bufferSize];
+
+            int len = 0;
+            while ((len = inputStream.read(buffer)) != -1) {
+                byteBuffer.write(buffer, 0, len);
+            }
+            byte[] arr = byteBuffer.toByteArray();
+
+            String image = Base64.encodeToString(arr, Base64.DEFAULT);
+            photo.put("value", "data:image/png;base64, "+image.toString());
+
+            } else {
+                photo.put("value", photoUri.toString());
+            }
 
             // Query photo existance
             photoCursor = mApp.getActivity().getContentResolver().query(photoUri, new String[] {ContactsContract.Contacts.Photo.PHOTO}, null, null, null);

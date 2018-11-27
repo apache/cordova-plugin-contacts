@@ -150,7 +150,7 @@ exports.defineAutoTests = function() {
                     }
                 }
                 navigator.contacts.find(["displayName", "name", "phoneNumbers", "emails"], win, failed, obj);
-            });
+            }, HIGH_TIMEOUT); // give permission buster or a user a chance to accept the permission alert
 
             it("contacts.spec.4 success callback should be called with an array, even if partial ContactFindOptions specified", function(done) {
                 // Find method is not supported on Windows platform
@@ -692,7 +692,9 @@ exports.defineAutoTests = function() {
                 contact.name = new ContactName();
                 contact.name.familyName = contactName;
                 contact.note = "DeleteMe";
-                saveAndFindBy(contact, ["displayName", "name"], contactName, done, this);
+                saveAndFindBy(contact, ["displayName", "name"], contactName, function() {
+                    done();
+                }, this);
             }, MEDIUM_TIMEOUT);
 
             it("contacts.spec.26 Creating, saving, finding a contact should work, removing it should work", function(done) {
@@ -757,7 +759,9 @@ exports.defineAutoTests = function() {
                 contact.note = "DeleteMe";
                 contact.name = new ContactName();
                 contact.name.familyName = contactName;
-                saveAndFindBy(contact, ["displayName", "name"], contactName, done, this);
+                saveAndFindBy(contact, ["displayName", "name"], contactName, function() {
+                    done();
+                }, this);
             }, MEDIUM_TIMEOUT);
 
             it("contacts.spec.29 should find a contact without a name", function (done) {
@@ -771,7 +775,9 @@ exports.defineAutoTests = function() {
                 phoneNumbers[0] = new ContactField('work', '555-555-1234', true);
                 contact.phoneNumbers = phoneNumbers;
 
-                saveAndFindBy(contact, ["phoneNumbers"], "555-555-1234", done, this);
+                saveAndFindBy(contact, ["phoneNumbers"], "555-555-1234", function() {
+                    done();
+                }, this);
 
             }, MEDIUM_TIMEOUT);
 

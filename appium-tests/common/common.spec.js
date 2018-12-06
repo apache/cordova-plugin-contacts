@@ -37,7 +37,7 @@ var MINUTE = 60 * 1000;
 var PLATFORM = global.PLATFORM;
 var UNORM = global.UNORM;
 
-describe('Contacts Android', function () {
+describe('Contacts UI Automation Tests', function () {
     var driver;
     var webviewContext;
     var promiseCount = 0;
@@ -60,13 +60,17 @@ describe('Contacts Android', function () {
 
     function getDriver() {
         driver = wdHelper.getDriver(PLATFORM);
-        return driver.getWebviewContext()
-            .then(function(context) {
+        return wdHelper.getWebviewContext(driver, 2)
+            .then(function (context) {
                 webviewContext = context;
                 return driver.context(webviewContext);
             })
-            .waitForDeviceReady()
-            .injectLibraries();
+            .then(function () {
+                return wdHelper.waitForDeviceReady(driver);
+            })
+            .then(function () {
+                return wdHelper.injectLibraries(driver);
+            });
     }
 
     function addContact(firstName, lastName, bday) {
@@ -75,15 +79,19 @@ describe('Contacts Android', function () {
         return driver
             .context(webviewContext)
             .setAsyncScriptTimeout(MINUTE)
-            .executeAsync(function(contactname, bday, callback) {
+            .executeAsync(function (contactname, bday, callback) {
                 navigator.contacts.create({
                     'displayName': contactname.formatted,
                     'name': contactname,
                     'note': 'DeleteMe',
                     'birthday': new Date(bday)
-                }).save(callback, callback);
+                }).save(function (successResult) {
+                    callback(successResult);
+                }, function (failureResult) {
+                    callback(failureResult);
+                });
             }, [contactName, bdayString])
-            .then(function(result) {
+            .then(function (result) {
                 if (result && result.hasOwnProperty('code')) {
                     throw result;
                 }
@@ -108,9 +116,8 @@ describe('Contacts Android', function () {
                 switch (PLATFORM) {
                     case 'ios':
                         return driver
-                            .waitForElementByXPath(UNORM.nfd('//UIAStaticText[@label="' + name + '"]'), 20000)
-                            .elementByXPath(UNORM.nfd('//UIAStaticText[@label="' + name + '"]'))
-                            .elementByXPath(UNORM.nfd('//UIAStaticText[@label="' + name + '"]'));
+                            .waitForElementByAccessibilityId(name, 20000)
+                            .elementByAccessibilityId(name);
                     case 'android':
                         return driver
                             .waitForElementByXPath('//android.widget.TextView[@text="' + name + '"]', MINUTE);
@@ -146,7 +153,7 @@ describe('Contacts Android', function () {
                 obj.filter = oldname;
                 obj.multiple = false;
 
-                navigator.contacts.find(['displayName', 'name'], function(contacts) {
+                navigator.contacts.find(['displayName', 'name'], function (contacts) {
                     if (contacts.length === 0) {
                         callback({ 'code': -35142 });
                         return;
@@ -158,9 +165,11 @@ describe('Contacts Android', function () {
                     name.familyName = newfamilyname;
                     contact.name = name;
                     contact.save(callback, callback);
-                }, callback, obj);
+                }, function (result) {
+                    callback(result);
+                }, obj);
             }, [oldName, newGivenName, newFamilyName])
-            .then(function(result) {
+            .then(function (result) {
                 if (result && result.hasOwnProperty('code')) {
                     if (result.code === -35142) {
                         throw 'Couldn\'t find the contact "' + oldName + '"';
@@ -179,9 +188,9 @@ describe('Contacts Android', function () {
                 var obj = new ContactFindOptions();
                 obj.filter = 'DeleteMe';
                 obj.multiple = true;
-                navigator.contacts.find(['note'], function(contacts) {
+                navigator.contacts.find(['note'], function (contacts) {
                     var removes = [];
-                    contacts.forEach(function(contact) {
+                    contacts.forEach(function (contact) {
                         removes.push(contact);
                     });
                     if (removes.length === 0) {
@@ -212,9 +221,11 @@ describe('Contacts Android', function () {
                         });
                     }
                     removeNext(nextToRemove);
-                }, callback, obj);
+                }, function (failureResult) {
+                    callback(failureResult);
+                }, obj);
             }, [])
-            .then(function(result) {
+            .then(function (result) {
                 if (typeof result !== 'undefined') {
                     throw result;
                 }
@@ -228,13 +239,94 @@ describe('Contacts Android', function () {
         }
     }
 
-    it('contacts.ui.util configuring driver and starting a session', function (done) {
+    afterAll(function (done) {
+        checkSession(done);
+        driver
+            .quit()
+            .done(done);
+    }, MINUTE);
+
+    it('should connect to an appium endpoint properly', function (done) {
+        // retry up to 3 times
         getDriver()
+            .fail(function () {
+                return getDriver()
+                    .fail(function () {
+                        return getDriver()
+                            .fail(fail);
+                    });
+            })
             .then(function () {
                 failedToStart = false;
             }, fail)
+            .then(function () {
+                // on iOS and Android >= 6, first interaction with contacts API will trigger the permission dialog.
+                // We will attempt to bust it manually here, by triggering the contacts API
+                // and waiting for the native dialog to show up, then dismissing the alert.
+                // This only needs to be done once.
+                // NOTE: in earlier versions of iOS (9.3 and below), using the older UI testing library
+                // (UIAutomation), Appium's autoAcceptAlerts capability handles this for us. This logic
+                // is here as a transition between UIAutomation and XCUITest and is compatible with both.
+                // More details in the comment below.
+                var promiseId = getNextPromiseId();
+                var contactName = contactsHelper.getContactName('Permission', 'Buster');
+                return driver
+                    .context(webviewContext)
+                    .execute(function (pID, contactname) {
+                        navigator._appiumPromises[pID] = Q.defer();
+                        navigator.contacts.create({
+                            'displayName': contactname.formatted,
+                            'name': contactname,
+                            'note': 'DeleteMe'
+                        }).save(function (contact) {
+                            navigator._appiumPromises[pID].resolve(contact);
+                        }, function (err) {
+                            navigator._appiumPromises[pID].reject(err);
+                        });
+                    }, [promiseId, contactName])
+                    .context('NATIVE_APP')
+                    .then(function () {
+                        // iOS
+                        if (PLATFORM === 'ios') {
+                            return driver.acceptAlert()
+                                .then(function alertDismissed() {
+                                    // TODO: once we move to only XCUITest-based (which is force on you in either iOS 10+ or Xcode 8+)
+                                    // UI tests, we will have to:
+                                    // a) remove use of autoAcceptAlerts appium capability since it no longer functions in XCUITest
+                                    // b) can remove this entire then() clause, as we do not need to explicitly handle the acceptAlert
+                                    //    failure callback, since we will be guaranteed to hit the permission dialog on startup.
+                                 }, function noAlert() {
+                                     // in case the contacts permission alert never showed up: no problem, don't freak out.
+                                     // This can happen if:
+                                     // a) The application-under-test already had contacts permissions granted to it
+                                     // b) Appium's autoAcceptAlerts capability is provided (and functioning)
+                                 });
+                        }
+
+                        // Android
+                        return driver
+                            .elementByXPath('//android.widget.Button[translate(@text, "alow", "ALOW")="ALLOW"]')
+                            .click()
+                            .fail(function noAlert() { });
+                    })
+                    .context(webviewContext)
+                    .executeAsync(function (pID, cb) {
+                        navigator._appiumPromises[pID].promise
+                            .then(function (result) {
+                                cb(result);
+                            }, function (err) {
+                                cb('ERROR: ' + err);
+                            });
+                    }, [promiseId])
+                    .then(function (result) {
+                        if (typeof result === 'string' && result.indexOf('ERROR:') === 0) {
+                            throw result;
+                        }
+                        return result;
+                    });
+            })
             .done(done);
-    }, 10 * MINUTE);
+    }, 30 * MINUTE);
 
     describe('Picking contacts', function () {
         afterEach(function (done) {
@@ -270,10 +362,6 @@ describe('Contacts Android', function () {
                 })
                 .then(function () {
                     return renameContact('Dooney Evans', 'Urist', 'McContact');
-                })
-                .then(function (contact) {
-                    expect(contact.name.givenName).toBe('Urist');
-                    expect(contact.name.familyName).toBe('McContact');
                 })
                 .then(function () {
                     return pickContact('Urist McContact');
@@ -331,11 +419,4 @@ describe('Contacts Android', function () {
                 .done(done);
         }, 5 * MINUTE);
     });
-
-    it('contacts.ui.util Destroy the session', function (done) {
-        checkSession(done);
-        driver
-            .quit()
-            .done(done);
-    }, 5 * MINUTE);
 });

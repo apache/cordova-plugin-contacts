@@ -161,28 +161,17 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             searchTerm = options.optString("filter");
             if (searchTerm.length() == 0) {
                 searchTerm = "%";
-            }
-            else {
+            } else {
                 searchTerm = "%" + searchTerm + "%";
             }
 
-            try {
-                multiple = options.getBoolean("multiple");
-                if (!multiple) {
-                    limit = 1;
-                }
-            } catch (JSONException e) {
-                // Multiple was not specified so we assume the default is true.
-                LOG.e(LOG_TAG, e.getMessage(), e);
+            multiple = options.optBoolean("multiple", true);
+            if (!multiple) {
+                limit = 1;
             }
 
-            try {
-                hasPhoneNumber = options.getBoolean("hasPhoneNumber");
-            } catch (JSONException e) {
-                // hasPhoneNumber was not specified so we assume the default is false.
-            }
-        }
-        else {
+            hasPhoneNumber = options.optBoolean("hasPhoneNumber", false);
+        } else {
             searchTerm = "%";
         }
 
@@ -193,12 +182,30 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         WhereOptions whereOptions = buildWhereClause(fields, searchTerm, hasPhoneNumber);
 
         // Get all the id's where the search term matches the fields passed in.
-        Cursor idCursor = mApp.getActivity().getContentResolver().query(ContactsContract.Data.CONTENT_URI,
-                new String[] { ContactsContract.Data.CONTACT_ID },
-                whereOptions.getWhere(),
-                whereOptions.getWhereArgs(),
-                ContactsContract.Data.CONTACT_ID + " ASC");
 
+        Cursor idCursor;
+        boolean isSearchingPhone = false;
+        for (int i = 0; i < fields.length(); ++i) {
+            String key = fields.optString(i);
+            if (key.startsWith("phoneNumbers")) {
+                isSearchingPhone = true;
+                break;
+            }
+        }
+        if (!isSearchingPhone) {
+            idCursor = mApp.getActivity().getContentResolver().query(ContactsContract.Data.CONTENT_URI,
+                    new String[]{ContactsContract.Data.CONTACT_ID},
+                    whereOptions.getWhere(),
+                    whereOptions.getWhereArgs(),
+                    ContactsContract.Data.CONTACT_ID + " ASC");
+        } else {
+            Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(searchTerm.replaceAll("%", "")));
+            idCursor = mApp.getActivity().getContentResolver().query(uri,
+                    new String[]{ContactsContract.Data.CONTACT_ID},
+                    null,
+                    null,
+                    ContactsContract.Data.CONTACT_ID + " ASC");
+        }
         // Create a set of unique ids
         Set<String> contactIds = new HashSet<String>();
         int idColumn = -1;
@@ -287,7 +294,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
 
         // Do the id query
         Cursor c = mApp.getActivity().getContentResolver().query(ContactsContract.Data.CONTENT_URI,
-                columnsToFetch.toArray(new String[] {}),
+                columnsToFetch.toArray(new String[]{}),
                 idOptions.getWhere(),
                 idOptions.getWhereArgs(),
                 ContactsContract.Data.CONTACT_ID + " ASC");
@@ -1209,7 +1216,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                             contentValues.put(CommonDataKinds.Email.DATA, getJsonString(email, "value"));
                             contentValues.put(CommonDataKinds.Email.TYPE, getContactType(getJsonString(email, "type")));
                             contentValues.put(CommonDataKinds.Email.LABEL, getJsonString(email, "type"));
-                            
+
                             ops.add(ContentProviderOperation.newInsert(
                                     ContactsContract.Data.CONTENT_URI).withValues(contentValues).build());
                         }
@@ -1717,7 +1724,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             String baseEncoding = dataInfos.substring(dataInfos.indexOf(';') + 1);
             // [ENCODED_IMAGE]
             if("base64".equalsIgnoreCase(baseEncoding)) {
-                String img = path.substring(path.indexOf(',') + 1); 
+                String img = path.substring(path.indexOf(',') + 1);
                 byte[] encodedData = img.getBytes();
                 ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(encodedData, 0, encodedData.length);
                 Base64InputStream base64InputStream = new Base64InputStream(byteArrayInputStream, Base64.DEFAULT);
@@ -1725,7 +1732,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             } else {
                 LOG.d(LOG_TAG, "Could not decode image. The found base encoding is " + baseEncoding);
             }
-        }  
+        }
         if (path.startsWith("content:")) {
             Uri uri = Uri.parse(path);
             return mApp.getActivity().getContentResolver().openInputStream(uri);

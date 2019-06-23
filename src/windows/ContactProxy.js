@@ -404,6 +404,10 @@ module.exports = {
 
         // When contact store retrieved
         contactStoreRequest.done(function (contactStore) {
+            // check if contactStore is not null object
+            if (!contactStore) {
+                return fail(new ContactError(ContactError.UNKNOWN_ERROR));
+            }
             // determine, which function we use depending on whether searchOptions.filter specified or not
             var contactsRequest = searchFilter ? contactStore.findContactsAsync(searchFilter) : contactStore.findContactsAsync();
             // request contacts and resolve either with success or error callback

@@ -9,7 +9,7 @@ exports.config = {
 
     // define specific suites
     suites: {
-        home: ['./tests/specs/sample.spec.ts']
+        home: ['./tests/specs/contact.spec.ts']
     },
 
     // ====================

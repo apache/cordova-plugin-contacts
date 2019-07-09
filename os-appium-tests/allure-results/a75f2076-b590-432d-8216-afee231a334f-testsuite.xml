@@ -1,0 +1,69 @@
+<?xml version='1.0'?>
+<ns2:test-suite xmlns:ns2='urn:model.allure.qatools.yandex.ru' start='1562687957999' stop='1562687967111'>
+    <name>[TestSuite, Description("Add Contact")]</name>
+    <title>[TestSuite, Description("Add Contact")]</title>
+    <test-cases>
+        <test-case start='1562687958011' status='failed' stop='1562687967109'>
+            <name>[Test, Description("Add contact with all parameters"), Priority="P0"]</name>
+            <title>[Test, Description("Add contact with all parameters"), Priority="P0"]</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='device' value='Android'/>
+            </parameters>
+            <steps>
+                <step start='1562687958090' status='passed' stop='1562687958970'>
+                    <name>GET /session/:sessionId/contexts</name>
+                    <title>GET /session/:sessionId/contexts</title>
+                    <attachments>
+                        <attachment title='Response' source='687881be-1b11-48e1-bcdd-bd9e6c27d7f1-attachment.json' type='application/json' size='74'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1562687958971' status='failed' stop='1562687967109'>
+                    <name>POST /session/:sessionId/context</name>
+                    <title>POST /session/:sessionId/context</title>
+                    <attachments>
+                        <attachment title='Request' source='f2caf532-9184-4834-a61f-caaafb6ff45c-attachment.json' type='application/json' size='66'/>
+                    </attachments>
+                    <steps>
+                        <step start='1562687962662' status='passed' stop='1562687963062'>
+                            <name>GET /session/:sessionId/contexts</name>
+                            <title>GET /session/:sessionId/contexts</title>
+                            <attachments>
+                                <attachment title='Response' source='f3d46542-d9d7-4f2b-9d2e-57c7c844437c-attachment.json' type='application/json' size='18'/>
+                            </attachments>
+                            <steps/>
+                        </step>
+                        <step start='1562687963062' status='passed' stop='1562687963538'>
+                            <name>POST /session/:sessionId/context</name>
+                            <title>POST /session/:sessionId/context</title>
+                            <attachments>
+                                <attachment title='Request' source='96515f94-b98c-4354-8fd3-c186dd80853f-attachment.json' type='application/json' size='26'/>
+                            </attachments>
+                            <steps/>
+                        </step>
+                        <step start='1562687963545' status='passed' stop='1562687967107'>
+                            <name>GET /session/:sessionId/screenshot</name>
+                            <title>GET /session/:sessionId/screenshot</title>
+                            <attachments>
+                                <attachment title='Screenshot' source='b7ef7cd2-fc19-440c-8bd4-2d7347b19679-attachment.png' type='image/png' size='35589'/>
+                            </attachments>
+                            <steps/>
+                        </step>
+                    </steps>
+                </step>
+            </steps>
+            <attachments/>
+            <failure>
+                <message>unknown error: No such context found.</message>
+                <stack-trace>    at &lt;Jasmine>
+                    at Object.switchToContext (C:\Users\iso\Documents\GitHub\cordova-plugin-contacts\os-appium-tests\tests\helpers\Context.ts:41:13)
+                    at UserContext.beforeEach (C:\Users\iso\Documents\GitHub\cordova-plugin-contacts\os-appium-tests\tests\specs\contact.spec.ts:11:17)</stack-trace>
+            </failure>
+        </test-case>
+    </test-cases>
+</ns2:test-suite>

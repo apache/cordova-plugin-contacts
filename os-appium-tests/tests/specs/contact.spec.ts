@@ -1,13 +1,13 @@
 import 'jasmine';
-import * as ContactsScreen from '../screenobjects/contacts.screen';
+import * as ContactsScreen from '../screenobjects/ContactSscreen';
 import * as Context from '../helpers/Context';
-import NativeAlert from '../helpers/NativeAlert' //it only works without "* as"
-import '../constants';
+import NativeAlert from '../helpers/NativeAlert' 
+import * as Constants from '../constants';
 
 describe('[TestSuite, Description("Add Contact")]', () => {
     beforeEach(() => {
         //do test setup here, for instance:
-        //browser.reset();
+        browser.reset();
         Context.switchToContext(Context.CONTEXT_REF.WEBVIEW);
         ContactsScreen.getAddContactScreen().click();
     });
@@ -16,13 +16,12 @@ describe('[TestSuite, Description("Add Contact")]', () => {
         // To be able to use the site in the webview webdriver.io first needs
         // change the context to native
     
-        ContactsScreen.getTitle().waitForDisplayed(DEFAULT_TIMEOUT)
+        ContactsScreen.getTitle().waitForDisplayed(Constants.DEFAULT_TIMEOUT)
 
         ContactsScreen.SetupContactAllParameters().click();
         // WE NEED TO FIND THE RIGHT OUTPUT TO SEE IF SETUP HAPPENED
         ContactsScreen.getAddContactButton().click();
-       
-        
+
         Context.switchToContext(Context.CONTEXT_REF.NATIVE);
 
         if(NativeAlert.isShown(true, browser)) {

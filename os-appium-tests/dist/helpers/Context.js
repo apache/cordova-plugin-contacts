@@ -10,6 +10,8 @@ const DOCUMENT_READY_STATE = {
     INTERACTIVE: 'interactive',
     LOADING: 'loading',
 };
+const DEFAULT_TIMEOUT = 10000;
+const DEFAULT_TIMEOUT_INTERVAL = 1000;
 /**
  * Wait for the webview context to be loaded
  *

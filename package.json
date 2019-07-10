@@ -57,5 +57,8 @@
   },
   "devDependencies": {
     "jshint": "^2.6.0"
+  },
+  "dependencies": {
+    "adb": "^0.2.0"
   }
 }

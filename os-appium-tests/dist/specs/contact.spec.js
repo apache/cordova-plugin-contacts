@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 require("jasmine");
-const ContactsScreen = require("../screenobjects/contacts.screen");
+const ContactsScreen = require("../screenobjects/ContactSscreen");
 const Context = require("../helpers/Context");
 const NativeAlert_1 = require("../helpers/NativeAlert"); //it only works without "* as"
 require("../constants");

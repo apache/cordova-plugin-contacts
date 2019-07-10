@@ -32,7 +32,7 @@ exports.config = {
 
     },
     sync: true,
-    logLevel: 'debug',
+    logLevel: 'error',
     deprecationWarnings: true,
     bail: 0,
     baseUrl: '',
@@ -52,6 +52,7 @@ exports.config = {
     // Some hooks
     // ====================
     afterTest: function (test) {
+        // eslint-disable-next-line no-debugger
         debugger;
         console.log(test);
         if (!test.passed) {
@@ -60,7 +61,7 @@ exports.config = {
     },
 
     beforeSession: (config, capabilities, specs) => {
-        require('ts-node').register({files: true});
+        require('ts-node').register({ files: true });
     },
 
     /**

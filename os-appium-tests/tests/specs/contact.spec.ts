@@ -1,12 +1,12 @@
 import 'jasmine';
-import * as ContactsScreen from '../screenobjects/ContactSscreen';
+import {DEFAULT_TIMEOUT, DEFAULT_TIMEOUT_INTERVAL} from '../constants';
 import * as Context from '../helpers/Context';
-import NativeAlert from '../helpers/NativeAlert' 
-import * as Constants from '../constants';
+import NativeAlert from '../helpers/NativeAlert';
+import * as ContactsScreen from '../screenobjects/ContactSscreen';
 
 describe('[TestSuite, Description("Add Contact")]', () => {
     beforeEach(() => {
-        //do test setup here, for instance:
+        // do test setup here, for instance:
         browser.reset();
         Context.switchToContext(Context.CONTEXT_REF.WEBVIEW);
         ContactsScreen.getAddContactScreen().click();
@@ -16,7 +16,7 @@ describe('[TestSuite, Description("Add Contact")]', () => {
         // To be able to use the site in the webview webdriver.io first needs
         // change the context to native
 
-        ContactsScreen.getTitle().waitForDisplayed(Constants.DEFAULT_TIMEOUT)
+        ContactsScreen.getTitle().waitForDisplayed(DEFAULT_TIMEOUT);
 
         ContactsScreen.SetupContactAllParameters().click();
         // WE NEED TO FIND THE RIGHT OUTPUT TO SEE IF SETUP HAPPENED

@@ -1,4 +1,4 @@
-import "../constants"
+import {DEFAULT_TIMEOUT, DEFAULT_TIMEOUT_INTERVAL} from '../constants';
 
 const SELECTORS = {
     ANDROID: {
@@ -17,7 +17,7 @@ class NativeAlert {
     /**
      * Wait for the alert to exist
      */
-    public static waitForIsShown (isShown = true, driver): void {
+    public static waitForIsShown(isShown = true, driver): void {
         const selector = driver.isAndroid ? SELECTORS.ANDROID.ALERT_DIALOG : SELECTORS.IOS.ALERT;
         $(selector).waitForExist(DEFAULT_TIMEOUT, !isShown); // ISO: commented because native.alert wasn't working with it
     }
@@ -25,7 +25,7 @@ class NativeAlert {
     /**
      * Check if exists the alert
      */
-    public static isShown (isShown = true, driver): boolean {
+    public static isShown(isShown = true, driver): boolean {
         const selector = driver.isAndroid ? SELECTORS.ANDROID.ALERT_DIALOG : SELECTORS.IOS.ALERT;
         return $(selector).isDisplayed();
     }
@@ -42,7 +42,7 @@ class NativeAlert {
      *
      * @param {string} selector
      */
-    public static pressButton (selector, driver): void {
+    public static pressButton(selector, driver): void {
         const buttonSelector = driver.isAndroid
             ? SELECTORS.ANDROID.ALERT_BUTTON.replace(/{BUTTON_TEXT}/, selector.toUpperCase())
             : `~${selector}`;
@@ -54,7 +54,7 @@ class NativeAlert {
      *
      * @return {string}
      */
-    public static text (driver): string {
+    public static text(driver): string {
         return driver.getAlertText();
     }
 }

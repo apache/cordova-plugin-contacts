@@ -1,4 +1,4 @@
-import {DEFAULT_TIMEOUT, DEFAULT_TIMEOUT_INTERVAL} from "../constants"
+import {DEFAULT_TIMEOUT, DEFAULT_TIMEOUT_INTERVAL} from '../constants';
 
 export const CONTEXT_REF = {
     NATIVE: 'native',
@@ -18,7 +18,7 @@ const DOCUMENT_READY_STATE = {
  * `["NATIVE_APP","WEBVIEW_28158.2"]`
  * The number behind `WEBVIEW` can be any string
  */
-export function waitForWebViewContextLoaded (): void {
+export function waitForWebViewContextLoaded(): void {
     browser.waitUntil(
         () => {
             const currentContexts = this.getCurrentContexts();

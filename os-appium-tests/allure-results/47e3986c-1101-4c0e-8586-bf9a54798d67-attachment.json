@@ -1,0 +1,5 @@
+{
+  "error": "no such element",
+  "message": "An element could not be located on the page using the given search parameters.",
+  "stacktrace": "NoSuchElementError: An element could not be located on the page using the given search parameters.\n    at AndroidUiautomator2Driver.helpers.findElOrEls (C:\\Users\\iso\\AppData\\Local\\Programs\\Appium\\resources\\app\\node_modules\\appium-android-driver\\lib\\commands\\find.js:75:11)\n    at process._tickCallback (internal/process/next_tick.js:68:7)"
+}

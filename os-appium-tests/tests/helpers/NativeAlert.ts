@@ -3,11 +3,11 @@ import {DEFAULT_TIMEOUT, DEFAULT_TIMEOUT_INTERVAL} from '../constants';
 const SELECTORS = {
     ANDROID: {
         ALERT_BUTTON: '*//android.widget.Button[@text="{BUTTON_TEXT}"]',
+        ALERT_DIALOG: '*//android.widget.LinearLayout[@resource-id="com.android.packageinstaller:id/dialog_container"]', // Sandra
         ALERT_TITLE: '*//android.widget.TextView[@resource-id="com.android.packageinstaller:id/permission_message"]', // ANDROID 9
         // ALERT_TITLE: '*//android.widget.TextView[@resource-id="android:id/alertTitle"]', //BEFORE ANDROID 9
-        ALERT_DIALOG: '*//android.widget.LinearLayout[@resource-id="com.android.packageinstaller:id/dialog_container"]' // Sandra
-
     },
+
     IOS: {
         ALERT: '*//XCUIElementTypeAlert',
     },

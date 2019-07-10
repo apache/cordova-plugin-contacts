@@ -37,7 +37,7 @@ export function waitForWebViewContextLoaded(): void {
  *
  * @param {string} context should be native of webview
  */
-export function switchToContext (context): void {
+export function switchToContext(context): void {
     browser.switchContext(this.getCurrentContexts()[context === CONTEXT_REF.WEBVIEW ? 1 : 0]);
 }
 
@@ -46,14 +46,14 @@ export function switchToContext (context): void {
  *
  * @return {object} An object containing the list of all available contexts
  */
-export function getCurrentContexts () {
+export function getCurrentContexts() {
     return browser.getContexts();
 }
 
 /**
  * Wait for the document to be fully loaded
  */
-export function waitForDocumentFullyLoaded (): void {
+export function waitForDocumentFullyLoaded(): void {
     browser.waitUntil(
         () => browser.execute(() => document.readyState) === DOCUMENT_READY_STATE.COMPLETE,
         DEFAULT_TIMEOUT,
@@ -65,18 +65,18 @@ export function waitForDocumentFullyLoaded (): void {
 /**
  * Wait for the website in the webview to be loaded
  */
-export function waitForWebsiteLoaded (): void {
+export function waitForWebsiteLoaded(): void {
     this.waitForWebViewContextLoaded();
     this.switchToContext(CONTEXT_REF.WEBVIEW);
     this.waitForDocumentFullyLoaded();
     this.switchToContext(CONTEXT_REF.NATIVE);
 }
 
-export function getElemBySelector (selector: string, throwError: boolean = true, waitTime: number = DEFAULT_TIMEOUT): WebdriverIO.Element | undefined {
+export function getElemBySelector(selector: string, throwError: boolean = true, waitTime: number = DEFAULT_TIMEOUT): WebdriverIO.Element | undefined {
     return waitForElement(selector, throwError, waitTime);
 }
 
-export function waitForElement (selector: string, throwError: boolean = true, waitTime: number = DEFAULT_TIMEOUT): WebdriverIO.Element | undefined {
+export function waitForElement(selector: string, throwError: boolean = true, waitTime: number = DEFAULT_TIMEOUT): WebdriverIO.Element | undefined {
     let elem = $$(selector);
     let it = 0;
     while (elem.length < 1 && it < waitTime / DEFAULT_TIMEOUT_INTERVAL) {
@@ -85,7 +85,7 @@ export function waitForElement (selector: string, throwError: boolean = true, wa
         elem = $$(selector);
     }
     if (elem.length > 0) {
-        return elem[0]
+        return elem[0];
     } else if (throwError) {
         throw new Error('Element not found: ' + selector);
     } else {

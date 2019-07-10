@@ -15,7 +15,7 @@ describe('[TestSuite, Description("Add Contact")]', () => {
     it('[Test, Description("Add contact with all parameters"), Priority="P0"]', () => {
         // To be able to use the site in the webview webdriver.io first needs
         // change the context to native
-    
+
         ContactsScreen.getTitle().waitForDisplayed(Constants.DEFAULT_TIMEOUT)
 
         ContactsScreen.SetupContactAllParameters().click();
@@ -24,19 +24,19 @@ describe('[TestSuite, Description("Add Contact")]', () => {
 
         Context.switchToContext(Context.CONTEXT_REF.NATIVE);
 
-        if(NativeAlert.isShown(true, browser)) {
-            NativeAlert.waitForIsShown(true, browser);    
+        if (NativeAlert.isShown(true, browser)) {
+            NativeAlert.waitForIsShown(true, browser);
             NativeAlert.pressButton('ALLOW', browser);
             NativeAlert.waitForIsShown(false, browser);
             }
-            
+
         Context.switchToContext(Context.CONTEXT_REF.WEBVIEW);
 
         expect(ContactsScreen.getFeedbackMessage().getText()).toEqual('Success: True');
     });
 
     afterEach(() => {
-        //Do test teardown here
+        // Do test teardown here
         Context.switchToContext(Context.CONTEXT_REF.NATIVE);
     });
 

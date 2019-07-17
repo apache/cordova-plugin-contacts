@@ -1,4 +1,4 @@
-import "../constants"
+import {DEFAULT_TIMEOUT, DEFAULT_TIMEOUT_INTERVAL} from '../constants';
 import { waitForElement } from "./Context";
 
 export function getByTextSelector (val: string): string {

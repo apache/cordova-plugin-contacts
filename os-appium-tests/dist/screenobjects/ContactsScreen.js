@@ -6,6 +6,30 @@ function SetupContactAllParameters() {
     return Context.getElemBySelector('#Name1');
 }
 exports.SetupContactAllParameters = SetupContactAllParameters;
+function SetupContactDifferentPhone() {
+    return Context.getElemBySelector('#Name1_changephone');
+}
+exports.SetupContactDifferentPhone = SetupContactDifferentPhone;
+function SetupContactDifferentEmail() {
+    return Context.getElemBySelector('#Name1_changeemail');
+}
+exports.SetupContactDifferentEmail = SetupContactDifferentEmail;
+function SetupContactDifferentPhoneEmail() {
+    return Context.getElemBySelector('#Name1_changephoneandemail');
+}
+exports.SetupContactDifferentPhoneEmail = SetupContactDifferentPhoneEmail;
+function SetupContactNoPhone() {
+    return Context.getElemBySelector('#Name2_nophone');
+}
+exports.SetupContactNoPhone = SetupContactNoPhone;
+function SetupContactOnlyPhone() {
+    return Context.getElemBySelector('#onlyphone');
+}
+exports.SetupContactOnlyPhone = SetupContactOnlyPhone;
+function SetupContactStrangeFormat() {
+    return Context.getElemBySelector('#strangeformat');
+}
+exports.SetupContactStrangeFormat = SetupContactStrangeFormat;
 // SCREEN ELEMENTS
 function getTitle() {
     return Context.getElemBySelector('#b1-Title');
@@ -35,7 +59,7 @@ function getFindContactButton() {
     return Context.getElemBySelector('#findContactButton');
 }
 exports.getFindContactButton = getFindContactButton;
-//********PICK CONTACT SCREEN********/
+// ********PICK CONTACT SCREEN********/
 function getPickContactScreen() {
     return $('#pickContactScreen');
 }

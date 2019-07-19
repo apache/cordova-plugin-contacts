@@ -15,7 +15,7 @@ config.capabilities = [
         // appPackage: 'com.outsystemsenterprise.enmobiletst.ContactsSampleApp', // Path to your app package
         // appActivity: 'com.outsystemsenterprise.enmobiletst.ContactsSampleApp.MainActivity', // Path to your activity
         // chromedriver windows:
-        chromedriver: join(process.cwd(), 'chromedriver/chromedriver.exe'),
+        chromedriver: join(process.cwd(), 'chromedriver/chromedriver244.exe'),
         // chromedriver iOS:
         // chromedriver: join(process.cwd(), 'chromedriver/chromedriver_iOS'),
         noReset: true

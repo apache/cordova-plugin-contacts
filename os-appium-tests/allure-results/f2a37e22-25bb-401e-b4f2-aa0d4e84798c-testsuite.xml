@@ -1,0 +1,161 @@
+<?xml version='1.0'?>
+<ns2:test-suite xmlns:ns2='urn:model.allure.qatools.yandex.ru' start='1563355689916' stop='1563355702622'>
+    <name>[TestSuite, Description("Add Contact")]</name>
+    <title>[TestSuite, Description("Add Contact")]</title>
+    <test-cases>
+        <test-case start='1563355689918' status='failed' stop='1563355697092'>
+            <name>[Test, Description("Add contact with all parameters"), Priority="P2"]</name>
+            <title>[Test, Description("Add contact with all parameters"), Priority="P2"]</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='device' value='Nexus'/>
+            </parameters>
+            <steps>
+                <step start='1563355689942' status='passed' stop='1563355693466'>
+                    <name>POST /session/:sessionId/appium/app/reset</name>
+                    <title>POST /session/:sessionId/appium/app/reset</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563355693466' status='passed' stop='1563355693774'>
+                    <name>GET /session/:sessionId/contexts</name>
+                    <title>GET /session/:sessionId/contexts</title>
+                    <attachments>
+                        <attachment title='Response' source='3241807c-f4ba-41cd-bb82-64d28accc070-attachment.json' type='application/json' size='74'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1563355693774' status='failed' stop='1563355697092'>
+                    <name>POST /session/:sessionId/context</name>
+                    <title>POST /session/:sessionId/context</title>
+                    <attachments>
+                        <attachment title='Request' source='43577d4c-b7d1-4feb-87df-fb2140999d06-attachment.json' type='application/json' size='66'/>
+                    </attachments>
+                    <steps>
+                        <step start='1563355695587' status='failed' stop='1563355697092'>
+                            <name>POST /session/:sessionId/elements</name>
+                            <title>POST /session/:sessionId/elements</title>
+                            <attachments>
+                                <attachment title='Request' source='08a31c03-141c-4a59-abc9-faa3e9c36955-attachment.json' type='application/json' size='53'/>
+                            </attachments>
+                            <steps>
+                                <step start='1563355695672' status='passed' stop='1563355695943'>
+                                    <name>GET /session/:sessionId/contexts</name>
+                                    <title>GET /session/:sessionId/contexts</title>
+                                    <attachments>
+                                        <attachment title='Response' source='1bef9cc0-f0fa-4646-898f-ac97efb5c4a6-attachment.json' type='application/json' size='74'/>
+                                    </attachments>
+                                    <steps/>
+                                </step>
+                                <step start='1563355695943' status='passed' stop='1563355696227'>
+                                    <name>POST /session/:sessionId/context</name>
+                                    <title>POST /session/:sessionId/context</title>
+                                    <attachments>
+                                        <attachment title='Request' source='31161d10-6905-42e0-ad08-ed07c99c7549-attachment.json' type='application/json' size='26'/>
+                                    </attachments>
+                                    <steps/>
+                                </step>
+                                <step start='1563355696235' status='passed' stop='1563355697090'>
+                                    <name>GET /session/:sessionId/screenshot</name>
+                                    <title>GET /session/:sessionId/screenshot</title>
+                                    <attachments>
+                                        <attachment title='Screenshot' source='a367994a-746d-422c-8922-ec1d81121147-attachment.png' type='image/png' size='56109'/>
+                                    </attachments>
+                                    <steps/>
+                                </step>
+                            </steps>
+                        </step>
+                    </steps>
+                </step>
+            </steps>
+            <attachments/>
+            <failure>
+                <message>unknown error: An unknown server-side error occurred while processing the command. Original error: No Chromedriver found that can automate Chrome '69.0.3497'. See https://github.com/appium/appium/blob/master/docs/en/writing-running-appium/web/chromedriver.md for more details.</message>
+                <stack-trace>    at &lt;Jasmine>
+                    at Object.switchToContext (C:\Users\iso\Documents\GitHub\cordova-plugin-contacts\os-appium-tests\tests\helpers\Context.ts:41:13)
+                    at UserContext.beforeEach (C:\Users\iso\Documents\GitHub\cordova-plugin-contacts\os-appium-tests\tests\specs\contact.spec.ts:11:17)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1563355697093' status='failed' stop='1563355702621'>
+            <name>[Test, Description("Add contact with same number"), Priority="P0"]</name>
+            <title>[Test, Description("Add contact with same number"), Priority="P0"]</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='device' value='Nexus'/>
+            </parameters>
+            <steps>
+                <step start='1563355697093' status='passed' stop='1563355700160'>
+                    <name>POST /session/:sessionId/appium/app/reset</name>
+                    <title>POST /session/:sessionId/appium/app/reset</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563355700161' status='passed' stop='1563355700553'>
+                    <name>GET /session/:sessionId/contexts</name>
+                    <title>GET /session/:sessionId/contexts</title>
+                    <attachments>
+                        <attachment title='Response' source='180b6ec8-1314-42ce-8b8c-dd2a72f44a79-attachment.json' type='application/json' size='74'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1563355700554' status='failed' stop='1563355702621'>
+                    <name>POST /session/:sessionId/context</name>
+                    <title>POST /session/:sessionId/context</title>
+                    <attachments>
+                        <attachment title='Request' source='320c37ca-9a60-48e9-b608-b6d8cb3535b7-attachment.json' type='application/json' size='66'/>
+                    </attachments>
+                    <steps>
+                        <step start='1563355701788' status='failed' stop='1563355702621'>
+                            <name>POST /session/:sessionId/elements</name>
+                            <title>POST /session/:sessionId/elements</title>
+                            <attachments>
+                                <attachment title='Request' source='71b6a41d-dc01-42ae-ab4a-e28f84e647f8-attachment.json' type='application/json' size='53'/>
+                            </attachments>
+                            <steps>
+                                <step start='1563355701807' status='passed' stop='1563355702120'>
+                                    <name>GET /session/:sessionId/contexts</name>
+                                    <title>GET /session/:sessionId/contexts</title>
+                                    <attachments>
+                                        <attachment title='Response' source='c2449b7d-2a4a-43b3-bf21-98311f9b43c0-attachment.json' type='application/json' size='74'/>
+                                    </attachments>
+                                    <steps/>
+                                </step>
+                                <step start='1563355702120' status='passed' stop='1563355702315'>
+                                    <name>POST /session/:sessionId/context</name>
+                                    <title>POST /session/:sessionId/context</title>
+                                    <attachments>
+                                        <attachment title='Request' source='42f45c51-54b2-4a84-9386-70f9ec40fe5b-attachment.json' type='application/json' size='26'/>
+                                    </attachments>
+                                    <steps/>
+                                </step>
+                                <step start='1563355702315' status='passed' stop='1563355702620'>
+                                    <name>GET /session/:sessionId/screenshot</name>
+                                    <title>GET /session/:sessionId/screenshot</title>
+                                    <attachments>
+                                        <attachment title='Screenshot' source='adf2b64b-a3d0-4772-a0b2-c07ba1c5053d-attachment.png' type='image/png' size='53468'/>
+                                    </attachments>
+                                    <steps/>
+                                </step>
+                            </steps>
+                        </step>
+                    </steps>
+                </step>
+            </steps>
+            <attachments/>
+            <failure>
+                <message>unknown error: An unknown server-side error occurred while processing the command. Original error: No Chromedriver found that can automate Chrome '69.0.3497'. See https://github.com/appium/appium/blob/master/docs/en/writing-running-appium/web/chromedriver.md for more details.</message>
+                <stack-trace>    at &lt;Jasmine>
+                    at Object.switchToContext (C:\Users\iso\Documents\GitHub\cordova-plugin-contacts\os-appium-tests\tests\helpers\Context.ts:41:13)
+                    at UserContext.beforeEach (C:\Users\iso\Documents\GitHub\cordova-plugin-contacts\os-appium-tests\tests\specs\contact.spec.ts:11:17)</stack-trace>
+            </failure>
+        </test-case>
+    </test-cases>
+</ns2:test-suite>

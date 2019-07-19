@@ -12,7 +12,7 @@ describe('[TestSuite, Description("Add Contact")]', () => {
         ContactsScreen.getAddContactScreen().click();
     });
 
-    it('[Test, Description("Add contact with all parameters"), Priority="P2"]', () => {
+    it('[Test, Description("Add contact with all parameters"), Priority="P0"]', () => {
         // To be able to use the site in the webview webdriver.io first needs
         // change the context to native
 
@@ -35,7 +35,7 @@ describe('[TestSuite, Description("Add Contact")]', () => {
         expect(ContactsScreen.getFeedbackMessage().getText()).toEqual('Success: True');
     });
 
-    it('[Test, Description("Add contact with same number"), Priority="P0"]', () => {
+    it('[Test, Description("Add contact with same number"), Priority="P2"]', () => {
         // To be able to use the site in the webview webdriver.io first needs
         // change the context to native
 

@@ -1,4 +1,4 @@
-import {DEFAULT_TIMEOUT, DEFAULT_TIMEOUT_INTERVAL} from '../constants';
+import "../constants"
 import { waitForElement } from "./Context";
 
 function getNameSelector (name: string, type?: string): string {

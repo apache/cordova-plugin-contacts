@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const constants_1 = require("../constants");
+require("../constants");
 exports.CONTEXT_REF = {
     NATIVE: 'native',
     WEBVIEW: 'webview',
@@ -10,6 +10,8 @@ const DOCUMENT_READY_STATE = {
     INTERACTIVE: 'interactive',
     LOADING: 'loading',
 };
+const DEFAULT_TIMEOUT = 10000;
+const DEFAULT_TIMEOUT_INTERVAL = 1000;
 /**
  * Wait for the webview context to be loaded
  *
@@ -24,7 +26,7 @@ function waitForWebViewContextLoaded() {
         const result = currentContexts.length > 1 &&
             currentContexts.find((context) => context.toLowerCase().includes(exports.CONTEXT_REF.WEBVIEW)) != null;
         return result;
-    }, constants_1.DEFAULT_TIMEOUT, 'Webview context not loaded', constants_1.DEFAULT_TIMEOUT_INTERVAL);
+    }, DEFAULT_TIMEOUT, 'Webview context not loaded', DEFAULT_TIMEOUT_INTERVAL);
 }
 exports.waitForWebViewContextLoaded = waitForWebViewContextLoaded;
 /**
@@ -49,7 +51,7 @@ exports.getCurrentContexts = getCurrentContexts;
  * Wait for the document to be fully loaded
  */
 function waitForDocumentFullyLoaded() {
-    browser.waitUntil(() => browser.execute(() => document.readyState) === DOCUMENT_READY_STATE.COMPLETE, constants_1.DEFAULT_TIMEOUT, 'Website not loaded', constants_1.DEFAULT_TIMEOUT_INTERVAL);
+    browser.waitUntil(() => browser.execute(() => document.readyState) === DOCUMENT_READY_STATE.COMPLETE, DEFAULT_TIMEOUT, 'Website not loaded', DEFAULT_TIMEOUT_INTERVAL);
 }
 exports.waitForDocumentFullyLoaded = waitForDocumentFullyLoaded;
 /**
@@ -62,15 +64,15 @@ function waitForWebsiteLoaded() {
     this.switchToContext(exports.CONTEXT_REF.NATIVE);
 }
 exports.waitForWebsiteLoaded = waitForWebsiteLoaded;
-function getElemBySelector(selector, throwError = true, waitTime = constants_1.DEFAULT_TIMEOUT) {
+function getElemBySelector(selector, throwError = true, waitTime = DEFAULT_TIMEOUT) {
     return waitForElement(selector, throwError, waitTime);
 }
 exports.getElemBySelector = getElemBySelector;
-function waitForElement(selector, throwError = true, waitTime = constants_1.DEFAULT_TIMEOUT) {
+function waitForElement(selector, throwError = true, waitTime = DEFAULT_TIMEOUT) {
     let elem = $$(selector);
     let it = 0;
-    while (elem.length < 1 && it < waitTime / constants_1.DEFAULT_TIMEOUT_INTERVAL) {
-        browser.pause(constants_1.DEFAULT_TIMEOUT_INTERVAL);
+    while (elem.length < 1 && it < waitTime / DEFAULT_TIMEOUT_INTERVAL) {
+        browser.pause(DEFAULT_TIMEOUT_INTERVAL);
         it++;
         elem = $$(selector);
     }

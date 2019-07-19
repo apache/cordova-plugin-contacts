@@ -1,11 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const constants_1 = require("../constants");
+require("../constants");
 const SELECTORS = {
     ANDROID: {
         ALERT_BUTTON: '*//android.widget.Button[@text="{BUTTON_TEXT}"]',
-        ALERT_DIALOG: '*//android.widget.LinearLayout[@resource-id="com.android.packageinstaller:id/dialog_container"]',
         ALERT_TITLE: '*//android.widget.TextView[@resource-id="com.android.packageinstaller:id/permission_message"]',
+        // ALERT_TITLE: '*//android.widget.TextView[@resource-id="android:id/alertTitle"]', //BEFORE ANDROID 9
+        ALERT_DIALOG: '*//android.widget.LinearLayout[@resource-id="com.android.packageinstaller:id/dialog_container"]' // Sandra
     },
     IOS: {
         ALERT: '*//XCUIElementTypeAlert',
@@ -17,7 +18,7 @@ class NativeAlert {
      */
     static waitForIsShown(isShown = true, driver) {
         const selector = driver.isAndroid ? SELECTORS.ANDROID.ALERT_DIALOG : SELECTORS.IOS.ALERT;
-        $(selector).waitForExist(constants_1.DEFAULT_TIMEOUT, !isShown); // ISO: commented because native.alert wasn't working with it
+        $(selector).waitForExist(DEFAULT_TIMEOUT, !isShown); // ISO: commented because native.alert wasn't working with it
     }
     /**
      * Check if exists the alert

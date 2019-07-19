@@ -52,21 +52,22 @@
   "bundledDependencies": [
     "@types/jasmine",
     "@types/node",
+    "@wdio/allure-reporter",
     "@wdio/cli",
     "@wdio/jasmine-framework",
     "@wdio/local-runner",
     "@wdio/sauce-service",
     "@wdio/spec-reporter",
     "@wdio/sync",
+    "allure-commandline",
     "appium",
+    "fibers",
     "jasmine",
     "log4js",
     "ts-node",
     "typescript",
     "wdio-jasmine-framework",
     "wdio-spec-reporter",
-    "@wdio/allure-reporter",
-    "allure-commandline",
     "webdriverio"
   ]
 }

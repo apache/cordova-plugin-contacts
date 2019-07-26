@@ -16,3 +16,4 @@ node_modules/
 allure-results/
 os-appium-tests/allure-results/
 *.zip
+*.tar

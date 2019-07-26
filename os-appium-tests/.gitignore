@@ -38,6 +38,7 @@ build/Release
 node_modules/
 jspm_packages/
 os-appium-tests/allure-results/
+allure-results
 
 # TypeScript v1 declaration files
 typings/

@@ -34,6 +34,7 @@
     "jasmine": "~3.3.1",
     "log4js": "~4.0.2",
     "ts-node": "~7.0.1",
+    "tslint": "^5.18.0",
     "typescript": "~3.2.1",
     "wdio-jasmine-framework": "~0.3.8",
     "wdio-spec-reporter": "~0.1.5",
@@ -52,21 +53,23 @@
   "bundledDependencies": [
     "@types/jasmine",
     "@types/node",
+    "@wdio/allure-reporter",
     "@wdio/cli",
     "@wdio/jasmine-framework",
     "@wdio/local-runner",
     "@wdio/sauce-service",
     "@wdio/spec-reporter",
     "@wdio/sync",
+    "allure-commandline",
     "appium",
+    "fibers",
     "jasmine",
     "log4js",
     "ts-node",
+    "tslint",
     "typescript",
     "wdio-jasmine-framework",
     "wdio-spec-reporter",
-    "@wdio/allure-reporter",
-    "allure-commandline",
     "webdriverio"
   ]
 }

@@ -112,7 +112,7 @@ export function getPickContactButton(): WebdriverIO.Element {
     return Context.getElemBySelector('#pickContactButton');
 }
 
-// Contacts Validation
+// CONTACTS VALIDATION
 
 export function getValidateFirstName(): WebdriverIO.Element {
     return Context.getElemBySelector('#firstname');
@@ -130,8 +130,16 @@ export function getValidatePhoneNumber(): WebdriverIO.Element {
     return Context.getElemBySelector('#l1-0-phoneNumber');
 }
 
+export function getValidatePhoneNumber2(): WebdriverIO.Element {
+    return Context.getElemBySelector('#l1-1-phoneNumber');
+}
+
 export function getValidateEmail(): WebdriverIO.Element {
     return Context.getElemBySelector('#l2-0-Email');
+}
+
+export function getValidateEmail2(): WebdriverIO.Element {
+    return Context.getElemBySelector('#l2-1-Email');
 }
 
 export function getValidateCompanyName(): WebdriverIO.Element {
@@ -158,7 +166,7 @@ export function getValidateNotes(): WebdriverIO.Element {
     return Context.getElemBySelector('#note');
 }
 
-// Bottom Bar
+// BOTTOM BAR
 
 export function getAddContactBottomMenu(): WebdriverIO.Element {
     return Context.getElemBySelector('#b4-AddContactBottomBar');

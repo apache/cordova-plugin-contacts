@@ -1,8 +1,8 @@
 import * as AndroidUtils from '../helpers/AndroidUtils';
+import * as Context from '../helpers/Context';
 import * as IOSUtils from '../helpers/IOSUtils';
-import * as Context  from "../helpers/Context";
 
-export function getNativeElementX (): WebdriverIO.Element {
+export function getNativeElementX(): WebdriverIO.Element {
     if (browser.isAndroid) {
         return AndroidUtils.getElemByPartialId('viewIdX');
     } else {
@@ -10,7 +10,7 @@ export function getNativeElementX (): WebdriverIO.Element {
     }
 }
 
-export function getNativeElementWithTextY (): WebdriverIO.Element {
+export function getNativeElementWithTextY(): WebdriverIO.Element {
     if (browser.isAndroid) {
         return AndroidUtils.getElemByText('Y');
     } else {
@@ -18,6 +18,6 @@ export function getNativeElementWithTextY (): WebdriverIO.Element {
     }
 }
 
-export function getWebViewElementX (): WebdriverIO.Element {
-    return Context.getElemBySelector("#x");
+export function getWebViewElementX(): WebdriverIO.Element {
+    return Context.getElemBySelector('#x');
 }

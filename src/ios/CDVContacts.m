@@ -171,7 +171,9 @@
     }
     pickerController.allowsEditing = allowsEditing;
 
-    [self.viewController presentViewController:pickerController animated:YES completion:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.viewController presentViewController:pickerController animated:YES completion:nil];
+    });
 }
 
 - (void)pickContact:(CDVInvokedUrlCommand *)command

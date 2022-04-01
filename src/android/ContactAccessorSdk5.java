@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1974,7 +1975,11 @@ public class ContactAccessorSdk5 extends ContactAccessor {
 
         try {
             int colBirthday = c.getColumnIndexOrThrow(CommonDataKinds.Event.START_DATE);
-            return Date.valueOf(c.getString(colBirthday));
+            String birthday = c.getString(colBirthday);
+            if(birthday.startsWith("--")){
+                birthday = birthday.replaceFirst("-", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
+            }
+            return Date.valueOf(birthday);
         } catch (IllegalArgumentException e) {
             LOG.e(LOG_TAG, "Failed to get birthday for contact from cursor", e);
             return null;

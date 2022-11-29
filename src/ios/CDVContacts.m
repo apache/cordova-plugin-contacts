@@ -211,12 +211,14 @@
     // if no permissions granted try to request them first
     if (status == kABAuthorizationStatusNotDetermined) {
         ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
-            if (granted) {
-                [self chooseContact:newCommand];
-                return;
-            }
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                if (granted) {
+                    [self chooseContact:newCommand];
+                    return;
+                }
 
-            [self.commandDelegate sendPluginResult: errorResult callbackId:command.callbackId];
+                [self.commandDelegate sendPluginResult: errorResult callbackId:command.callbackId];
+            });
         });
     }
 }
